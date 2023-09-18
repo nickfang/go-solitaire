@@ -7,18 +7,26 @@ import (
 )
 
 var cardNumDisplay = [13]string{"Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"}
+var cardNumDisplayMini = [13]string{"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"}
 
 type card struct {
-	value   int
-	suit    string
-	color   string
-	display string
+	value       int
+	suit        string
+	color       string
+	display     string
+	displayMini string
 }
 
 type cards []card
 
 func getCardDisplay(value int, suit string) string {
 	return cardNumDisplay[value-1] + " of " + suit
+}
+func getCardDisplayMini(value int, suit string) string {
+	if value != 10 {
+		return " " + cardNumDisplayMini[value-1] + suit + " "
+	}
+	return cardNumDisplayMini[value-1] + suit
 }
 func getCardColor(suit string) string {
 	if suit == "Spades" || suit == "Clubs" {
@@ -30,11 +38,21 @@ func getCardColor(suit string) string {
 func newDeck() cards {
 	deck := cards{}
 	cardSuits := []string{"Spades", "Hearts", "Clubs", "Diamonds"}
+	cardSuitsMini := []string{"♠", "♥", "♣", "♦"}
 	cardValues := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}
 
-	for _, suit := range cardSuits {
+	for index, suit := range cardSuits {
 		for _, value := range cardValues {
-			deck = append(deck, card{value, suit, getCardColor(suit), getCardDisplay(value, suit)})
+			deck = append(
+				deck,
+				card{
+					value,
+					suit,
+					getCardColor(suit),
+					getCardDisplay(value, suit),
+					getCardDisplayMini(value, cardSuitsMini[index]),
+				},
+			)
 		}
 	}
 
@@ -63,5 +81,11 @@ func (c cards) perfectShuffle() {
 func (c cards) print() {
 	for _, card := range c {
 		fmt.Println(card.display)
+	}
+}
+
+func (c cards) display() {
+	for _, card := range c {
+		fmt.Println(card.displayMini)
 	}
 }
