@@ -39,7 +39,7 @@ func getCardColor(suit string) string {
 func newDeck() cards {
 	deck := cards{}
 	cardSuits := []string{"Spades", "Hearts", "Clubs", "Diamonds"}
-	cardSuitsMini := []string{"♠", "♥", "♣", "♦"}
+	cardSuitsIcons := []string{"♠", "♥", "♣", "♦"}
 	cardValues := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}
 
 	for index, suit := range cardSuits {
@@ -52,7 +52,7 @@ func newDeck() cards {
 					suit,
 					getCardColor(suit),
 					// getCardDisplay(value, suit),
-					getCardDisplayMini(value, cardSuitsMini[index]),
+					getCardDisplayMini(value, cardSuitsIcons[index]),
 				},
 			)
 		}
