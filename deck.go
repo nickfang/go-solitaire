@@ -6,10 +6,11 @@ import (
 	"time"
 )
 
-var cardNumDisplay = [13]string{"Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"}
-var cardNumDisplayMini = [13]string{"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"}
+// var cardNumDisplay = [13]string{"Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"}
+var cardNumDisplay = [13]string{"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"}
 
 type card struct {
+	debug bool
 	shown bool
 	value int
 	suit  string
@@ -20,14 +21,14 @@ type card struct {
 
 type cards []card
 
+//	func getCardDisplay(value int, suit string) string {
+//		return cardNumDisplay[value-1] + " of " + suit
+//	}
 func getCardDisplay(value int, suit string) string {
-	return cardNumDisplay[value-1] + " of " + suit
-}
-func getCardDisplayMini(value int, suit string) string {
 	if value != 10 {
-		return "  " + cardNumDisplayMini[value-1] + suit
+		return "  " + cardNumDisplay[value-1] + suit
 	}
-	return " " + cardNumDisplayMini[value-1] + suit
+	return " " + cardNumDisplay[value-1] + suit
 }
 func getCardColor(suit string) string {
 	if suit == "Spades" || suit == "Clubs" {
@@ -48,11 +49,11 @@ func newDeck() cards {
 				deck,
 				card{
 					false,
+					false,
 					value,
 					suit,
 					getCardColor(suit),
-					// getCardDisplay(value, suit),
-					getCardDisplayMini(value, cardSuitsIcons[index]),
+					getCardDisplay(value, cardSuitsIcons[index]),
 				},
 			)
 		}
@@ -93,7 +94,7 @@ func (c cards) display() {
 		} else if card.shown {
 			fmt.Print(card.displayMini)
 		} else {
-			fmt.Print(" * ")
+			fmt.Print("  * ")
 		}
 	}
 }
@@ -107,16 +108,18 @@ func (c cards) displayAll() {
 	}
 }
 
-func (c card) print() {
-	fmt.Println(c.display)
-}
-
 func (c card) display() {
 	if c.value == 0 {
 		fmt.Print("    ")
 		return
 	}
-	fmt.Print(c.displayMini)
+	if c.debug {
+		fmt.Print(c.displayMini)
+	} else if c.shown {
+		fmt.Print(c.displayMini)
+	} else {
+		fmt.Print("  * ")
+	}
 	// if c.shown {
 	// 	fmt.Println(c.displayMini)
 	// } else {
