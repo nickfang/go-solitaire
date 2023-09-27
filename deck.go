@@ -81,13 +81,7 @@ func (c cards) perfectShuffle() {
 	}
 }
 
-func (c cards) print() {
-	for _, card := range c {
-		fmt.Println(card.display)
-	}
-}
-
-func (c cards) display() {
+func (c cards) displayAll() {
 	for _, card := range c {
 		if card.displayMini == "null" {
 			return
@@ -96,15 +90,6 @@ func (c cards) display() {
 		} else {
 			fmt.Print("  * ")
 		}
-	}
-}
-
-func (c cards) displayAll() {
-	for _, card := range c {
-		if card.value == 0 {
-			return
-		}
-		fmt.Println(card.displayMini)
 	}
 }
 
@@ -120,9 +105,4 @@ func (c card) display() {
 	} else {
 		fmt.Print("  * ")
 	}
-	// if c.shown {
-	// 	fmt.Println(c.displayMini)
-	// } else {
-	// 	fmt.Println(" * ")
-	// }
 }

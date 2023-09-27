@@ -2,8 +2,6 @@ package main
 
 import "fmt"
 
-type board [7][19]card
-
 type game struct {
 	cards            cards
 	board            board
@@ -14,20 +12,18 @@ func newGame() game {
 	return game{newDeck(), newBoard(), 0}
 }
 
-func setDebug(g game) game {
-	cards := g.cards
-	for _, card := range cards {
+func (g game) setDebug() {
+	for _, card := range g.cards {
 		card.debug = true
 	}
-	return g
 }
 
-func (g game) dealBoard() (cards, board) {
+func (g game) dealBoard() (cards, board, int) {
 	// a board of solitare is 7 columns of cards
 	// the first column has 1 card, the second has 2, etc.
 	cards := g.cards
 	board := g.board
-	// currentCardIndex := 0
+	currentCardIndex := 0
 
 	for i := 0; i < 7; i++ {
 		for j := i; j < 7; j++ {
@@ -38,42 +34,16 @@ func (g game) dealBoard() (cards, board) {
 		}
 		cards = cards[7-i:]
 	}
-	// cards[currentCardIndex].shown = true
+	cards[currentCardIndex].shown = true
 
-	return cards, board
+	return cards, board, currentCardIndex
 }
 
 func newBoard() board {
 	return board{}
 }
 
-// func (b board) printColumn(column int) {
-// 	for _, card := range b[column] {
-// 		card.print()
-// 	}
-// 	fmt.Println()
-// }
-
-// func (b board) print() {
-// 	for index, column := range b {
-// 		fmt.Println("Column:", index+1)
-// 		for _, card := range column {
-// 			card.print()
-// 		}
-// 	}
-// }
-
-func (b board) display() {
-	for y := 0; y < 19; y++ {
-		for x := 0; x < 7; x++ {
-			b[x][y].display()
-		}
-		fmt.Println()
-	}
-}
-
 func (g game) currentCard() card {
-	// g.cards[g.currentCardIndex].shown = true
 	return g.cards[g.currentCardIndex]
 }
 
@@ -86,4 +56,27 @@ func (g game) getNextCard() game {
 	}
 	g.cards[g.currentCardIndex].shown = true
 	return g
+}
+
+func (g game) displayCards() {
+	fmt.Println(g.currentCardIndex, g.cards[g.currentCardIndex].displayMini, len(g.cards)-g.currentCardIndex)
+}
+
+func (g game) displayBoard() {
+	maxLen := 1 // add a space so the board isn't cramped with the deck.
+	for _, column := range g.board {
+		for index, card := range column {
+			if card.value == 0 {
+				maxLen = index
+				break
+			}
+		}
+	}
+
+	for y := 0; y < maxLen; y++ {
+		for x := 0; x < 7; x++ {
+			g.board[x][y].display()
+		}
+		fmt.Println()
+	}
 }
