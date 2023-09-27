@@ -43,7 +43,7 @@ func newBoard() board {
 	return board{}
 }
 
-func (g game) currentCard() card {
+func (g game) getCurrentCard() card {
 	return g.cards[g.currentCardIndex]
 }
 
@@ -58,22 +58,68 @@ func (g game) getNextCard() game {
 	return g
 }
 
+func checkMove(card card, toCard card) bool {
+	if card.value == toCard.value-1 && card.color != toCard.color {
+		return true
+	}
+	return false
+}
+
+func getLastCard(cards []card) (int, card) {
+	var lastIndex int
+	var lastCard card
+	for i, card := range cards {
+		lastIndex = i
+		lastCard = card
+		if card.value == 0 {
+			if i == 0 {
+				return i, card
+			}
+			return i - 1, cards[i-1]
+		}
+	}
+	return lastIndex, lastCard
+}
+
+// take the current deck card and return columns that are possible moves
+func (g game) getDeckMoves() []int {
+	currentCard := g.getCurrentCard()
+	moves := []int{}
+	for index, column := range g.board {
+		columnCopy := make([]card, len(column))
+		copy(columnCopy, column[:])
+		_, lastCard := getLastCard(columnCopy)
+		if checkMove(currentCard, lastCard) {
+			moves = append(moves, index)
+		}
+	}
+	return moves
+}
+
+func (g game) displayCurrentCard() string {
+	return g.getCurrentCard().displayMini
+}
+
 func (g game) displayCards() {
-	fmt.Println(g.currentCardIndex, g.cards[g.currentCardIndex].displayMini, len(g.cards)-g.currentCardIndex)
+	fmt.Println(g.currentCardIndex, g.displayCurrentCard(), len(g.cards)-g.currentCardIndex)
 }
 
 func (g game) displayBoard() {
-	maxLen := 1 // add a space so the board isn't cramped with the deck.
+	maxLen := 0
 	for _, column := range g.board {
-		for index, card := range column {
-			if card.value == 0 {
-				maxLen = index
-				break
-			}
+		// turn an array into a slice so it's the right type.
+		columnCopy := make([]card, len(column))
+		copy(columnCopy, column[:])
+		index, card := getLastCard(columnCopy)
+		fmt.Println(index, card)
+		if maxLen < index {
+			maxLen = index
 		}
 	}
 
-	for y := 0; y < maxLen; y++ {
+	fmt.Println("maxLen", maxLen)
+
+	for y := 0; y <= maxLen; y++ {
 		for x := 0; x < 7; x++ {
 			g.board[x][y].display()
 		}
