@@ -1,8 +1,9 @@
 package main
 
-import "fmt"
-
-// import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 func main() {
 	game := newGame()
@@ -10,9 +11,18 @@ func main() {
 	game.cards, game.board, game.currentCardIndex = game.dealBoard()
 	game.displayBoard()
 
-	for i := 0; i < 10; i++ {
-		game.displayCards()
-		fmt.Println(game.getDeckMoves())
-		game = game.getNextCard()
+	var input string
+	game.displayCards()
+	for {
+		fmt.Scanln(&input)
+		if strings.ToLower(input) == "q" {
+			return
+		}
+		if strings.ToLower(input) == "n" {
+			game = game.getNextCard()
+			game.displayCards()
+			continue
+		}
+		fmt.Println("Invalid Input.")
 	}
 }
