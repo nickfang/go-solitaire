@@ -39,10 +39,6 @@ func (g game) dealBoard() (cards, board, int) {
 	return cards, board, currentCardIndex
 }
 
-func newBoard() board {
-	return board{}
-}
-
 func (g game) getCurrentCard() card {
 	return g.cards[g.currentCardIndex]
 }

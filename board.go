@@ -4,6 +4,10 @@ import "fmt"
 
 type board [7][19]card
 
+func newBoard() board {
+	return board{}
+}
+
 func (b board) display() {
 	maxLen := 1 // add a space so the board isn't cramped with the deck.
 	for _, column := range b {
