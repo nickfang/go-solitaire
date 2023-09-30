@@ -62,6 +62,13 @@ func newDeck() cards {
 	return deck
 }
 
+func (d cards) removeCard(cardIndex int) cards {
+	deck1 := d[:cardIndex]
+	deck2 := d[cardIndex+1:]
+	newDeck := append(deck1, deck2...)
+	return newDeck
+}
+
 func (c cards) randomShuffle() {
 	// todo: implement shuffle like hand shuffle
 	source := rand.NewSource(time.Now().UnixNano())
