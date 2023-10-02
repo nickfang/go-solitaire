@@ -49,7 +49,7 @@ func (g game) getCurrentCard() card {
 
 func (g game) getNextCard() game {
 	g.cards[g.currentCardIndex].shown = false
-	if g.currentCardIndex+3 > len(g.cards)-1 {
+	if g.currentCardIndex+3 > len(g.cards) {
 		g.currentCardIndex = 0
 	} else {
 		g.currentCardIndex += 3
@@ -97,12 +97,14 @@ func (g game) getDeckMoves() []int {
 	return moves
 }
 
+// move the current card from the deck to a column
 func (g game) moveCurrentCard(column int) game {
 	moves := g.getDeckMoves()
 	fmt.Println("moves", moves, column)
 	if slices.Contains(moves, column) {
 		lastIndex, _ := getLastCard(g.board[column])
 		g.board[column][lastIndex+1] = g.cards[g.currentCardIndex]
+		g.board[column][lastIndex+1].shown = true
 		g.cards = g.cards.removeCard(g.currentCardIndex)
 		if g.currentCardIndex > 0 {
 			g.currentCardIndex = g.currentCardIndex - 1
