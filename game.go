@@ -17,9 +17,9 @@ func newGame() game {
 	return game{newDeck(), newBoard(), newStacks(), 0}
 }
 
-func (g *game) setDebug() {
+func (g *game) setDebug(onOff bool) {
 	for _, card := range g.cards {
-		card.debug = true
+		card.debug = onOff
 	}
 }
 
@@ -44,10 +44,6 @@ func (g *game) dealBoard() (cards, board, int) {
 	return cards, board, currentCardIndex
 }
 
-func (g game) getCurrentCard() card {
-	return g.cards[g.currentCardIndex]
-}
-
 func (g *game) nextDeckCard() {
 	g.cards[g.currentCardIndex].shown = false
 	if g.currentCardIndex+3 > len(g.cards)-1 {
@@ -56,6 +52,27 @@ func (g *game) nextDeckCard() {
 		g.currentCardIndex += 3
 	}
 	g.cards[g.currentCardIndex].shown = true
+}
+
+// move the current card from the deck to a column
+func (g *game) moveCurrentCard(column int) {
+	moves := g.getDeckMoves()
+	fmt.Println("moves", moves, column)
+	if slices.Contains(moves, column) {
+		lastIndex, _ := getLastCard(g.board[column])
+		g.board[column][lastIndex+1] = g.cards[g.currentCardIndex]
+		g.board[column][lastIndex+1].shown = true
+		g.cards = g.cards.removeCard(g.currentCardIndex)
+		if g.currentCardIndex > 0 {
+			g.currentCardIndex = g.currentCardIndex - 1
+		}
+	} else {
+		fmt.Println("Invalid move.")
+	}
+}
+
+func (g game) getCurrentCard() card {
+	return g.cards[g.currentCardIndex]
 }
 
 func checkMove(card card, toCard card) bool {
@@ -97,23 +114,6 @@ func (g game) getDeckMoves() []int {
 	return moves
 }
 
-// move the current card from the deck to a column
-func (g *game) moveCurrentCard(column int) {
-	moves := g.getDeckMoves()
-	fmt.Println("moves", moves, column)
-	if slices.Contains(moves, column) {
-		lastIndex, _ := getLastCard(g.board[column])
-		g.board[column][lastIndex+1] = g.cards[g.currentCardIndex]
-		g.board[column][lastIndex+1].shown = true
-		g.cards = g.cards.removeCard(g.currentCardIndex)
-		if g.currentCardIndex > 0 {
-			g.currentCardIndex = g.currentCardIndex - 1
-		}
-	} else {
-		fmt.Println("Invalid move.")
-	}
-}
-
 func (g game) displayCurrentCard() string {
 	return g.getCurrentCard().displayMini
 }
@@ -122,19 +122,8 @@ func (g game) displayCards() {
 	fmt.Println(g.currentCardIndex, g.displayCurrentCard(), len(g.cards)-g.currentCardIndex)
 }
 
-func (g game) displayBoard() {
-	maxLen := 0
-	for _, column := range g.board {
-		index, _ := getLastCard(column)
-		if maxLen < index+1 {
-			maxLen = index + 1
-		}
-	}
-
-	for y := 0; y < maxLen; y++ {
-		for x := 0; x < 7; x++ {
-			g.board[x][y].display()
-		}
-		fmt.Println()
-	}
+func (g game) display() {
+	g.stacks.display()
+	g.board.display()
+	g.displayCards()
 }
