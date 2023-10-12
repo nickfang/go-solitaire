@@ -88,8 +88,8 @@ func (c cards) perfectShuffle() {
 	}
 }
 
-func (c cards) displayAll() {
-	for _, card := range c {
+func (cs cards) displayAll() {
+	for _, card := range cs {
 		if card.displayMini == "null" {
 			return
 		} else if card.shown {

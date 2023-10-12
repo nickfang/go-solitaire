@@ -12,7 +12,6 @@ func newStacks() stacks {
 	return stacks
 }
 
-func (s stacks) displayStacks() {
-	fmt.Println(len(s))
+func (s stacks) display() {
 	fmt.Println(s)
 }
