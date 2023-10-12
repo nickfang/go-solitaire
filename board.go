@@ -2,7 +2,11 @@ package main
 
 import "fmt"
 
+// using arrays since they are easier to initialize.
+// TODO: maybe use slices and see how those work out.
 type board [7][19]card
+
+const NumColumns = 7
 
 func newBoard() board {
 	return board{}

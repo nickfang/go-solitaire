@@ -9,28 +9,29 @@ import (
 type game struct {
 	cards            cards
 	board            board
+	stacks           stacks
 	currentCardIndex int
 }
 
 func newGame() game {
-	return game{newDeck(), newBoard(), 0}
+	return game{newDeck(), newBoard(), newStacks(), 0}
 }
 
-func (g game) setDebug() {
+func (g *game) setDebug() {
 	for _, card := range g.cards {
 		card.debug = true
 	}
 }
 
-func (g game) dealBoard() (cards, board, int) {
+func (g *game) dealBoard() (cards, board, int) {
 	// a board of solitare is 7 columns of cards
 	// the first column has 1 card, the second has 2, etc.
 	cards := g.cards
 	board := g.board
 	currentCardIndex := 0
 
-	for i := 0; i < 7; i++ {
-		for j := i; j < 7; j++ {
+	for i := 0; i < NumColumns; i++ {
+		for j := i; j < NumColumns; j++ {
 			board[j][i] = cards[j-i]
 			if j == i {
 				board[i][j].shown = true
@@ -47,7 +48,7 @@ func (g game) getCurrentCard() card {
 	return g.cards[g.currentCardIndex]
 }
 
-func (g game) getNextCard() game {
+func (g *game) nextDeckCard() {
 	g.cards[g.currentCardIndex].shown = false
 	if g.currentCardIndex+3 > len(g.cards)-1 {
 		g.currentCardIndex = 0
@@ -55,7 +56,6 @@ func (g game) getNextCard() game {
 		g.currentCardIndex += 3
 	}
 	g.cards[g.currentCardIndex].shown = true
-	return g
 }
 
 func checkMove(card card, toCard card) bool {
@@ -98,7 +98,7 @@ func (g game) getDeckMoves() []int {
 }
 
 // move the current card from the deck to a column
-func (g game) moveCurrentCard(column int) game {
+func (g *game) moveCurrentCard(column int) {
 	moves := g.getDeckMoves()
 	fmt.Println("moves", moves, column)
 	if slices.Contains(moves, column) {
@@ -112,7 +112,6 @@ func (g game) moveCurrentCard(column int) game {
 	} else {
 		fmt.Println("Invalid move.")
 	}
-	return g
 }
 
 func (g game) displayCurrentCard() string {
