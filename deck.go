@@ -69,30 +69,36 @@ func (d cards) removeCard(cardIndex int) cards {
 	return newDeck
 }
 
-func (c cards) randomShuffle() {
+func (d cards) randomShuffle() {
 	// todo: implement shuffle like hand shuffle
 	source := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(source)
-	for i := range c {
-		newPosition := r.Intn(len(c) - 1)
-		c[i], c[newPosition] = c[newPosition], c[i]
+	for i := range d {
+		newPosition := r.Intn(len(d) - 1)
+		d[i], d[newPosition] = d[newPosition], d[i]
 	}
 }
 
-func (c cards) perfectShuffle() {
-	half1 := [26]card(c[:len(c)/2])
-	half2 := [26]card(c[len(c)/2:])
-	for i := 0; i < (len(c) / 2); i++ {
-		c[i*2] = half1[i]
-		c[(i*2)+1] = half2[i]
+func (d cards) perfectShuffle() {
+	half1 := [26]card(d[:len(d)/2])
+	half2 := [26]card(d[len(d)/2:])
+	for i := 0; i < (len(d) / 2); i++ {
+		d[i*2] = half1[i]
+		d[(i*2)+1] = half2[i]
 	}
 }
 
-func (cs cards) displayAll() {
-	for _, card := range cs {
+func (d cards) displayDebug() {
+	for _, card := range d {
+		fmt.Println(card)
+	}
+}
+
+func (d cards) displayAll() {
+	for _, card := range d {
 		if card.displayMini == "null" {
 			return
-		} else if card.shown {
+		} else if card.shown || card.debug {
 			fmt.Print(card.displayMini)
 		} else {
 			fmt.Print("  * ")
