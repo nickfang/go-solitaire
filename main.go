@@ -28,11 +28,19 @@ func main() {
 			continue
 		}
 		if input[:1] == "d" {
-			columnIndex, _ := strconv.ParseInt(string(input[1]), 10, 64)
-			game.moveCurrentCard(int(columnIndex))
-			game.display()
-			fmt.Println(game.getDeckMoves())
+			to := string(input[1])
+			if to == "s" {
+				game.moveDeckToStacks()
+			} else {
+				columnIndex, _ := strconv.ParseInt(to, 10, 64)
+				game.moveCurrentCard(int(columnIndex))
+				game.display()
+				fmt.Println(game.getDeckMoves())
+			}
 			continue
+		}
+		if input[:1] == "s" {
+			// move from stacks to board.
 		}
 		fmt.Println("Invalid Input.", input)
 	}
