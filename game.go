@@ -76,6 +76,11 @@ func (g *game) moveCurrentCard(column int) {
 	}
 }
 
+func (g *game) moveDeckToStacks() {
+	moves := g.getStackMoves()
+	fmt.Println("moves", moves)
+}
+
 func (g game) getCurrentCard() card {
 	return g.cards[g.currentCardIndex]
 }
@@ -115,6 +120,15 @@ func (g game) getDeckMoves() []int {
 		if checkMove(currentCard, lastCard) {
 			moves = append(moves, index)
 		}
+	}
+	return moves
+}
+
+func (g game) getStackMoves() []int {
+	moves := []int{0, 0, 0, 0}
+	for i := range g.stacks {
+
+		moves[i] = len(g.stacks[i])
 	}
 	return moves
 }
