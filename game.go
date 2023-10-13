@@ -18,8 +18,13 @@ func newGame() game {
 }
 
 func (g *game) setDebug(onOff bool) {
-	for _, card := range g.cards {
-		card.debug = onOff
+	for i := range g.cards {
+		g.cards[i].debug = onOff
+	}
+	for i, column := range g.board {
+		for j := range column {
+			g.board[i][j].debug = onOff
+		}
 	}
 }
 
