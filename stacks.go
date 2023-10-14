@@ -16,5 +16,14 @@ func newStacks() stacks {
 }
 
 func (s stacks) display() {
-	fmt.Println(s)
+	fmt.Print("     [")
+	for _, stack := range s {
+		numCards := len(stack)
+		if numCards == 0 {
+			fmt.Print("    ")
+		} else {
+			stack[numCards-1].display()
+		}
+	}
+	fmt.Println("]")
 }

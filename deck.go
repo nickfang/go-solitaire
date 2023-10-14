@@ -37,13 +37,14 @@ func getCardColor(suit string) string {
 	return "Red"
 }
 
+var CardSuits = []string{"Spades", "Hearts", "Clubs", "Diamonds"}
+var CardSuitsIcons = []string{"♠", "♥", "♣", "♦"}
+var cardValues = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}
+
 func newDeck() cards {
 	deck := cards{}
-	cardSuits := []string{"Spades", "Hearts", "Clubs", "Diamonds"}
-	cardSuitsIcons := []string{"♠", "♥", "♣", "♦"}
-	cardValues := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}
 
-	for index, suit := range cardSuits {
+	for index, suit := range CardSuits {
 		for _, value := range cardValues {
 			deck = append(
 				deck,
@@ -53,7 +54,7 @@ func newDeck() cards {
 					value,
 					suit,
 					getCardColor(suit),
-					getCardDisplay(value, cardSuitsIcons[index]),
+					getCardDisplay(value, CardSuitsIcons[index]),
 				},
 			)
 		}
