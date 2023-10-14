@@ -30,10 +30,12 @@ func main() {
 		if input[:1] == "d" {
 			to := string(input[1])
 			if to == "s" {
-				game.moveDeckToStacks()
+				game.moveFromDeckToStacks()
+				game.display()
+				fmt.Println(game.getDeckMoves())
 			} else {
 				columnIndex, _ := strconv.ParseInt(to, 10, 64)
-				game.moveCurrentCard(int(columnIndex))
+				game.moveFromDeckToBoard(int(columnIndex))
 				game.display()
 				fmt.Println(game.getDeckMoves())
 			}
