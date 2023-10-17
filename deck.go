@@ -8,6 +8,9 @@ import (
 
 // var cardNumDisplay = [13]string{"Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"}
 var cardNumDisplay = [13]string{"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"}
+var CardSuits = []string{"Spades", "Hearts", "Clubs", "Diamonds"}
+var CardSuitsIcons = []string{"♠", "♥", "♣", "♦"}
+var CardValues = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}
 
 type card struct {
 	debug bool
@@ -37,15 +40,11 @@ func getCardColor(suit string) string {
 	return "Red"
 }
 
-var CardSuits = []string{"Spades", "Hearts", "Clubs", "Diamonds"}
-var CardSuitsIcons = []string{"♠", "♥", "♣", "♦"}
-var cardValues = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}
-
 func newDeck() cards {
 	deck := cards{}
 
 	for index, suit := range CardSuits {
-		for _, value := range cardValues {
+		for _, value := range CardValues {
 			deck = append(
 				deck,
 				card{
@@ -89,12 +88,6 @@ func (d cards) perfectShuffle() {
 	}
 }
 
-func (d cards) displayDebug() {
-	for _, card := range d {
-		fmt.Println(card)
-	}
-}
-
 func (d cards) displayAll() {
 	for _, card := range d {
 		if card.displayMini == "null" {
@@ -112,9 +105,7 @@ func (c card) display() {
 		fmt.Print("    ")
 		return
 	}
-	if c.debug {
-		fmt.Print(c.displayMini)
-	} else if c.shown {
+	if c.debug || c.shown {
 		fmt.Print(c.displayMini)
 	} else {
 		fmt.Print("  * ")
