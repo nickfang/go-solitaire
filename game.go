@@ -135,6 +135,14 @@ func (g *game) moveFromBoardToStacks(column int) {
 
 func (g *game) moveFromBoardToBoard(from int, to int) {
 	// move cards from one column to another column
+	// check if this is a valid move
+	// one of the cards showing in the from column can be put on the last card of the to column
+	// If the to column is empty, make sure a king is the first card of the from column.
+
+	// add all card from the king or the valid next card to the end of the from column to the to column
+
+	// remove the cards from the from column that were added to the to column
+
 }
 
 func (g *game) pruneColumn(column int, index int) []card {
