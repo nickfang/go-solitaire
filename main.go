@@ -36,7 +36,6 @@ func main() {
 				game.display()
 			} else if slices.Contains(validColumns, to) {
 				columnIndex, _ := strconv.ParseInt(to, 10, 64)
-				fmt.Println("columnIndex", columnIndex)
 				game.moveFromDeckToBoard(int(columnIndex))
 				game.display()
 			} else {
@@ -47,7 +46,6 @@ func main() {
 		if input[1] == 's' {
 			// move from board to stacks
 			from := string(input[0])
-			fmt.Println(from, validColumns, slices.Contains(validColumns, from))
 			if slices.Contains(validColumns, from) {
 				columnIndex, _ := strconv.ParseInt(from, 10, 64)
 				game.moveFromBoardToStacks(int(columnIndex))
