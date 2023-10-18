@@ -67,7 +67,6 @@ func (g *game) nextDeckCard() {
 // move the current card from the deck to a column
 func (g *game) moveFromDeckToBoard(column int) {
 	moves := g.getDeckMoves()
-	fmt.Println("moves", moves, column)
 	if slices.Contains(moves, column) {
 		g.cards[g.currentCardIndex].shown = true
 		g.board[column] = append(g.board[column], g.cards[g.currentCardIndex])
@@ -82,7 +81,6 @@ func (g *game) moveFromDeckToBoard(column int) {
 
 func (g *game) moveFromDeckToStacks() {
 	moves := g.getStackMoves()
-	fmt.Println("moves", moves)
 	currentCard := g.cards[g.currentCardIndex]
 	var suitIndex int
 	switch currentCard.suit {
@@ -96,7 +94,6 @@ func (g *game) moveFromDeckToStacks() {
 		suitIndex = 3
 	default:
 	}
-	fmt.Println(suitIndex, moves[suitIndex], currentCard.value)
 	if currentCard.value == moves[suitIndex] {
 		g.stacks[suitIndex] = append(g.stacks[suitIndex], g.getCurrentCard())
 		g.cards = g.cards.removeCard(g.currentCardIndex)
@@ -112,7 +109,6 @@ func (g *game) moveFromBoardToStacks(column int) {
 	// move card from bottom of column to stacks
 	moves := g.getStackMoves()
 	lastIndex, lastCard := getLastCard(g.board[column])
-	fmt.Println(lastIndex, lastCard)
 	var suitIndex int
 	switch lastCard.suit {
 	case CardSuits[0]:
@@ -128,7 +124,6 @@ func (g *game) moveFromBoardToStacks(column int) {
 	if lastCard.value == moves[suitIndex] {
 		g.stacks[suitIndex] = append(g.stacks[suitIndex], lastCard)
 		g.pruneColumn(column, lastIndex)
-		fmt.Println(g.board[column], len(g.board[column]))
 		columnLength := len(g.board[column])
 		if columnLength > 0 && !g.board[column][columnLength-1].shown {
 			g.board[column][len(g.board[column])-1].shown = true
@@ -145,7 +140,6 @@ func (g *game) moveFromBoardToBoard(from int, to int) {
 func (g *game) pruneColumn(column int, index int) []card {
 	removed := g.board[column][index:]
 	g.board[column] = g.board[column][:index]
-	fmt.Println(removed)
 	return removed
 }
 
@@ -195,9 +189,7 @@ func (g game) getDeckMoves() []int {
 
 func (g game) getStackMoves() []int {
 	moves := make([]int, 4)
-	fmt.Println(moves)
 	for i, stack := range g.stacks {
-
 		moves[i] = len(stack) + 1
 	}
 	return moves
