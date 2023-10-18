@@ -26,6 +26,10 @@ func newBoard() board {
 // 	return removed
 // }
 
+func (b board) getColumnInfo(column int) {
+
+}
+
 func (b board) display() {
 	displayBoard := [7][19]card{}
 	maxLen := 0 // add a space so the board isn't cramped with the deck.
