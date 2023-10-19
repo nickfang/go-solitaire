@@ -11,10 +11,9 @@ import (
 
 func main() {
 	game := game.NewGame()
-	// game.cards.randomShuffle()
-	fmt.Println(game.cards, game.board, game.currentCardIndex)
-	game.cards, game.board, game.currentCardIndex = game.DealBoard()
-	// game.setDebug(true)
+	// game.Cards.RandomShuffle()
+	game.Cards, game.Board, game.CurrentCardIndex = game.DealBoard()
+	// game.SetDebug(true)
 	game.Display()
 
 	var i string
