@@ -37,6 +37,7 @@ func main() {
 			input0 := string(input[0])
 			input1 := string(input[1])
 			if input0 == "d" {
+				// move from deck to board
 				to := input1
 				if to == "s" {
 					game.moveFromDeckToStacks()
@@ -62,9 +63,10 @@ func main() {
 				fmt.Println("Invalid Input.")
 			}
 			if (slices.Contains(validColumns, input0) && slices.Contains(validColumns, input1)) && input0 != input1 {
+				// move from column to column
 				fromColumn, _ := strconv.ParseInt(input0, 10, 32)
 				toColumn, _ := strconv.ParseInt(input1, 10, 32)
-				game.moveFromBoardToBoard(int(fromColumn), int(toColumn))
+				game.moveFromColumnToColumn(int(fromColumn), int(toColumn))
 				continue
 			}
 			if input[:1] == "s" {
