@@ -6,14 +6,16 @@ import (
 	"strings"
 
 	"golang.org/x/exp/slices"
+	"solitaire/game"
 )
 
 func main() {
-	game := newGame()
+	game := game.NewGame()
 	// game.cards.randomShuffle()
-	game.cards, game.board, game.currentCardIndex = game.dealBoard()
+	fmt.Println(game.cards, game.board, game.currentCardIndex)
+	game.cards, game.board, game.currentCardIndex = game.DealBoard()
 	// game.setDebug(true)
-	game.display()
+	game.Display()
 
 	var i string
 	validColumns := []string{"0", "1", "2", "3", "4", "5", "6"}
@@ -27,9 +29,9 @@ func main() {
 				break
 			}
 			if input == "n" {
-				game.nextDeckCard()
-				game.displayCards()
-				fmt.Println(game.getDeckMoves())
+				game.NextDeckCard()
+				game.DisplayCards()
+				fmt.Println(game.GetDeckMoves())
 				continue
 			}
 		}
@@ -40,12 +42,12 @@ func main() {
 				// move from deck to board
 				to := input1
 				if to == "s" {
-					game.moveFromDeckToStacks()
-					game.display()
+					game.MoveFromDeckToStacks()
+					game.Display()
 				} else if slices.Contains(validColumns, to) {
 					columnIndex, _ := strconv.ParseInt(to, 10, 32)
-					game.moveFromDeckToBoard(int(columnIndex))
-					game.display()
+					game.MoveFromDeckToBoard(int(columnIndex))
+					game.Display()
 				} else {
 					fmt.Println("Invalid Input.")
 				}
@@ -56,8 +58,8 @@ func main() {
 				from := input0
 				if slices.Contains(validColumns, from) {
 					columnIndex, _ := strconv.ParseInt(from, 10, 32)
-					game.moveFromBoardToStacks(int(columnIndex))
-					game.display()
+					game.MoveFromBoardToStacks(int(columnIndex))
+					game.Display()
 					continue
 				}
 				fmt.Println("Invalid Input.")
@@ -66,7 +68,7 @@ func main() {
 				// move from column to column
 				fromColumn, _ := strconv.ParseInt(input0, 10, 32)
 				toColumn, _ := strconv.ParseInt(input1, 10, 32)
-				game.moveFromColumnToColumn(int(fromColumn), int(toColumn))
+				game.MoveFromColumnToColumn(int(fromColumn), int(toColumn))
 				continue
 			}
 			if input[:1] == "s" {
