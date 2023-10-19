@@ -1,14 +1,16 @@
 package main_test
 
 import (
-	"github.com/nickfang/go-solitaire/game"
-	"github.com/nickfang/go-solitaire/main"
+	"fmt"
+	"solitaire/game"
+	// "solitaire/main"
 	"testing"
 )
 
 func TestDealBoard(t *testing.T) {
-	g := NewGame()
-	g.cards, g.board, g.currentCardIndex = g.dealBoard()
-	g.setDebug(true)
-	g.board.display()
+	g := game.NewGame()
+	fmt.Println(g)
+	// g.cards, g.board, g.currentCardIndex = g.DealBoard()
+	// g.SetDebug(true)
+	// g.board.Display()
 }

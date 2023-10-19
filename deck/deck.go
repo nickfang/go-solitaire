@@ -13,13 +13,13 @@ var CardSuitsIcons = []string{"♠", "♥", "♣", "♦"}
 var CardValues = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}
 
 type Card struct {
-	debug bool
-	shown bool
-	value int
-	suit  string
-	color string
+	Debug bool
+	Shown bool
+	Value int
+	Suit  string
+	Color string
 	// display     string
-	displayMini string
+	DisplayMini string
 }
 
 type Cards []Card
@@ -90,10 +90,10 @@ func (d Cards) perfectShuffle() {
 
 func (d Cards) displayAll() {
 	for _, card := range d {
-		if card.displayMini == "null" {
+		if card.DisplayMini == "null" {
 			return
-		} else if card.shown || card.debug {
-			fmt.Print(card.displayMini)
+		} else if card.Shown || card.Debug {
+			fmt.Print(card.DisplayMini)
 		} else {
 			fmt.Print("  * ")
 		}
@@ -101,12 +101,12 @@ func (d Cards) displayAll() {
 }
 
 func (c Card) Display() {
-	if c.value == 0 {
+	if c.Value == 0 {
 		fmt.Print("    ")
 		return
 	}
-	if c.shown || c.debug {
-		fmt.Print(c.displayMini)
+	if c.Shown || c.Debug {
+		fmt.Print(c.DisplayMini)
 	} else {
 		fmt.Print("  * ")
 	}

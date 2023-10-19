@@ -1,19 +1,15 @@
 package game_test
 
 import (
-	// "fmt"
-	// "os"
+	"solitaire/game"
 	"testing"
 )
 
 func TestNewGame(t *testing.T) {
-	g := newGame()
+	g := game.NewGame()
 
-	if len(g.cards) != 52 {
+	if len(g.Cards) != 52 {
 		t.Error("Wrong number of cards in the deck.")
 	}
-	// fmt.Println(g.cards)
-	// fmt.Println(g.board)
-	// fmt.Println(g.currentCardIndex)
 
 }

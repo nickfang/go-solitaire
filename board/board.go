@@ -5,8 +5,6 @@ import (
 	"solitaire/deck"
 )
 
-// using arrays since they are easier to initialize.
-// TODO: maybe use slices and see how those work out.
 type Board [][]deck.Card
 
 const NumColumns = 7
