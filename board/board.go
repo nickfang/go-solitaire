@@ -1,17 +1,20 @@
-package main
+package board
 
-import "fmt"
+import (
+	"fmt"
+	"solitaire/deck"
+)
 
 // using arrays since they are easier to initialize.
 // TODO: maybe use slices and see how those work out.
-type board [][]card
+type Board [][]deck.Card
 
 const NumColumns = 7
 
-func newBoard() board {
-	board := board{}
+func NewBoard() Board {
+	board := Board{}
 	for i := 0; i < NumColumns; i++ {
-		board = append(board, []card{})
+		board = append(board, []deck.Card{})
 	}
 	return board
 }
@@ -26,12 +29,12 @@ func newBoard() board {
 // 	return removed
 // }
 
-func (b board) getColumnInfo(column int) {
+func (b Board) getColumnInfo(column int) {
 
 }
 
-func (b board) display() {
-	displayBoard := [7][19]card{}
+func (b Board) Display() {
+	displayBoard := [7][19]deck.Card{}
 	maxLen := 0 // add a space so the board isn't cramped with the deck.
 	for i, column := range b {
 		if len(column) > maxLen {
@@ -43,7 +46,7 @@ func (b board) display() {
 	}
 	for y := 0; y < maxLen; y++ {
 		for x := 0; x < 7; x++ {
-			displayBoard[x][y].display()
+			displayBoard[x][y].Display()
 		}
 		fmt.Println()
 	}

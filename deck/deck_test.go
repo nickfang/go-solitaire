@@ -1,7 +1,9 @@
-package main
+package deck_test
 
 import (
 	"testing"
+
+	"github.com/nickfang/go-solitaire/deck"
 )
 
 func TestGetCardColor(t *testing.T) {
@@ -9,7 +11,7 @@ func TestGetCardColor(t *testing.T) {
 }
 
 func TestNewDeck(t *testing.T) {
-	deck := newDeck()
+	deck := deck.newDeck()
 	if len(deck) != 52 {
 		t.Error("Deck is the wrong size.")
 	}

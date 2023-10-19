@@ -1,4 +1,4 @@
-package main
+package deck
 
 import (
 	"fmt"
@@ -6,13 +6,13 @@ import (
 	"time"
 )
 
-// var cardNumDisplay = [13]string{"Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"}
-var cardNumDisplay = [13]string{"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"}
+// var CardNumDisplay = [13]string{"Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"}
+var CardNumDisplay = [13]string{"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"}
 var CardSuits = []string{"Spades", "Hearts", "Clubs", "Diamonds"}
 var CardSuitsIcons = []string{"♠", "♥", "♣", "♦"}
 var CardValues = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}
 
-type card struct {
+type Card struct {
 	debug bool
 	shown bool
 	value int
@@ -22,16 +22,16 @@ type card struct {
 	displayMini string
 }
 
-type cards []card
+type Cards []Card
 
 //	func getCardDisplay(value int, suit string) string {
-//		return cardNumDisplay[value-1] + " of " + suit
+//		return CardNumDisplay[value-1] + " of " + suit
 //	}
 func getCardDisplay(value int, suit string) string {
 	if value != 10 {
-		return "  " + cardNumDisplay[value-1] + suit
+		return "  " + CardNumDisplay[value-1] + suit
 	}
-	return " " + cardNumDisplay[value-1] + suit
+	return " " + CardNumDisplay[value-1] + suit
 }
 func getCardColor(suit string) string {
 	if suit == "Spades" || suit == "Clubs" {
@@ -40,14 +40,14 @@ func getCardColor(suit string) string {
 	return "Red"
 }
 
-func newDeck() cards {
-	deck := cards{}
+func NewDeck() Cards {
+	deck := Cards{}
 
 	for index, suit := range CardSuits {
 		for _, value := range CardValues {
 			deck = append(
 				deck,
-				card{
+				Card{
 					false,
 					false,
 					value,
@@ -62,14 +62,14 @@ func newDeck() cards {
 	return deck
 }
 
-func (d cards) removeCard(cardIndex int) cards {
+func (d Cards) RemoveCard(cardIndex int) Cards {
 	deck1 := d[:cardIndex]
 	deck2 := d[cardIndex+1:]
 	newDeck := append(deck1, deck2...)
 	return newDeck
 }
 
-func (d cards) randomShuffle() {
+func (d Cards) randomShuffle() {
 	// todo: implement shuffle like hand shuffle
 	source := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(source)
@@ -79,16 +79,16 @@ func (d cards) randomShuffle() {
 	}
 }
 
-func (d cards) perfectShuffle() {
-	half1 := [26]card(d[:len(d)/2])
-	half2 := [26]card(d[len(d)/2:])
+func (d Cards) perfectShuffle() {
+	half1 := [26]Card(d[:len(d)/2])
+	half2 := [26]Card(d[len(d)/2:])
 	for i := 0; i < (len(d) / 2); i++ {
 		d[i*2] = half1[i]
 		d[(i*2)+1] = half2[i]
 	}
 }
 
-func (d cards) displayAll() {
+func (d Cards) displayAll() {
 	for _, card := range d {
 		if card.displayMini == "null" {
 			return
@@ -100,12 +100,12 @@ func (d cards) displayAll() {
 	}
 }
 
-func (c card) display() {
+func (c Card) Display() {
 	if c.value == 0 {
 		fmt.Print("    ")
 		return
 	}
-	if c.debug || c.shown {
+	if c.shown || c.debug {
 		fmt.Print(c.displayMini)
 	} else {
 		fmt.Print("  * ")

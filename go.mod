@@ -1,4 +1,4 @@
-module solitare
+module solitaire
 
 go 1.21.1
 
