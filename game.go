@@ -133,11 +133,38 @@ func (g *game) moveFromBoardToStacks(column int) {
 	fmt.Println("Invalid move.")
 }
 
-func (g *game) moveFromBoardToBoard(from int, to int) {
+func (g *game) moveFromColumnToColumn(from int, to int) {
 	// move cards from one column to another column
 	// check if this is a valid move
 	// one of the cards showing in the from column can be put on the last card of the to column
 	// If the to column is empty, make sure a king is the first card of the from column.
+	var validCard card
+	if len(g.board[to]) == 0 {
+		validCard.value = 13
+	} else {
+		lastCard := g.board[to][len(g.board[to])-1]
+		fmt.Println(lastCard)
+		if lastCard.value != 1 {
+			validCard.value = lastCard.value - 1
+			if lastCard.color == "Black" {
+				validCard.color = "Red"
+			} else {
+				validCard.color = "Black"
+			}
+		}
+	}
+	visibleCards := []card{}
+	for _, card := range g.board[from] {
+		if card.shown {
+			visibleCards = append(visibleCards, card)
+		}
+	}
+
+	fmt.Println(visibleCards)
+	if validCard.value == 0 {
+		fmt.Println("Invalid move from:", from, " to:", to)
+		return
+	}
 
 	// add all card from the king or the valid next card to the end of the from column to the to column
 
@@ -158,6 +185,7 @@ func (g game) getCurrentCard() card {
 func checkMove(card card, toCard card) bool {
 	if card.value == toCard.value-1 && card.color != toCard.color {
 		return true
+	} else if card.value == 13 && toCard.value == 0 {
 	}
 	return false
 }
