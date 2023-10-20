@@ -2,11 +2,13 @@ package game
 
 import (
 	"fmt"
+	"strconv"
 
-	"golang.org/x/exp/slices"
 	"solitaire/board"
 	"solitaire/deck"
 	"solitaire/stacks"
+
+	"golang.org/x/exp/slices"
 )
 
 type Game struct {
@@ -21,6 +23,12 @@ const NumColumns = 7
 
 func NewGame() Game {
 	return Game{deck.NewDeck(), board.NewBoard(), stacks.NewStacks(), 0, false}
+}
+
+func (g *Game) Reset() {
+	g.Cards = deck.NewDeck()
+	g.Board = board.NewBoard()
+	g.Stacks = stacks.NewStacks()
 }
 
 func (g *Game) SetDebug(onOff bool) {
@@ -85,22 +93,11 @@ func (g *Game) MoveFromDeckToBoard(column int) {
 }
 
 func (g *Game) MoveFromDeckToStacks() {
-	moves := g.GetStackMoves()
 	currentCard := g.Cards[g.CurrentCardIndex]
-	var suitIndex int
-	switch currentCard.Suit {
-	case deck.CardSuits[0]:
-		suitIndex = 0
-	case deck.CardSuits[1]:
-		suitIndex = 1
-	case deck.CardSuits[2]:
-		suitIndex = 2
-	case deck.CardSuits[3]:
-		suitIndex = 3
-	default:
-	}
-	if currentCard.Value == moves[suitIndex] {
-		g.Stacks[suitIndex] = append(g.Stacks[suitIndex], g.getCurrentCard())
+	suitIndex, validMove := g.GetStackMoves(currentCard)
+	if validMove {
+		currentCard.Shown = true
+		g.Stacks[suitIndex] = append(g.Stacks[suitIndex], currentCard)
 		g.Cards = g.Cards.RemoveCard(g.CurrentCardIndex)
 		if g.CurrentCardIndex > 0 {
 			g.CurrentCardIndex = g.CurrentCardIndex - 1
@@ -112,21 +109,9 @@ func (g *Game) MoveFromDeckToStacks() {
 
 func (g *Game) MoveFromBoardToStacks(column int) {
 	// move card from bottom of column to stacks
-	moves := g.GetStackMoves()
 	lastIndex, lastCard := g.Board.GetLastCard(column)
-	var suitIndex int
-	switch lastCard.Suit {
-	case deck.CardSuits[0]:
-		suitIndex = 0
-	case deck.CardSuits[1]:
-		suitIndex = 1
-	case deck.CardSuits[2]:
-		suitIndex = 2
-	case deck.CardSuits[3]:
-		suitIndex = 3
-	default:
-	}
-	if lastCard.Value == moves[suitIndex] {
+	suitIndex, validMove := g.GetStackMoves(lastCard)
+	if validMove {
 		g.Stacks[suitIndex] = append(g.Stacks[suitIndex], lastCard)
 		g.pruneColumn(column, lastIndex)
 		columnLength := len(g.Board[column])
@@ -242,12 +227,56 @@ func (g Game) GetDeckMoves() []int {
 	return moves
 }
 
-func (g Game) GetStackMoves() []int {
+func (g Game) GetStackMoves(card deck.Card) (int, bool) {
 	moves := make([]int, 4)
 	for i, stack := range g.Stacks {
 		moves[i] = len(stack) + 1
 	}
-	return moves
+
+	var suitIndex int
+	switch card.Suit {
+	case deck.CardSuits[0]:
+		suitIndex = 0
+	case deck.CardSuits[1]:
+		suitIndex = 1
+	case deck.CardSuits[2]:
+		suitIndex = 2
+	case deck.CardSuits[3]:
+		suitIndex = 3
+	default:
+	}
+	if card.Value == moves[suitIndex] {
+		return suitIndex, true
+	}
+	return suitIndex, false
+}
+
+func (g Game) GetDeckHints() []string {
+	deckHints := []string{}
+	for _, move := range g.GetDeckMoves() {
+		fmt.Println(move)
+		moveStr := "d" + strconv.FormatInt(int64(move), 10)
+		deckHints = append(deckHints, moveStr)
+	}
+	return deckHints
+}
+
+func (g Game) GetStackHints() []string {
+	stackHints := []string{}
+	// check deck first
+	_, validDeckMove := g.GetStackMoves(g.getCurrentCard())
+	if validDeckMove {
+		stackHints = append(stackHints, "ds")
+	}
+	for i := 0; i < len(g.Board); i++ {
+		_, lastCard := g.Board.GetLastCard(i)
+		_, validBoardMove := g.GetStackMoves(lastCard)
+		if validBoardMove {
+			moveStr := strconv.FormatInt(int64(i), 10) + "s"
+			stackHints = append(stackHints, moveStr)
+		}
+	}
+	return stackHints
 }
 
 func (g Game) DisplayCurrentCard() string {
@@ -265,4 +294,10 @@ func (g Game) Display() {
 	if g.Debug {
 		fmt.Println(g.GetDeckMoves())
 	}
+}
+
+func (g Game) DisplayHints() {
+	deckMoves := g.GetDeckHints()
+	stackMoves := g.GetStackHints()
+	fmt.Println("Moves:", append(deckMoves, stackMoves...))
 }

@@ -69,7 +69,7 @@ func (d Cards) RemoveCard(cardIndex int) Cards {
 	return newDeck
 }
 
-func (d Cards) randomShuffle() {
+func (d Cards) RandomShuffle() {
 	// todo: implement shuffle like hand shuffle
 	source := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(source)

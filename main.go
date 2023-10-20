@@ -11,7 +11,7 @@ import (
 
 func main() {
 	game := game.NewGame()
-	// game.Cards.RandomShuffle()
+	game.Cards.RandomShuffle()
 	game.Cards, game.Board, game.CurrentCardIndex = game.DealBoard()
 	// game.SetDebug(true)
 	game.Display()
@@ -31,6 +31,17 @@ func main() {
 				game.NextDeckCard()
 				game.DisplayCards()
 				fmt.Println(game.GetDeckMoves())
+				continue
+			}
+			if input == "r" {
+				game.Reset()
+				game.Cards.RandomShuffle()
+				game.Cards, game.Board, game.CurrentCardIndex = game.DealBoard()
+				game.Display()
+				continue
+			}
+			if input == "h" {
+				game.DisplayHints()
 				continue
 			}
 		}
