@@ -113,7 +113,7 @@ func (g *Game) MoveFromDeckToStacks() {
 func (g *Game) MoveFromBoardToStacks(column int) {
 	// move card from bottom of column to stacks
 	moves := g.GetStackMoves()
-	lastIndex, lastCard := GetLastCard(g.Board[column])
+	lastIndex, lastCard := g.Board.GetLastCard(column)
 	var suitIndex int
 	switch lastCard.Suit {
 	case deck.CardSuits[0]:
@@ -209,32 +209,32 @@ func CheckMove(card deck.Card, toCard deck.Card) bool {
 	return false
 }
 
-func GetLastCard(column []deck.Card) (int, deck.Card) {
-	// turn an array into a slice so it's the right type.
-	columnCopy := make([]deck.Card, len(column))
-	copy(columnCopy, column[:])
-	var lastIndex int
-	var lastCard deck.Card
-	for i, card := range columnCopy {
-		lastIndex = i
-		lastCard = card
-		if card.Value == 0 {
-			if i == 0 {
-				return i, card
-			}
-			return i - 1, columnCopy[i-1]
-		}
-	}
-	return lastIndex, lastCard
-}
+// func GetLastCard(column []deck.Card) (int, deck.Card) {
+// 	// turn an array into a slice so it's the right type.
+// 	columnCopy := make([]deck.Card, len(column))
+// 	copy(columnCopy, column[:])
+// 	var lastIndex int
+// 	var lastCard deck.Card
+// 	for i, card := range columnCopy {
+// 		lastIndex = i
+// 		lastCard = card
+// 		if card.Value == 0 {
+// 			if i == 0 {
+// 				return i, card
+// 			}
+// 			return i - 1, columnCopy[i-1]
+// 		}
+// 	}
+// 	return lastIndex, lastCard
+// }
 
 // take the current deck card and return columns that are possible moves
 // for the user the columns are 1 indexed instead of 0 indexed.
 func (g Game) GetDeckMoves() []int {
 	currentCard := g.getCurrentCard()
 	moves := []int{}
-	for index, column := range g.Board {
-		_, lastCard := GetLastCard(column)
+	for index, _ := range g.Board {
+		_, lastCard := g.Board.GetLastCard(index)
 		if CheckMove(currentCard, lastCard) {
 			moves = append(moves, index)
 		}

@@ -31,6 +31,22 @@ func (b Board) getColumnInfo(column int) {
 
 }
 
+func (b Board) GetLastCard(column int) (int, deck.Card) {
+	var lastIndex int
+	var lastCard deck.Card
+	for i, card := range b[column] {
+		lastIndex = i
+		lastCard = card
+		if card.Value == 0 {
+			if i == 0 {
+				return i, card
+			}
+			return i - 1, b[column][i-1]
+		}
+	}
+	return lastIndex, lastCard
+}
+
 func (b Board) Display() {
 	displayBoard := [7][19]deck.Card{}
 	maxLen := 0 // add a space so the board isn't cramped with the deck.
