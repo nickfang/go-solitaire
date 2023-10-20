@@ -68,6 +68,7 @@ func main() {
 				fromColumn, _ := strconv.ParseInt(input0, 10, 32)
 				toColumn, _ := strconv.ParseInt(input1, 10, 32)
 				game.MoveFromColumnToColumn(int(fromColumn), int(toColumn))
+				game.Display()
 				continue
 			}
 			if input[:1] == "s" {

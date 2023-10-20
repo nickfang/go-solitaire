@@ -140,15 +140,14 @@ func (g *Game) MoveFromBoardToStacks(column int) {
 
 func (g *Game) MoveFromColumnToColumn(from int, to int) {
 	// move cards from one column to another column
-	// check if this is a valid move
-	// one of the cards showing in the from column can be put on the last card of the to column
-	// If the to column is empty, make sure a king is the first card of the from column.
+
+	// get the last card of the to column and figure out what value and color can be placed on top of it.
+	// if it is an empty column, the card must be a king of any color.
 	var validCard deck.Card
 	if len(g.Board[to]) == 0 {
 		validCard.Value = 13
 	} else {
 		lastCard := g.Board[to][len(g.Board[to])-1]
-		fmt.Println(lastCard)
 		if lastCard.Value != 1 {
 			validCard.Value = lastCard.Value - 1
 			if lastCard.Color == "Black" {
@@ -158,22 +157,38 @@ func (g *Game) MoveFromColumnToColumn(from int, to int) {
 			}
 		}
 	}
-	visibleCards := []deck.Card{}
-	for _, card := range g.Board[from] {
-		if card.Shown {
-			visibleCards = append(visibleCards, card)
-		}
-	}
 
-	fmt.Println(visibleCards)
 	if validCard.Value == 0 {
-		fmt.Println("Invalid move from:", from, " to:", to)
+		fmt.Println("Invalid Move.  Cannot place a card on an ace.")
 		return
 	}
 
-	// add all card from the king or the valid next card to the end of the from column to the to column
+	visibleCards := []deck.Card{}
+	validIndex := -1
+	for index, card := range g.Board[from] {
+		if card.Shown {
+			visibleCards = append(visibleCards, card)
+			if validCard.Value == 13 && card.Value == 13 {
+				validIndex = index
+			} else if card.Value == validCard.Value && card.Color == validCard.Color {
+				validIndex = index
+			}
+		}
+	}
+
+	if validIndex == -1 {
+		fmt.Println("Invalid Move. No valid cards to move.")
+		return
+	}
 
 	// remove the cards from the from column that were added to the to column
+	removed := g.pruneColumn(from, validIndex)
+	g.Board[to] = append(g.Board[to], removed...)
+	if validIndex > 0 {
+		g.Board[from][validIndex-1].Shown = true
+	}
+
+	// add all card from the king or the valid next card to the end of the from column to the to column
 
 }
 
