@@ -163,11 +163,9 @@ func (g *Game) MoveFromColumnToColumn(from int, to int) {
 		return
 	}
 
-	visibleCards := []deck.Card{}
 	validIndex := -1
 	for index, card := range g.Board[from] {
 		if card.Shown {
-			visibleCards = append(visibleCards, card)
 			if validCard.Value == 13 && card.Value == 13 {
 				validIndex = index
 			} else if card.Value == validCard.Value && card.Color == validCard.Color {
@@ -206,6 +204,7 @@ func CheckMove(card deck.Card, toCard deck.Card) bool {
 	if card.Value == toCard.Value-1 && card.Color != toCard.Color {
 		return true
 	} else if card.Value == 13 && toCard.Value == 0 {
+		return true
 	}
 	return false
 }
