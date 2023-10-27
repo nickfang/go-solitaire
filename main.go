@@ -22,14 +22,14 @@ func main() {
 			break
 		}
 		if input == "n" {
-			game = game.getNextCard()
+			game.nextDeckCard()
 			game.displayCards()
 			fmt.Println(game.getDeckMoves())
 			continue
 		}
 		if input[:1] == "d" {
 			columnIndex, _ := strconv.ParseInt(string(input[1]), 10, 64)
-			game = game.moveCurrentCard(int(columnIndex))
+			game.moveCurrentCard(int(columnIndex))
 			game.displayBoard()
 			game.displayCards()
 			fmt.Println(game.getDeckMoves())
