@@ -1,15 +1,19 @@
 package main
 
 import (
-	"fmt"
+	// "fmt"
 	// "os"
 	"testing"
 )
 
 func TestNewGame(t *testing.T) {
 	g := newGame()
-	fmt.Println(g.cards)
-	fmt.Println(g.board)
-	fmt.Println(g.currentCardIndex)
+
+	if len(g.cards) != 52 {
+		t.Error("Wrong number of cards in the deck.")
+	}
+	// fmt.Println(g.cards)
+	// fmt.Println(g.board)
+	// fmt.Println(g.currentCardIndex)
 
 }

@@ -16,13 +16,14 @@ func main() {
 	for {
 		fmt.Scanln(&input)
 		if strings.ToLower(input) == "q" {
-			return
+			break
 		}
 		if strings.ToLower(input) == "n" {
 			game = game.getNextCard()
 			game.displayCards()
 			continue
 		}
+
 		fmt.Println("Invalid Input.")
 	}
 }
