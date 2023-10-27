@@ -49,7 +49,7 @@ func (g game) getCurrentCard() card {
 
 func (g game) getNextCard() game {
 	g.cards[g.currentCardIndex].shown = false
-	if g.currentCardIndex+3 > len(g.cards) {
+	if g.currentCardIndex+3 > len(g.cards)-1 {
 		g.currentCardIndex = 0
 	} else {
 		g.currentCardIndex += 3
