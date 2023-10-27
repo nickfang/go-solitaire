@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"golang.org/x/exp/slices"
+)
 
 type game struct {
 	cards            cards
@@ -61,17 +65,20 @@ func checkMove(card card, toCard card) bool {
 	return false
 }
 
-func getLastCard(cards []card) (int, card) {
+func getLastCard(column [19]card) (int, card) {
+	// turn an array into a slice so it's the right type.
+	columnCopy := make([]card, len(column))
+	copy(columnCopy, column[:])
 	var lastIndex int
 	var lastCard card
-	for i, card := range cards {
+	for i, card := range columnCopy {
 		lastIndex = i
 		lastCard = card
 		if card.value == 0 {
 			if i == 0 {
 				return i, card
 			}
-			return i - 1, cards[i-1]
+			return i - 1, columnCopy[i-1]
 		}
 	}
 	return lastIndex, lastCard
@@ -82,14 +89,28 @@ func (g game) getDeckMoves() []int {
 	currentCard := g.getCurrentCard()
 	moves := []int{}
 	for index, column := range g.board {
-		columnCopy := make([]card, len(column))
-		copy(columnCopy, column[:])
-		_, lastCard := getLastCard(columnCopy)
+		_, lastCard := getLastCard(column)
 		if checkMove(currentCard, lastCard) {
 			moves = append(moves, index)
 		}
 	}
 	return moves
+}
+
+func (g game) moveCurrentCard(column int) game {
+	moves := g.getDeckMoves()
+	fmt.Println("moves", moves, column)
+	if slices.Contains(moves, column) {
+		lastIndex, _ := getLastCard(g.board[column])
+		g.board[column][lastIndex+1] = g.cards[g.currentCardIndex]
+		g.cards = g.cards.removeCard(g.currentCardIndex)
+		if g.currentCardIndex > 0 {
+			g.currentCardIndex = g.currentCardIndex - 1
+		}
+	} else {
+		fmt.Println("Invalid move.")
+	}
+	return g
 }
 
 func (g game) displayCurrentCard() string {
@@ -103,10 +124,7 @@ func (g game) displayCards() {
 func (g game) displayBoard() {
 	maxLen := 0
 	for _, column := range g.board {
-		// turn an array into a slice so it's the right type.
-		columnCopy := make([]card, len(column))
-		copy(columnCopy, column[:])
-		index, _ := getLastCard(columnCopy)
+		index, _ := getLastCard(column)
 		if maxLen < index+1 {
 			maxLen = index + 1
 		}
