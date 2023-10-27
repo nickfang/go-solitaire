@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-type board [7][13]cards
+type board [19][7]card
 
 type game struct {
 	cards cards
@@ -20,7 +20,12 @@ func (g game) dealBoard() (cards, board) {
 	board := g.board
 
 	for i := 0; i < 7; i++ {
-		board[i][0] = cards[:i+1]
+		for j := 0; j < i+1; j++ {
+			board[i][j] = cards[j]
+			if j == i {
+				board[i][j].shown = true
+			}
+		}
 		cards = cards[i+1:]
 	}
 
@@ -45,4 +50,21 @@ func (b board) print() {
 			card.print()
 		}
 	}
+}
+
+func (b board) display() {
+	for y := 0; y < 19; y++ {
+		for x := 0; x < 7; x++ {
+			b[x][y].display()
+		}
+		fmt.Println()
+	}
+	// for i, row := range b {
+	// 	for j, card := range row {
+	// 		b[]
+	// 		fmt.Print(i, j, ": ")
+	// 		card.display()
+	// 	}
+	// 	// fmt.Println()
+	// }
 }
