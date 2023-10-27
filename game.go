@@ -5,12 +5,13 @@ import "fmt"
 type board [7][19]card
 
 type game struct {
-	cards cards
-	board board
+	cards            cards
+	board            board
+	currentCardIndex int
 }
 
 func newGame() game {
-	return game{newDeck(), newBoard()}
+	return game{newDeck(), newBoard(), 0}
 }
 
 func (g game) dealBoard() (cards, board) {
@@ -27,7 +28,7 @@ func (g game) dealBoard() (cards, board) {
 			}
 		}
 		// fmt.Println(board[i])
-		cards = cards[6-i:]
+		cards = cards[7-i:]
 	}
 
 	return cards, board
@@ -60,4 +61,15 @@ func (b board) display() {
 		}
 		fmt.Println()
 	}
+}
+
+func (g game) currentCard() card {
+	return g.cards[g.currentCardIndex]
+}
+
+func (g game) getNextCard() int {
+	if g.currentCardIndex+3 > len(g.cards)-1 {
+		return 0
+	}
+	return g.currentCardIndex + 3
 }
