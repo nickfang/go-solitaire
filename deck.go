@@ -17,10 +17,6 @@ type card struct {
 
 type cards []card
 
-type game struct {
-	cards cards
-}
-
 func getCardDisplay(value int, suit string) string {
 	return cardNumDisplay[value-1] + " of " + suit
 }
@@ -29,10 +25,6 @@ func getCardColor(suit string) string {
 		return "Black"
 	}
 	return "Red"
-}
-
-func newGame() game {
-	return game{newDeck()}
 }
 
 func newDeck() cards {
@@ -49,9 +41,8 @@ func newDeck() cards {
 	return deck
 }
 
-func (g game) randomShuffle() {
+func (c cards) randomShuffle() {
 	// todo: implement shuffle like hand shuffle
-	c := g.cards
 	source := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(source)
 	for i := range c {
@@ -60,8 +51,7 @@ func (g game) randomShuffle() {
 	}
 }
 
-func (g game) perfectShuffle() {
-	c := g.cards
+func (c cards) perfectShuffle() {
 	half1 := [26]card(c[:len(c)/2])
 	half2 := [26]card(c[len(c)/2:])
 	for i := 0; i < (len(c) / 2); i++ {
@@ -70,8 +60,8 @@ func (g game) perfectShuffle() {
 	}
 }
 
-func (g game) printCards() {
-	for _, card := range g.cards {
+func (c cards) print() {
+	for _, card := range c {
 		fmt.Println(card.display)
 	}
 }
