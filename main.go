@@ -6,6 +6,7 @@ func main() {
 	game := newGame()
 
 	game.cards.randomShuffle()
-	game.dealBoard()
+	game.cards, game.board = game.dealBoard()
+	game.cards.display()
 	game.board.print()
 }

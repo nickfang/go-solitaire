@@ -13,20 +13,18 @@ func newGame() game {
 	return game{newDeck(), newBoard()}
 }
 
-func (g game) dealBoard() board {
+func (g game) dealBoard() (cards, board) {
 	// a board of solitare is 7 columns of cards
 	// the first column has 1 card, the second has 2, etc.
+	cards := g.cards
+	board := g.board
 
 	for i := 0; i < 7; i++ {
-		cards := g.cards
-		board := g.board
-		// cards[:i+1].print()
 		board[i][0] = cards[:i+1]
-		board.printColumn(i)
-		g.cards = cards[i+1:]
+		cards = cards[i+1:]
 	}
 
-	return board{}
+	return cards, board
 }
 
 func newBoard() board {
@@ -41,11 +39,10 @@ func (b board) printColumn(column int) {
 }
 
 func (b board) print() {
-	for _, column := range b {
-		fmt.Print("[")
+	for index, column := range b {
+		fmt.Println("Column:", index+1)
 		for _, card := range column {
 			card.print()
 		}
-		fmt.Println("]")
 	}
 }
