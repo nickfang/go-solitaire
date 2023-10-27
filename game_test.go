@@ -11,5 +11,5 @@ func TestNewGame(t *testing.T) {
 	fmt.Println(g.cards)
 	fmt.Println(g.board)
 	fmt.Println(g.currentCardIndex)
-	t.Log("test run")
+
 }

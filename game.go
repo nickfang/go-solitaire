@@ -110,16 +110,13 @@ func (g game) displayBoard() {
 		// turn an array into a slice so it's the right type.
 		columnCopy := make([]card, len(column))
 		copy(columnCopy, column[:])
-		index, card := getLastCard(columnCopy)
-		fmt.Println(index, card)
-		if maxLen < index {
-			maxLen = index
+		index, _ := getLastCard(columnCopy)
+		if maxLen < index+1 {
+			maxLen = index + 1
 		}
 	}
 
-	fmt.Println("maxLen", maxLen)
-
-	for y := 0; y <= maxLen; y++ {
+	for y := 0; y < maxLen; y++ {
 		for x := 0; x < 7; x++ {
 			g.board[x][y].display()
 		}
