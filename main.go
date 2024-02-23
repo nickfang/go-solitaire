@@ -30,7 +30,8 @@ func main() {
 			if input == "n" {
 				game.NextDeckCard()
 				game.DisplayCards()
-				fmt.Println(game.GetDeckMoves())
+				game.Display()
+				// fmt.Println(game.GetDeckMoves())
 				continue
 			}
 			if input == "r" {
