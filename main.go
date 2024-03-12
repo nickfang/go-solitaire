@@ -7,13 +7,16 @@ import (
 
 	"golang.org/x/exp/slices"
 	"solitaire/game"
+	"solitaire/gamestates"
 )
 
 func main() {
 	game := game.NewGame()
+	gameStates := gamestates.NewGameStates()
 	game.Cards.RandomShuffle()
 	game.Cards, game.Board, game.CurrentCardIndex = game.DealBoard()
 	// game.SetDebug(true)
+	gameStates.SaveState(game)
 	game.Display()
 
 	var i string
