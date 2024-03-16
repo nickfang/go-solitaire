@@ -1,17 +1,32 @@
-package deck_test
+package deck
 
 import (
 	"testing"
 
-	"solitaire/deck"
 )
+
+func (c1 Card) IsEqual(c2 Card) bool {
+	return c1.Suit == c2.Suit && c1.Value == c2.Value
+}
+
+func (d1 Cards) IsEqual(d2 Cards) bool {
+	if len(d1) != len(d2) {
+		return false // Decks have different number of cards
+	}
+	for i := range d1 {
+		if !d1[i].IsEqual(d2[i]) {
+			return false // Cards at the same position are different
+		}
+	}
+	return true // All cards match in order
+}
 
 func TestGetCardColor(t *testing.T) {
 
 }
 
 func TestNewDeck(t *testing.T) {
-	deck := deck.NewDeck()
+	deck := NewDeck()
 	if len(deck) != 52 {
 		t.Error("Deck is the wrong size.")
 	}

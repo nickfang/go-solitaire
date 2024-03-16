@@ -1,13 +1,12 @@
-package board_test
+package board
 
 import (
-	"solitaire/board"
 	"solitaire/deck"
 	"testing"
 )
 
 func TestNewBoard(t *testing.T) {
-	b := board.NewBoard()
+	b := NewBoard()
 	if len(b) != 7 {
 		t.Error("Board has the wrong number of columns.")
 	}
@@ -24,7 +23,7 @@ func TestNewBoard(t *testing.T) {
 }
 
 func TestGetLastCard(t *testing.T) {
-	b := board.NewBoard()
+	b := NewBoard()
 	index, card := b.GetLastCard(0)
 	if index != 0 {
 		t.Error("Index should be 0, but is ", index)
@@ -32,6 +31,7 @@ func TestGetLastCard(t *testing.T) {
 	if card.Value != 0 {
 		t.Error("Card should be 0, but is ", card.Value)
 	}
+
 	card1 := deck.Card{false, false, 1, "Spades", "", ""}
 	b[1] = append(b[1], card1)
 	index, card = b.GetLastCard(1)

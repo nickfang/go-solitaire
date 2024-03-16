@@ -32,8 +32,8 @@ func main() {
 			}
 			if input == "n" {
 				game.NextDeckCard()
-				game.DisplayCards()
 				game.Display()
+				gameStates.SaveState(game)
 				// fmt.Println(game.GetDeckMoves())
 				continue
 			}
@@ -42,10 +42,24 @@ func main() {
 				game.Cards.RandomShuffle()
 				game.Cards, game.Board, game.CurrentCardIndex = game.DealBoard()
 				game.Display()
+				gameStates.Reset()
+				gameStates.SaveState(game)
 				continue
 			}
 			if input == "h" {
 				game.DisplayHints()
+				continue
+			}
+			if input == "u" {
+				game.Display()
+				if len(gameStates.States) == 0 {
+					fmt.Printf("No moves to undo.")
+				} else {
+					lastGameState := gameStates.Undo()
+					fmt.Print(lastGameState)
+					game.SetState(lastGameState)
+				}
+				game.Display()
 				continue
 			}
 		}
@@ -58,10 +72,12 @@ func main() {
 				if to == "s" {
 					game.MoveFromDeckToStacks()
 					game.Display()
+					gameStates.SaveState(game)
 				} else if slices.Contains(validColumns, to) {
 					columnIndex, _ := strconv.ParseInt(to, 10, 32)
 					game.MoveFromDeckToBoard(int(columnIndex))
 					game.Display()
+					gameStates.SaveState(game)
 				} else {
 					fmt.Println("Invalid Input.")
 				}
@@ -74,6 +90,7 @@ func main() {
 					columnIndex, _ := strconv.ParseInt(from, 10, 32)
 					game.MoveFromBoardToStacks(int(columnIndex))
 					game.Display()
+					gameStates.SaveState(game)
 					continue
 				}
 				fmt.Println("Invalid Input.")
@@ -84,6 +101,7 @@ func main() {
 				toColumn, _ := strconv.ParseInt(input1, 10, 32)
 				game.MoveFromColumnToColumn(int(fromColumn), int(toColumn))
 				game.Display()
+				gameStates.SaveState(game)
 				continue
 			}
 			if input[:1] == "s" {

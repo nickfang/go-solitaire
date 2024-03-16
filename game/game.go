@@ -21,6 +21,28 @@ type Game struct {
 
 const NumColumns = 7
 
+func checkMove(card deck.Card, toCard deck.Card) bool {
+	if card.Value == toCard.Value-1 && card.Color != toCard.Color {
+		return true
+	} else if card.Value == 13 && toCard.Value == 0 {
+		return true
+	}
+	return false
+}
+
+func (g Game) getCurrentCard() deck.Card {
+	return g.Cards[g.CurrentCardIndex]
+}
+
+func (g *Game) pruneColumn(column int, index int) []deck.Card {
+	removed := g.Board[column][index:]
+	g.Board[column] = g.Board[column][:index]
+	return removed
+}
+
+
+/* Exported Functions */
+
 func NewGame() Game {
 	return Game{deck.NewDeck(), board.NewBoard(), stacks.NewStacks(), 0, false}
 }
@@ -29,6 +51,7 @@ func (g *Game) Reset() {
 	g.Cards = deck.NewDeck()
 	g.Board = board.NewBoard()
 	g.Stacks = stacks.NewStacks()
+	g.CurrentCardIndex = 0
 }
 
 func (g *Game) SetDebug(onOff bool) {
@@ -175,24 +198,13 @@ func (g *Game) MoveFromColumnToColumn(from int, to int) {
 
 }
 
-func (g *Game) pruneColumn(column int, index int) []deck.Card {
-	removed := g.Board[column][index:]
-	g.Board[column] = g.Board[column][:index]
-	return removed
+func (g *Game) SetState(gameState Game) {
+	g.Cards = gameState.Cards
+	g.Board = gameState.Board
+	g.Stacks = gameState.Stacks
+	g.CurrentCardIndex = gameState.CurrentCardIndex
 }
 
-func (g Game) getCurrentCard() deck.Card {
-	return g.Cards[g.CurrentCardIndex]
-}
-
-func CheckMove(card deck.Card, toCard deck.Card) bool {
-	if card.Value == toCard.Value-1 && card.Color != toCard.Color {
-		return true
-	} else if card.Value == 13 && toCard.Value == 0 {
-		return true
-	}
-	return false
-}
 
 // func GetLastCard(column []deck.Card) (int, deck.Card) {
 // 	// turn an array into a slice so it's the right type.
@@ -215,12 +227,14 @@ func CheckMove(card deck.Card, toCard deck.Card) bool {
 
 // take the current deck card and return columns that are possible moves
 // for the user the columns are 1 indexed instead of 0 indexed.
+
+
 func (g Game) GetDeckMoves() []int {
 	currentCard := g.getCurrentCard()
 	moves := []int{}
 	for index, _ := range g.Board {
 		_, lastCard := g.Board.GetLastCard(index)
-		if CheckMove(currentCard, lastCard) {
+		if checkMove(currentCard, lastCard) {
 			moves = append(moves, index)
 		}
 	}

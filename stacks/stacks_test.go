@@ -1,12 +1,22 @@
-package stacks_test
+package stacks
 
 import (
-	"solitaire/stacks"
 	"testing"
 )
 
+func (stacks1 Stacks) IsEqual(stacks2 Stacks) bool {
+	for i := range stacks1 {
+		stack1 := stacks1[i]
+		stack2 := stacks2[i]
+		if !stack1[i].insEqual(stack2[i]) {
+			return false
+		}
+	}
+	return true
+}
+
 func TestNewStacks(t *testing.T) {
-	s := stacks.NewStacks()
+	s := NewStacks()
 	if len(s) != 4 {
 		t.Error("Stacks has the wrong number of columns.")
 	}
