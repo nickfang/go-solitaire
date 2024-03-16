@@ -10,6 +10,18 @@ import (
 // stacks[0] are all the Spades, stacks[1] are all the Heards ...
 type Stacks [][]deck.Card
 
+func (stacks1 Stacks) IsEqual(stacks2 Stacks) bool {
+	for i := range stacks1 {
+		stack1 := stacks1[i]
+		stack2 := stacks2[i]
+		fmt.Print(stack1)
+		if !stack1[i].IsEqual(stack2[i]) {
+			return false
+		}
+	}
+	return true
+}
+
 func NewStacks() Stacks {
 	stacks := Stacks{}
 	for i := 0; i < 4; i++ {
