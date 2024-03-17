@@ -73,7 +73,6 @@ func TestNewCard(t *testing.T) {
 	if err == nil {
 		t.Error("invalid suit error show be returned.")
 	}
-	fmt.Print(err)
 	if err.Error() != "invalid suit: wrong" {
 		t.Error("invalid suit error message is incorrect")
 	}
@@ -95,11 +94,28 @@ func TestNewCard(t *testing.T) {
 	}
 
 	c3, err3 := NewCard(0, "Hearts", true)
-	if err3 != nil {
-		t.Error("error while creating c1:", err3)
+	if !c3.IsEqual(Card{}) {
+		t.Error("error while creating card should return default card.")
 	}
-	if  c3.Suit != "Hearts" || c3.Value != 13 || c3.Color != "Red" || c3.Shown != true {
-		t.Error("c2 not created correctly", c3)
+	if err3.Error() != "invalid card display: invalid value: 0" {
+		t.Error("Incorrect error message when value outside range.")
+	}
+
+	c4, err4 := NewCard(14, "Hearts", true)
+	if !c4.IsEqual(Card{}) {
+		t.Error("error while creating card should return default card.")
+	}
+	if err4.Error() != "invalid card display: invalid value: 14" {
+		t.Error("Incorrect error message when value outside range.")
+	}
+
+	c5, err5 := NewCard(14, "Rocks", true)
+	if !c5.IsEqual(Card{}) {
+		t.Error("error while creating card should return default card.")
+	}
+	fmt.Print(err5.Error())
+	if err5.Error() != "invalid suit: Rocks" {
+		t.Error("Incorrect error message when value outside range.")
 	}
 }
 

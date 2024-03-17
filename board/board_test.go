@@ -37,7 +37,7 @@ func TestGetLastCard(t *testing.T) {
 		t.Error("Card should be 0, but is ", card.Value)
 	}
 
-	card1 := deck.Card{false, false, 1, "Spades", "", ""}
+	card1, _ := deck.NewCard(1, "Spades", false)
 	b[1] = append(b[1], card1)
 	index, card = b.GetLastCard(1)
 	if index != 0 {

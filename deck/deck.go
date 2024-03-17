@@ -80,23 +80,15 @@ func NewCard(value int, suit string, shown bool) (Card, error) {
 func NewDeck() Cards {
 	deck := Cards{}
 
-	for index, suit := range CardSuits {
+	for _, suit := range CardSuits {
 		for _, value := range CardValues {
-			displayMini, err := getCardDisplay(value, CardSuitsIcons[index])
-			if err != nil {
-				fmt.Printf("new deck not created: %s", err)
-				break
+			card, cardErr := NewCard(value, suit, false)
+			if cardErr != nil {
+				fmt.Printf("new deck not created: %s", cardErr.Error())
 			}
 			deck = append(
 				deck,
-				Card{
-					false,
-					false,
-					value,
-					suit,
-					getCardColor(suit),
-					displayMini,
-				},
+				card,
 			)
 		}
 	}
