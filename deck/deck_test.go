@@ -68,6 +68,41 @@ func TestGetColor(t *testing.T) {
 	}
 }
 
+func TestNewCard(t *testing.T) {
+	_, err := NewCard(1, "wrong", false)
+	if err == nil {
+		t.Error("invalid suit error show be returned.")
+	}
+	fmt.Print(err)
+	if err.Error() != "invalid suit: wrong" {
+		t.Error("invalid suit error message is incorrect")
+	}
+
+	c1, err1 := NewCard(1, "Spades", false)
+	if err1 != nil {
+		t.Error("error while creating c1:", err1)
+	}
+	if c1.Suit != "Spades" || c1.Value != 1 || c1.Color != "Black" || c1.Shown != false {
+		t.Error("c1 not created correctly", c1)
+	}
+
+	c2, err2 := NewCard(13, "Hearts", true)
+	if err2 != nil {
+		t.Error("error while creating c1:", err2)
+	}
+	if  c2.Suit != "Hearts" || c2.Value != 13 || c2.Color != "Red" || c2.Shown != true {
+		t.Error("c2 not created correctly", c2)
+	}
+
+	c3, err3 := NewCard(0, "Hearts", true)
+	if err3 != nil {
+		t.Error("error while creating c1:", err3)
+	}
+	if  c3.Suit != "Hearts" || c3.Value != 13 || c3.Color != "Red" || c3.Shown != true {
+		t.Error("c2 not created correctly", c3)
+	}
+}
+
 func TestNewDeck(t *testing.T) {
 	deck := NewDeck()
 	if len(deck) != 52 {

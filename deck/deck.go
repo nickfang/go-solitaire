@@ -44,11 +44,14 @@ func (d1 Cards) IsEqual(d2 Cards) bool {
 //	func getCardDisplay(value int, suit string) string {
 //		return CardNumDisplay[value-1] + " of " + suit
 //	}
-func getCardDisplay(value int, suit string) string {
-	if value != 10 {
-		return "  " + CardNumDisplay[value-1] + suit
+func getCardDisplay(value int, suit string) (string, error) {
+	if value < 1 || value > 13 {
+		return "", fmt.Errorf("invalid value: %d", value)
 	}
-	return " " + CardNumDisplay[value-1] + suit
+	if value != 10 {
+		return "  " + CardNumDisplay[value-1] + suit, nil
+	}
+	return " " + CardNumDisplay[value-1] + suit, nil
 }
 func getCardColor(suit string) string {
 	if suit == "Spades" || suit == "Clubs" {
@@ -57,11 +60,33 @@ func getCardColor(suit string) string {
 	return "Red"
 }
 
+func NewCard(value int, suit string, shown bool) (Card, error) {
+	suitIndex := -1
+	for i, s := range CardSuits {
+		if s == suit {
+			suitIndex = i
+		}
+	}
+	if suitIndex == -1 {
+		return Card{}, fmt.Errorf("invalid suit: %s", suit)
+	}
+	displayMini, err := getCardDisplay(value, CardSuitsIcons[suitIndex])
+	if err != nil {
+		return Card{}, fmt.Errorf("invalid card display: %s", err)
+	}
+	return Card{false, shown, value, suit, getCardColor(suit), displayMini}, nil
+}
+
 func NewDeck() Cards {
 	deck := Cards{}
 
 	for index, suit := range CardSuits {
 		for _, value := range CardValues {
+			displayMini, err := getCardDisplay(value, CardSuitsIcons[index])
+			if err != nil {
+				fmt.Printf("new deck not created: %s", err)
+				break
+			}
 			deck = append(
 				deck,
 				Card{
@@ -70,7 +95,7 @@ func NewDeck() Cards {
 					value,
 					suit,
 					getCardColor(suit),
-					getCardDisplay(value, CardSuitsIcons[index]),
+					displayMini,
 				},
 			)
 		}

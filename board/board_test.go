@@ -5,6 +5,11 @@ import (
 	"testing"
 )
 
+func TestIsEqual(t *testing.T) {
+	board := NewBoard()
+	board2 := NewBoard()
+}
+
 func TestNewBoard(t *testing.T) {
 	b := NewBoard()
 	if len(b) != 7 {

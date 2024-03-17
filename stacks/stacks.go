@@ -30,6 +30,15 @@ func NewStacks() Stacks {
 	return stacks
 }
 
+func (s *Stacks) MoveToStack(suitIndex int, card deck.Card) {
+	if suitIndex >= 0 && suitIndex < 4 {
+		(*s)[suitIndex] = append((*s)[suitIndex], card)
+	} else {
+		fmt.Printf("suitIndex out of range.")
+		// handle out of bounds error.
+	}
+}
+
 func (s Stacks) Display() {
 	fmt.Print("     [")
 	for _, stack := range s {
