@@ -24,6 +24,23 @@ type Card struct {
 
 type Cards []Card
 
+func getCardDisplay(value int, suit string) (string, error) {
+	if value < 1 || value > 13 {
+		return "", fmt.Errorf("invalid value: %d", value)
+	}
+	if value != 10 {
+		return "  " + CardNumDisplay[value-1] + suit, nil
+	}
+	return " " + CardNumDisplay[value-1] + suit, nil
+}
+
+func getCardColor(suit string) string {
+	if suit == "Spades" || suit == "Clubs" {
+		return "Black"
+	}
+	return "Red"
+}
+
 func (c1 Card) IsEqual(c2 Card) bool {
 	return c1.Suit == c2.Suit && c1.Value == c2.Value
 }
@@ -39,25 +56,6 @@ func (d1 Cards) IsEqual(d2 Cards) bool {
 		}
 	}
 	return true // All cards match in order
-}
-
-//	func getCardDisplay(value int, suit string) string {
-//		return CardNumDisplay[value-1] + " of " + suit
-//	}
-func getCardDisplay(value int, suit string) (string, error) {
-	if value < 1 || value > 13 {
-		return "", fmt.Errorf("invalid value: %d", value)
-	}
-	if value != 10 {
-		return "  " + CardNumDisplay[value-1] + suit, nil
-	}
-	return " " + CardNumDisplay[value-1] + suit, nil
-}
-func getCardColor(suit string) string {
-	if suit == "Spades" || suit == "Clubs" {
-		return "Black"
-	}
-	return "Red"
 }
 
 func NewCard(value int, suit string, shown bool) (Card, error) {
@@ -113,7 +111,7 @@ func (d Cards) RandomShuffle() {
 	}
 }
 
-func (d Cards) perfectShuffle() {
+func (d Cards) PerfectShuffle() {
 	half1 := [26]Card(d[:len(d)/2])
 	half2 := [26]Card(d[len(d)/2:])
 	for i := 0; i < (len(d) / 2); i++ {
@@ -143,5 +141,15 @@ func (c Card) Display() {
 		fmt.Print(c.DisplayMini)
 	} else {
 		fmt.Print("  * ")
+	}
+}
+
+func (c Card) Print() {
+	fmt.Printf("[V: %d, S: %s, C: %s]", c.Value, c.Suit, c.Color)
+}
+
+func (d Cards) Print() {
+	for _, card := range d {
+		card.Print()
 	}
 }

@@ -24,8 +24,6 @@ func main() {
 	for {
 		fmt.Scanln(&i)
 		input := strings.ToLower(i)
-		// input0 := string(input[0])
-		// input1 := string(input[1])
 		if len(input) == 1 {
 			if input == "q" {
 				break

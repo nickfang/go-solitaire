@@ -1,7 +1,6 @@
 package stacks
 
 import (
-	"fmt"
 	"solitaire/deck"
 	"testing"
 )
@@ -26,11 +25,19 @@ func TestNewStacks(t *testing.T) {
 
 func TestMoveToStack(t *testing.T) {
 	s := NewStacks()
-	c := deck.NewCard(1, "Hearts", true)
-	fmt.Print(c)
-	s.MoveToStack(0, c)
-	s.Display()
-	t.Error("test")
+
+	c1, err1 := deck.NewCard(1, "Hearts", true)
+	if err1 != nil {
+		t.Error("error creating c1 card.")
+	}
+	s.MoveToStack(c1)
+
+	c2, err2 := deck.NewCard(2, "Spades", true)
+	if err2 != nil {
+		t.Error("error creating c1 card.")
+	}
+	s.MoveToStack(c2)
+
 }
 
 func TestIsEqual(t *testing.T) {

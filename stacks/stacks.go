@@ -30,13 +30,28 @@ func NewStacks() Stacks {
 	return stacks
 }
 
-func (s *Stacks) MoveToStack(suitIndex int, card deck.Card) {
-	if suitIndex >= 0 && suitIndex < 4 {
-		(*s)[suitIndex] = append((*s)[suitIndex], card)
-	} else {
-		fmt.Printf("suitIndex out of range.")
-		// handle out of bounds error.
+func (s *Stacks) MoveToStack(card deck.Card) {
+	suitIndex := -1
+	for index, suit := range deck.CardSuits {
+		if suit == card.Suit {
+			suitIndex = index
+			break
+		}
 	}
+	if suitIndex == -1 {
+		fmt.Printf("Invalid suit in card.  This card was created incorrectly.  This should never happen.")
+		return
+	}
+	if len((*s)[suitIndex]) == 0 {
+		if card.Value != 1 {
+			fmt.Printf("Only an ace can be moved to an empty stack.")
+			return
+		}
+	} else if ((*s)[suitIndex][len((*s)[suitIndex])-1].Value + 1 != card.Value) {
+		fmt.Printf("No valid spots in the stack for this card.")
+		return
+	}
+	(*s)[suitIndex] = append((*s)[suitIndex], card)
 }
 
 func (s Stacks) Display() {
