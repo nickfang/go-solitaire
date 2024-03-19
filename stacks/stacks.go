@@ -11,9 +11,13 @@ import (
 type Stacks [][]deck.Card
 
 func (stacks1 Stacks) IsEqual(stacks2 Stacks) bool {
+
 	for i := range stacks1 {
 		stack1 := stacks1[i]
 		stack2 := stacks2[i]
+		if len(stack1) == 0 && len(stack2) == 0 {
+			continue
+		}
 		fmt.Print(stack1)
 		if !stack1[i].IsEqual(stack2[i]) {
 			return false

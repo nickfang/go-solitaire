@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestIsEqual(t *testing.T) {
+func TestIsEqualCard(t *testing.T) {
 	card1 := Card{
 		false,
 		false,
@@ -33,11 +33,20 @@ func TestIsEqual(t *testing.T) {
 	if card1.IsEqual(card2) {
 		t.Error("IsEqual should return false.")
 	}
+}
+func TestIsEqualCards(t *testing.T) {
+	emptyDeck1 := Cards{}
+	emptyDeck2 := Cards{}
+	if !emptyDeck1.IsEqual(emptyDeck2) {
+		t.Error("Empty arrays should be equal.")
+	}
+
 	deck1 := NewDeck()
 	deck2 := NewDeck()
 	if !deck1.IsEqual(deck2) {
 		t.Error("Is Equal should return true.")
 	}
+
 	deck1[1].Value = 10
 	if deck1.IsEqual(deck2) {
 		t.Error("Is Equal should return false.")

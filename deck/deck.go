@@ -46,6 +46,9 @@ func (c1 Card) IsEqual(c2 Card) bool {
 }
 
 func (d1 Cards) IsEqual(d2 Cards) bool {
+	if len(d1) == 0 && len(d2) == 0 {
+		return true
+	}
 	if len(d1) != len(d2) {
 		return false // Decks have different number of cards
 	}

@@ -54,6 +54,16 @@ func (g *Game) Reset() {
 	g.CurrentCardIndex = 0
 }
 
+func (g1 Game) IsEqual(g2 Game) bool {
+	if g1.Cards.IsEqual(g2.Cards) &&
+		g1.Stacks.IsEqual(g2.Stacks) &&
+		g1.Board.IsEqual(g2.Board) &&
+		g1.CurrentCardIndex == g2.CurrentCardIndex {
+			return true
+	}
+	return false
+}
+
 func (g *Game) SetDebug(onOff bool) {
 	g.Debug = onOff
 	for i := range g.Cards {
