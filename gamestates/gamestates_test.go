@@ -10,12 +10,6 @@ type Game game.Game
 // Helper function to create a simple test game state
 func createTestGameState() game.Game {
     return game.NewGame()
-		// {
-    //     Cards:            game.Game.Cards{game.Card{Value: 1, Suit: "Hearts"}}, // Simplified for testing
-    //     Board:            game.Board{},
-    //     Stacks:           game.Stacks{},
-    //     CurrentCardIndex: 0,
-    // }
 }
 
 // func (g1 Game) compareTo(g2 game.Game) bool {

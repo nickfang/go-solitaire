@@ -6,7 +6,6 @@ import (
 
 type GameStates struct {
 	States []game.Game
-	justUnDid bool
 }
 
 func NewGameStates() GameStates {
@@ -15,7 +14,6 @@ func NewGameStates() GameStates {
 
 func (s *GameStates) push(state game.Game) {
 	s.States = append(s.States, state)
-	s.justUnDid = false
 }
 
 func (s *GameStates) pop() game.Game {
@@ -31,7 +29,6 @@ func (s *GameStates) pop() game.Game {
 
 func (s *GameStates) Reset() {
 	s.States = s.States[:0]
-	s.justUnDid = false
 }
 
 func (s *GameStates) SaveState(state game.Game) {
@@ -41,16 +38,14 @@ func (s *GameStates) SaveState(state game.Game) {
 	newState.Stacks = state.Stacks
 	newState.CurrentCardIndex = state.CurrentCardIndex
 	s.push(newState)
-	s.justUnDid = false
 }
 
 func (s *GameStates) Undo() game.Game {
-	if (len(s.States) == 1) {
+	numStates := len(s.States)
+	if (numStates <= 1) {
 		return s.States[0]
 	}
-	if !s.justUnDid {
-		s.pop()
-	}
-	s.justUnDid = true
-	return s.pop()
+	s.pop()
+	lastIndex := len(s.States) - 1
+	return s.States[lastIndex]
 }
