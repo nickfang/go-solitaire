@@ -13,9 +13,8 @@ import (
 func main() {
 	game := game.NewGame()
 	gameStates := gamestates.NewGameStates()
-	// game.Cards.RandomShuffle()
+	game.Cards.RandomShuffle()
 	game.Cards, game.Board, game.CurrentCardIndex = game.DealBoard()
-	// game.SetDebug(true)
 	gameStates.SaveState(game)
 	game.Display()
 
@@ -32,7 +31,6 @@ func main() {
 				game.NextDeckCard()
 				game.Display()
 				gameStates.SaveState(game)
-				// fmt.Println(game.GetDeckMoves())
 				continue
 			}
 			if input == "r" {
@@ -53,10 +51,8 @@ func main() {
 					fmt.Printf("No moves to undo.")
 				} else {
 					lastGameState := gameStates.Undo()
-					fmt.Print(lastGameState)
 					game.SetState(lastGameState)
 				}
-				fmt.Printf("display new game state.")
 				game.Display()
 				continue
 			}

@@ -8,6 +8,11 @@ import (
 func TestIsEqual(t *testing.T) {
 	board := NewBoard()
 	board2 := NewBoard()
+	equal := board.IsEqual(board2)
+	if !equal {
+		t.Error("Empty boards should be equal.")
+	}
+
 }
 
 func TestNewBoard(t *testing.T) {
