@@ -47,8 +47,8 @@ func main() {
 				continue
 			}
 			if input == "u" {
-				if len(gameStates.States) == 0 {
-					fmt.Printf("No moves to undo.")
+				if len(gameStates.States) <= 1 {
+					fmt.Println("No moves to undo.")
 				} else {
 					lastGameState := gameStates.Undo()
 					game.SetState(lastGameState)
