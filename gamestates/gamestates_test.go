@@ -66,6 +66,7 @@ func TestReset(t *testing.T) {
 func TestSaveState(t *testing.T) {
     // Use an unshuffled deck to make sure the goard is organized the same each time.
     // Made sure to test each type of move in game.
+    // TestUndo uses these same moves.  If any are updated here, update below.
 	gs := NewGameStates()
 	game := createTestGameState()
     game.DealBoard()
@@ -131,18 +132,50 @@ func TestSaveState(t *testing.T) {
 }
 
 func TestUndo(t *testing.T) {
+    // This is using the same moves as TestSaveState.  If any is updated there, update here.
     gs := NewGameStates()
-    state1 := createTestGameState()
-    state2 := createTestGameState()
-    // Modify state2 slightly to differentiate it
+	game := createTestGameState()
+    game.DealBoard()
+	gs.SaveState(game)
 
-    gs.SaveState(state1)
-    gs.SaveState(state2)
+    game.MoveFromBoardToStacks(0)
+    gs.SaveState(game)
+    game.MoveFromBoardToStacks(2)
+    gs.SaveState(game)
+    game.MoveFromColumnToColumn(2,4)
+    gs.SaveState(game)
+    game.MoveFromColumnToColumn(5,0)
+    gs.SaveState(game)
+    game.NextDeckCard()
+    gs.SaveState(game)
+    game.NextDeckCard()
+    gs.SaveState(game)
+    game.NextDeckCard()
+    gs.SaveState(game)
+    game.NextDeckCard()
+    gs.SaveState(game)
+    game.MoveFromDeckToBoard(0)
+    gs.SaveState(game)
+    game.MoveFromColumnToColumn(5,0)
+    gs.SaveState(game)
+    game.MoveFromColumnToColumn(5,4)
+    gs.SaveState(game)
+    game.NextDeckCard()
+    gs.SaveState(game)
+    game.MoveFromDeckToBoard(2)
+    gs.SaveState(game)
+    game.MoveFromDeckToStacks()
+    gs.SaveState(game)
+    game.MoveFromColumnToColumn(2,5)
+    gs.SaveState(game)
+    game.MoveFromDeckToBoard(2)
+    gs.SaveState(game)
 
-    // undoneState := gs.Undo()
-    // if undoneState != state1 {
-    //     t.Error("Undo didn't return the expected state")
-    // }
+    stateSize := len(gs.States)
+    gs.Undo()
+    if len(gs.States) != stateSize - 1 {
+        t.Error("State size should have been reduced by 1 after undo.")
+    }
 
     // Consider more tests for edge cases around multiple
     // undos and undos after resets.

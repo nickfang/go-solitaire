@@ -208,6 +208,32 @@ func (g *Game) MoveFromColumnToColumn(from int, to int) {
 
 }
 
+func (g Game) DeepCopy() Game {
+	newState := Game{}
+
+	// Deep Copy Board (assuming board.Board is [][]deck.Card)
+	newState.Board = make(board.Board, len(g.Board))
+	for i, row := range g.Board {
+			newState.Board[i] = make([]deck.Card, len(row))
+			copy(newState.Board[i], row)
+	}
+
+	// Deep Copy Cards
+	newState.Cards = make(deck.Cards, len(g.Cards))
+	copy(newState.Cards, g.Cards)
+
+	// Deep Copy Stacks (assuming stacks.Stacks is [][]deck.Card)
+	newState.Stacks = make(stacks.Stacks, len(g.Stacks))
+	for i, suitStack := range g.Stacks {
+			newState.Stacks[i] = make([]deck.Card, len(suitStack))
+			copy(newState.Stacks[i], suitStack)
+	}
+
+	newState.CurrentCardIndex = g.CurrentCardIndex
+
+	return newState
+}
+
 func (g *Game) SetState(gameState Game) {
 	g.Cards = gameState.Cards
 	g.Board = gameState.Board
