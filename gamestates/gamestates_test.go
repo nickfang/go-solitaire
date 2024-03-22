@@ -63,16 +63,70 @@ func TestReset(t *testing.T) {
 }
 
 func TestSaveState(t *testing.T) {
-   gs := NewGameStates()
-   originalState := createTestGameState()
-   gs.SaveState(originalState)
+	gs := NewGameStates()
+	game := createTestGameState()
+    game.DealBoard()
+	gs.SaveState(game)
 
-   if len(gs.States) != 1 {
-       t.Error("Expected 1 state after SaveState()")
-   }
-
-   // (Add more detailed checks that the copied state is
-   //  truly a deep copy by comparing individual fields)
+	if len(gs.States) != 1 {
+		t.Error("Expected 1 state after SaveState()")
+	}
+    game.MoveFromBoardToStacks(0)
+    gs.SaveState(game)
+    // Check for deep copy by comparing individual fields
+    if len(gs.States) != 2 {
+        t.Error("Expected 2 states after Save STate()")
+    }
+	if game.IsEqual(gs.States[0]) {
+        t.Error("Saved state is not a deep copy of the original state")
+    }
+    game.MoveFromBoardToStacks(2)
+    gs.SaveState(game)
+    // Check for deep copy by comparing individual fields
+	if game.IsEqual(gs.States[1]) {
+        t.Error("Saved state is not a deep copy of the original state")
+    }
+    game.MoveFromColumnToColumn(2,4)
+    gs.SaveState(game)
+    if game.IsEqual(gs.States[2]) {
+        t.Error("Saved state is not a deep copy of the original state")
+    }
+    game.MoveFromColumnToColumn(5,0)
+    gs.SaveState(game)
+    if game.IsEqual(gs.States[3]) {
+        t.Error("Saved state is not a deep copy of the original state")
+    }
+    game.NextDeckCard()
+    gs.SaveState(game)
+    if game.IsEqual(gs.States[5]) {
+        t.Error("Saved state is not a deep copy of the original state")
+    }
+    // game.NextDeckCard()
+    // gs.SaveState(game)
+    // game.NextDeckCard()
+    // gs.SaveState(game)
+    // game.NextDeckCard()
+    // gs.SaveState(game)
+    // game.MoveFromDeckToBoard(0)
+    // gs.SaveState(game)
+    // if game.Cards.IsEqual(gs.States[7].Cards) &&
+    //     game.Board.IsEqual(gs.States[7].Board) &&
+    //     game.Stacks.IsEqual(gs.States[7].Stacks) &&
+    //     game.CurrentCardIndex == gs.States[1].CurrentCardIndex {
+    //     t.Error("Saved state is not a deep copy of the original state")
+    // }
+    // game.NextDeckCard()
+    // gs.SaveState(game)
+    // game.MoveFromDeckToBoard(2)
+    // gs.SaveState(game)
+    // game.MoveFromDeckToStacks()
+    // gs.SaveState(game)
+    // if game.Cards.IsEqual(gs.States[10].Cards) &&
+    //     game.Board.IsEqual(gs.States[10].Board) &&
+    //     game.Stacks.IsEqual(gs.States[10].Stacks) &&
+    //     game.CurrentCardIndex == gs.States[1].CurrentCardIndex {
+    //     t.Error("Saved state is not a deep copy of the original state")
+    // }
 }
 
 func TestUndo(t *testing.T) {
@@ -91,18 +145,4 @@ func TestUndo(t *testing.T) {
 
     // Consider more tests for edge cases around multiple
     // undos and undos after resets.
-}
-
-
-func TestUndoJustUndid(t *testing.T) {
-   gs := NewGameStates()
-   state1 := createTestGameState()
-   gs.SaveState(state1)
-   gs.pop()
-    // undoneState := gs.Undo()
-    // undoneState2 := gs.Undo()
-    // if undoneState2 != undoneState {
-    //     t.Error("Undo didn't return the same state without a new push")
-    // }
-
 }

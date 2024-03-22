@@ -13,7 +13,7 @@ import (
 func main() {
 	game := game.NewGame()
 	gameStates := gamestates.NewGameStates()
-	game.Cards.RandomShuffle()
+	// game.Cards.RandomShuffle()
 	game.Cards, game.Board, game.CurrentCardIndex = game.DealBoard()
 	// game.SetDebug(true)
 	gameStates.SaveState(game)
@@ -84,8 +84,8 @@ func main() {
 			if input[1] == 's' {
 				// move from board to stacks
 				from := input0
+				columnIndex, _ := strconv.ParseInt(from, 10, 32)
 				if slices.Contains(validColumns, from) {
-					columnIndex, _ := strconv.ParseInt(from, 10, 32)
 					game.MoveFromBoardToStacks(int(columnIndex))
 					game.Display()
 					gameStates.SaveState(game)
@@ -103,6 +103,7 @@ func main() {
 				continue
 			}
 			if input[:1] == "s" {
+				fmt.Printf("Not Implemented.\n")
 				// move from stacks to board.
 			}
 		}

@@ -5,21 +5,28 @@ import (
 	"solitaire/deck"
 )
 
-// Stacks are where cards are pu starting with aces.
+// Stacks are where cards are put starting with aces.
 // the order of suits for the stacks are Spades, Hearts, Clubs and Diamonds.
 // stacks[0] are all the Spades, stacks[1] are all the Heards ...
-type Stacks [][]deck.Card
+type Stack []deck.Card
+type Stacks []Stack
+
+func (stack1 Stack) IsEqual(stack2 Stack) {
+	deck.Cards(stack1).IsEqual(deck.Cards(stack2))
+}
 
 func (stacks1 Stacks) IsEqual(stacks2 Stacks) bool {
-
-	for i := range stacks1 {
+	for i := 0; i < 4; i++ {
 		stack1 := stacks1[i]
 		stack2 := stacks2[i]
+		if len(stack1) != len(stack2) {
+			return false
+		}
+		// if both length are 0, don't need to check contents
 		if len(stack1) == 0 && len(stack2) == 0 {
 			continue
 		}
-		fmt.Print(stack1)
-		if !stack1[i].IsEqual(stack2[i]) {
+		if (deck.Cards(stack1).IsEqual(deck.Cards(stack2))) {
 			return false
 		}
 	}
