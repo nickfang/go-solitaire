@@ -13,8 +13,8 @@ import (
 func main() {
 	game := game.NewGame()
 	gameStates := gamestates.NewGameStates()
-	game.Cards.RandomShuffle()
-	game.Cards, game.Board, game.CurrentCardIndex = game.DealBoard()
+	// game.Cards.RandomShuffle()
+	game.DealBoard()
 	gameStates.SaveState(game)
 	game.Display()
 
@@ -36,7 +36,7 @@ func main() {
 			if input == "r" {
 				game.Reset()
 				game.Cards.RandomShuffle()
-				game.Cards, game.Board, game.CurrentCardIndex = game.DealBoard()
+				game.DealBoard()
 				game.Display()
 				gameStates.Reset()
 				gameStates.SaveState(game)

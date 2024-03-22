@@ -3,6 +3,7 @@ package gamestates
 import (
 	"fmt"
 	"solitaire/game"
+	"solitaire/testutils"
 	"testing"
 )
 
@@ -75,7 +76,7 @@ func TestSaveState(t *testing.T) {
 	if len(gs.States) != 1 {
 		t.Error("Expected 1 state after SaveState()")
 	}
-    game.MoveFromBoardToStacks(0)
+    testutils.AssertNoError(t, game.MoveFromBoardToStacks(0), "Move Board to Stacks failed")
     gs.SaveState(game)
     if len(gs.States) != 2 {
         t.Error("Expected 2 states after SaveState()")
@@ -83,50 +84,48 @@ func TestSaveState(t *testing.T) {
 	if game.IsEqual(gs.States[0]) {
         t.Error("Saved state is not a deep copy of the original state")
     }
-    game.MoveFromBoardToStacks(2)
+    testutils.AssertNoError(t, game.MoveFromBoardToStacks(2), "Move board to stack failed")
     gs.SaveState(game)
-    game.MoveFromColumnToColumn(2,4)
+    testutils.AssertNoError(t, game.MoveFromColumnToColumn(2,4), "Move column to colum")
     gs.SaveState(game)
     if game.IsEqual(gs.States[2]) {
         t.Error("Saved state is not a deep copy of the original state")
     }
-    game.MoveFromColumnToColumn(5,0)
+    testutils.AssertNoError(t, game.MoveFromColumnToColumn(5,0), "")
     gs.SaveState(game)
     if game.IsEqual(gs.States[3]) {
         t.Error("Saved state is not a deep copy of the original state")
     }
-    game.NextDeckCard()
+    testutils.AssertNoError(t, game.NextDeckCard(), "")
     gs.SaveState(game)
     if game.IsEqual(gs.States[5]) {
         t.Error("Saved state is not a deep copy of the original state")
     }
-    game.NextDeckCard()
+    testutils.AssertNoError(t, game.NextDeckCard(), "")
     gs.SaveState(game)
-    game.NextDeckCard()
+    testutils.AssertNoError(t, game.NextDeckCard(), "")
     gs.SaveState(game)
-    game.NextDeckCard()
-    gs.SaveState(game)
-    game.MoveFromDeckToBoard(0)
+    testutils.AssertNoError(t, game.MoveFromDeckToBoard(0), "Move deck to board")
     gs.SaveState(game)
     if game.IsEqual(gs.States[5]) {
         t.Error("Saved state is not a deep copy of the original state")
     }
-    game.MoveFromColumnToColumn(5,0)
+    testutils.AssertNoError(t, game.MoveFromColumnToColumn(5,0), "")
     gs.SaveState(game)
-    game.MoveFromColumnToColumn(5,4)
+    testutils.AssertNoError(t, game.MoveFromColumnToColumn(5,4), "")
     gs.SaveState(game)
-    game.NextDeckCard()
+    testutils.AssertNoError(t, game.NextDeckCard(), "Next card")
     gs.SaveState(game)
-    game.MoveFromDeckToBoard(2)
+    testutils.AssertNoError(t, game.MoveFromDeckToBoard(2), "Move deck to board")
     gs.SaveState(game)
-    game.MoveFromDeckToStacks()
+    testutils.AssertNoError(t, game.MoveFromDeckToStacks(), "Move deck to stack")
     gs.SaveState(game)
     if game.IsEqual(gs.States[5]) {
         t.Error("Saved state is not a deep copy of the original state")
     }
-    game.MoveFromColumnToColumn(2,5)
+    testutils.AssertNoError(t, game.MoveFromColumnToColumn(2,5), "Move column to column")
     gs.SaveState(game)
-    game.MoveFromDeckToBoard(2)
+    testutils.AssertNoError(t, game.MoveFromDeckToBoard(2), "Move deck to board")
     gs.SaveState(game)
     fmt.Println(len(gs.States))
 }
