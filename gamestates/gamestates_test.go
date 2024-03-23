@@ -80,24 +80,24 @@ func TestSaveState(t *testing.T) {
     if len(gs.States) != 2 {
         t.Error("Expected 2 states after SaveState()")
     }
-	if !game.IsEqual(gs.States[0]) {
+	if game.IsEqual(gs.States[0]) {
         t.Error("Saved state is not a deep copy of the original state")
     }
     testutils.AssertNoError(t, game.MoveFromBoardToStacks(2), "Move board to stack failed")
     gs.SaveState(game)
     testutils.AssertNoError(t, game.MoveFromColumnToColumn(2,4), "Move column to colum")
     gs.SaveState(game)
-    if !game.IsEqual(gs.States[2]) {
+    if game.IsEqual(gs.States[2]) {
         t.Error("Saved state is not a deep copy of the original state")
     }
     testutils.AssertNoError(t, game.MoveFromColumnToColumn(5,0), "")
     gs.SaveState(game)
-    if !game.IsEqual(gs.States[3]) {
+    if game.IsEqual(gs.States[3]) {
         t.Error("Saved state is not a deep copy of the original state")
     }
     testutils.AssertNoError(t, game.NextDeckCard(), "")
     gs.SaveState(game)
-    if !game.IsEqual(gs.States[5]) {
+    if game.IsEqual(gs.States[4]) {
         t.Error("Saved state is not a deep copy of the original state")
     }
     testutils.AssertNoError(t, game.NextDeckCard(), "")
@@ -106,7 +106,7 @@ func TestSaveState(t *testing.T) {
     gs.SaveState(game)
     testutils.AssertNoError(t, game.MoveFromDeckToBoard(0), "Move deck to board")
     gs.SaveState(game)
-    if !game.IsEqual(gs.States[5]) {
+    if game.IsEqual(gs.States[7]) {
         t.Error("Saved state is not a deep copy of the original state")
     }
     testutils.AssertNoError(t, game.MoveFromColumnToColumn(5,0), "")
@@ -119,7 +119,7 @@ func TestSaveState(t *testing.T) {
     gs.SaveState(game)
     testutils.AssertNoError(t, game.MoveFromDeckToStacks(), "Move deck to stack")
     gs.SaveState(game)
-    if !game.IsEqual(gs.States[5]) {
+    if game.IsEqual(gs.States[12]) {
         t.Error("Saved state is not a deep copy of the original state")
     }
     testutils.AssertNoError(t, game.MoveFromColumnToColumn(2,5), "Move column to column")
