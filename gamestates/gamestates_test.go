@@ -1,7 +1,6 @@
 package gamestates
 
 import (
-	"fmt"
 	"solitaire/game"
 	"solitaire/testutils"
 	"testing"
@@ -81,24 +80,24 @@ func TestSaveState(t *testing.T) {
     if len(gs.States) != 2 {
         t.Error("Expected 2 states after SaveState()")
     }
-	if game.IsEqual(gs.States[0]) {
+	if !game.IsEqual(gs.States[0]) {
         t.Error("Saved state is not a deep copy of the original state")
     }
     testutils.AssertNoError(t, game.MoveFromBoardToStacks(2), "Move board to stack failed")
     gs.SaveState(game)
     testutils.AssertNoError(t, game.MoveFromColumnToColumn(2,4), "Move column to colum")
     gs.SaveState(game)
-    if game.IsEqual(gs.States[2]) {
+    if !game.IsEqual(gs.States[2]) {
         t.Error("Saved state is not a deep copy of the original state")
     }
     testutils.AssertNoError(t, game.MoveFromColumnToColumn(5,0), "")
     gs.SaveState(game)
-    if game.IsEqual(gs.States[3]) {
+    if !game.IsEqual(gs.States[3]) {
         t.Error("Saved state is not a deep copy of the original state")
     }
     testutils.AssertNoError(t, game.NextDeckCard(), "")
     gs.SaveState(game)
-    if game.IsEqual(gs.States[5]) {
+    if !game.IsEqual(gs.States[5]) {
         t.Error("Saved state is not a deep copy of the original state")
     }
     testutils.AssertNoError(t, game.NextDeckCard(), "")
@@ -107,7 +106,7 @@ func TestSaveState(t *testing.T) {
     gs.SaveState(game)
     testutils.AssertNoError(t, game.MoveFromDeckToBoard(0), "Move deck to board")
     gs.SaveState(game)
-    if game.IsEqual(gs.States[5]) {
+    if !game.IsEqual(gs.States[5]) {
         t.Error("Saved state is not a deep copy of the original state")
     }
     testutils.AssertNoError(t, game.MoveFromColumnToColumn(5,0), "")
@@ -120,14 +119,13 @@ func TestSaveState(t *testing.T) {
     gs.SaveState(game)
     testutils.AssertNoError(t, game.MoveFromDeckToStacks(), "Move deck to stack")
     gs.SaveState(game)
-    if game.IsEqual(gs.States[5]) {
+    if !game.IsEqual(gs.States[5]) {
         t.Error("Saved state is not a deep copy of the original state")
     }
     testutils.AssertNoError(t, game.MoveFromColumnToColumn(2,5), "Move column to column")
     gs.SaveState(game)
     testutils.AssertNoError(t, game.MoveFromDeckToBoard(2), "Move deck to board")
     gs.SaveState(game)
-    fmt.Println(len(gs.States))
 }
 
 func TestUndo(t *testing.T) {
@@ -151,8 +149,6 @@ func TestUndo(t *testing.T) {
     gs.SaveState(game)
     game.NextDeckCard()
     gs.SaveState(game)
-    game.NextDeckCard()
-    gs.SaveState(game)
     game.MoveFromDeckToBoard(0)
     gs.SaveState(game)
     game.MoveFromColumnToColumn(5,0)
@@ -166,15 +162,22 @@ func TestUndo(t *testing.T) {
     game.MoveFromDeckToStacks()
     gs.SaveState(game)
     game.MoveFromColumnToColumn(2,5)
+    prevGame := game.DeepCopy()
     gs.SaveState(game)
     game.MoveFromDeckToBoard(2)
     gs.SaveState(game)
 
     stateSize := len(gs.States)
-    gs.Undo()
+    undoState := gs.Undo()
+    prevGame.Display()
+    undoState.Display()
     if len(gs.States) != stateSize - 1 {
         t.Error("State size should have been reduced by 1 after undo.")
     }
+    if !undoState.IsEqual(prevGame) {
+        t.Error("Undo did not move to the previous state.")
+    }
+
 
     // Consider more tests for edge cases around multiple
     // undos and undos after resets.

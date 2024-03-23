@@ -8,12 +8,8 @@ import (
 // Stacks are where cards are put starting with aces.
 // the order of suits for the stacks are Spades, Hearts, Clubs and Diamonds.
 // stacks[0] are all the Spades, stacks[1] are all the Heards ...
-type Stack []deck.Card
-type Stacks []Stack
-
-func (stack1 Stack) IsEqual(stack2 Stack) {
-	deck.Cards(stack1).IsEqual(deck.Cards(stack2))
-}
+type Stack deck.Cards
+type Stacks []deck.Cards
 
 func (stacks1 Stacks) IsEqual(stacks2 Stacks) bool {
 	for i := 0; i < 4; i++ {
@@ -26,7 +22,7 @@ func (stacks1 Stacks) IsEqual(stacks2 Stacks) bool {
 		if len(stack1) == 0 && len(stack2) == 0 {
 			continue
 		}
-		if (deck.Cards(stack1).IsEqual(deck.Cards(stack2))) {
+		if (!stack1.IsEqual(stack2)) {
 			return false
 		}
 	}

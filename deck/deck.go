@@ -50,15 +50,14 @@ func (d1 Cards) IsEqual(d2 Cards) bool {
 		return true
 	}
 	if len(d1) != len(d2) {
-		return false // Decks have different number of cards
+		return false
 	}
 	for i := range d1 {
-
 		if !d1[i].IsEqual(d2[i]) {
-			return false // Cards at the same position are different
+			return false
 		}
 	}
-	return true // All cards match in order
+	return true
 }
 
 func NewCard(value int, suit string, shown bool) (Card, error) {
