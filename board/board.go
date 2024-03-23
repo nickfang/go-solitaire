@@ -9,6 +9,20 @@ type Board [][]deck.Card
 
 const NumColumns = 7
 
+func (b1 Board) IsEqual(b2 Board) bool {
+	for columnIndex, column := range b1 {
+		if len(column) != len(b2[columnIndex]) {
+			return false
+		}
+		for rowIndex, cell := range column {
+			if !cell.IsEqual(b2[columnIndex][rowIndex]) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
 func NewBoard() Board {
 	board := Board{}
 	for i := 0; i < NumColumns; i++ {

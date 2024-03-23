@@ -7,13 +7,15 @@ import (
 
 	"golang.org/x/exp/slices"
 	"solitaire/game"
+	"solitaire/gamestates"
 )
 
 func main() {
 	game := game.NewGame()
-	game.Cards.RandomShuffle()
-	game.Cards, game.Board, game.CurrentCardIndex = game.DealBoard()
-	// game.SetDebug(true)
+	gameStates := gamestates.NewGameStates()
+	// game.Cards.RandomShuffle()
+	game.DealBoard()
+	gameStates.SaveState(game)
 	game.Display()
 
 	var i string
@@ -21,28 +23,37 @@ func main() {
 	for {
 		fmt.Scanln(&i)
 		input := strings.ToLower(i)
-		// input0 := string(input[0])
-		// input1 := string(input[1])
 		if len(input) == 1 {
 			if input == "q" {
 				break
 			}
 			if input == "n" {
 				game.NextDeckCard()
-				game.DisplayCards()
 				game.Display()
-				// fmt.Println(game.GetDeckMoves())
+				gameStates.SaveState(game)
 				continue
 			}
 			if input == "r" {
 				game.Reset()
 				game.Cards.RandomShuffle()
-				game.Cards, game.Board, game.CurrentCardIndex = game.DealBoard()
+				game.DealBoard()
 				game.Display()
+				gameStates.Reset()
+				gameStates.SaveState(game)
 				continue
 			}
 			if input == "h" {
 				game.DisplayHints()
+				continue
+			}
+			if input == "u" {
+				if len(gameStates.States) <= 1 {
+					fmt.Println("No moves to undo.")
+				} else {
+					lastGameState := gameStates.Undo()
+					game.SetState(lastGameState)
+				}
+				game.Display()
 				continue
 			}
 		}
@@ -55,10 +66,12 @@ func main() {
 				if to == "s" {
 					game.MoveFromDeckToStacks()
 					game.Display()
+					gameStates.SaveState(game)
 				} else if slices.Contains(validColumns, to) {
 					columnIndex, _ := strconv.ParseInt(to, 10, 32)
 					game.MoveFromDeckToBoard(int(columnIndex))
 					game.Display()
+					gameStates.SaveState(game)
 				} else {
 					fmt.Println("Invalid Input.")
 				}
@@ -67,10 +80,11 @@ func main() {
 			if input[1] == 's' {
 				// move from board to stacks
 				from := input0
+				columnIndex, _ := strconv.ParseInt(from, 10, 32)
 				if slices.Contains(validColumns, from) {
-					columnIndex, _ := strconv.ParseInt(from, 10, 32)
 					game.MoveFromBoardToStacks(int(columnIndex))
 					game.Display()
+					gameStates.SaveState(game)
 					continue
 				}
 				fmt.Println("Invalid Input.")
@@ -81,9 +95,11 @@ func main() {
 				toColumn, _ := strconv.ParseInt(input1, 10, 32)
 				game.MoveFromColumnToColumn(int(fromColumn), int(toColumn))
 				game.Display()
+				gameStates.SaveState(game)
 				continue
 			}
 			if input[:1] == "s" {
+				fmt.Printf("Not Implemented.\n")
 				// move from stacks to board.
 			}
 		}

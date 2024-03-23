@@ -3,6 +3,7 @@ package game
 import (
 	"fmt"
 	"strconv"
+	"errors"
 
 	"solitaire/board"
 	"solitaire/deck"
@@ -21,6 +22,28 @@ type Game struct {
 
 const NumColumns = 7
 
+func checkMove(card deck.Card, toCard deck.Card) bool {
+	if card.Value == toCard.Value-1 && card.Color != toCard.Color {
+		return true
+	} else if card.Value == 13 && toCard.Value == 0 {
+		return true
+	}
+	return false
+}
+
+func (g Game) getCurrentCard() deck.Card {
+	return g.Cards[g.CurrentCardIndex]
+}
+
+func (g *Game) pruneColumn(column int, index int) []deck.Card {
+	removed := g.Board[column][index:]
+	g.Board[column] = g.Board[column][:index]
+	return removed
+}
+
+
+/* Exported Functions */
+
 func NewGame() Game {
 	return Game{deck.NewDeck(), board.NewBoard(), stacks.NewStacks(), 0, false}
 }
@@ -29,6 +52,22 @@ func (g *Game) Reset() {
 	g.Cards = deck.NewDeck()
 	g.Board = board.NewBoard()
 	g.Stacks = stacks.NewStacks()
+	g.CurrentCardIndex = 0
+}
+
+func (g1 Game) IsEqual(g2 Game) bool {
+
+	fmt.Printf("Cards: %v\n", g1.Cards.IsEqual(g2.Cards))
+	fmt.Printf("Stacks: %v\n", g1.Stacks.IsEqual(g2.Stacks))
+	fmt.Printf("Board: %v\n", g1.Board.IsEqual(g2.Board))
+	fmt.Printf("Index: %v\n", g1.CurrentCardIndex == g2.CurrentCardIndex)
+	if g1.Cards.IsEqual(g2.Cards) &&
+		g1.Stacks.IsEqual(g2.Stacks) &&
+		g1.Board.IsEqual(g2.Board) &&
+		g1.CurrentCardIndex == g2.CurrentCardIndex {
+			return true
+	}
+	return false
 }
 
 func (g *Game) SetDebug(onOff bool) {
@@ -43,7 +82,7 @@ func (g *Game) SetDebug(onOff bool) {
 	}
 }
 
-func (g *Game) DealBoard() (deck.Cards, board.Board, int) {
+func (g *Game) DealBoard() {
 	// a board of solitare is 7 columns of cards
 	// the first column has 1 card, the second has 2, etc.
 	cards := g.Cards
@@ -63,67 +102,70 @@ func (g *Game) DealBoard() (deck.Cards, board.Board, int) {
 		// fmt.Println(cards)
 	}
 	cards[currentCardIndex].Shown = true
-
-	return cards, board, currentCardIndex
+	g.Cards = cards
+	g.Board = board
+	g.CurrentCardIndex = currentCardIndex
 }
 
-func (g *Game) NextDeckCard() {
+func (g *Game) NextDeckCard() error {
 	g.Cards[g.CurrentCardIndex].Shown = false
-	if g.CurrentCardIndex+3 > len(g.Cards)-1 {
+	if g.CurrentCardIndex + 3 > len(g.Cards) - 1 {
 		g.CurrentCardIndex = 0
 	} else {
 		g.CurrentCardIndex += 3
 	}
 	g.Cards[g.CurrentCardIndex].Shown = true
+	return nil
 }
 
 // move the current card from the deck to a column
-func (g *Game) MoveFromDeckToBoard(column int) {
+func (g *Game) MoveFromDeckToBoard(column int) error{
 	moves := g.GetDeckMoves()
-	if slices.Contains(moves, column) {
-		g.Cards[g.CurrentCardIndex].Shown = true
-		g.Board[column] = append(g.Board[column], g.Cards[g.CurrentCardIndex])
-		g.Cards = g.Cards.RemoveCard(g.CurrentCardIndex)
-		if g.CurrentCardIndex > 0 {
-			g.CurrentCardIndex = g.CurrentCardIndex - 1
-		}
-	} else {
-		fmt.Println("Invalid move.")
+	if !slices.Contains(moves, column) {
+		return errors.New("invalid move")
 	}
+	g.Cards[g.CurrentCardIndex].Shown = true
+	g.Board[column] = append(g.Board[column], g.Cards[g.CurrentCardIndex])
+	g.Cards = g.Cards.RemoveCard(g.CurrentCardIndex)
+	if g.CurrentCardIndex > 0 {
+		g.CurrentCardIndex = g.CurrentCardIndex - 1
+	}
+	return nil
 }
 
-func (g *Game) MoveFromDeckToStacks() {
+func (g *Game) MoveFromDeckToStacks() error {
+
 	currentCard := g.Cards[g.CurrentCardIndex]
 	suitIndex, validMove := g.GetStackMoves(currentCard)
-	if validMove {
-		currentCard.Shown = true
-		g.Stacks[suitIndex] = append(g.Stacks[suitIndex], currentCard)
-		g.Cards = g.Cards.RemoveCard(g.CurrentCardIndex)
-		if g.CurrentCardIndex > 0 {
-			g.CurrentCardIndex = g.CurrentCardIndex - 1
-		}
-		return
+	if !validMove {
+		return errors.New("invalid move")
 	}
-	fmt.Println("Invalid move.")
+	currentCard.Shown = true
+	g.Stacks[suitIndex] = append(g.Stacks[suitIndex], currentCard)
+	g.Cards = g.Cards.RemoveCard(g.CurrentCardIndex)
+	if g.CurrentCardIndex > 0 {
+		g.CurrentCardIndex = g.CurrentCardIndex - 1
+	}
+	return nil
 }
 
-func (g *Game) MoveFromBoardToStacks(column int) {
+func (g *Game) MoveFromBoardToStacks(column int) error {
 	// move card from bottom of column to stacks
 	lastIndex, lastCard := g.Board.GetLastCard(column)
 	suitIndex, validMove := g.GetStackMoves(lastCard)
-	if validMove {
-		g.Stacks[suitIndex] = append(g.Stacks[suitIndex], lastCard)
-		g.pruneColumn(column, lastIndex)
-		columnLength := len(g.Board[column])
-		if columnLength > 0 && !g.Board[column][columnLength-1].Shown {
-			g.Board[column][len(g.Board[column])-1].Shown = true
-		}
-		return
+	if !validMove {
+		return errors.New("invalid move")
 	}
-	fmt.Println("Invalid move.")
+	g.Stacks[suitIndex] = append(g.Stacks[suitIndex], lastCard)
+	g.pruneColumn(column, lastIndex)
+	columnLength := len(g.Board[column])
+	if columnLength > 0 && !g.Board[column][columnLength-1].Shown {
+		g.Board[column][len(g.Board[column])-1].Shown = true
+	}
+	return nil
 }
 
-func (g *Game) MoveFromColumnToColumn(from int, to int) {
+func (g *Game) MoveFromColumnToColumn(from int, to int) error {
 	// move cards from one column to another column
 
 	// get the last card of the to column and figure out what value and color can be placed on top of it.
@@ -144,8 +186,7 @@ func (g *Game) MoveFromColumnToColumn(from int, to int) {
 	}
 
 	if validCard.Value == 0 {
-		fmt.Println("Invalid Move.  Cannot place a card on an ace.")
-		return
+		return errors.New("invalid move - cannot place a card on an ace")
 	}
 
 	validIndex := -1
@@ -160,8 +201,7 @@ func (g *Game) MoveFromColumnToColumn(from int, to int) {
 	}
 
 	if validIndex == -1 {
-		fmt.Println("Invalid Move. No valid cards to move.")
-		return
+		return errors.New("invalid move - no valid cards to move")
 	}
 
 	// remove the cards from the from column that were added to the to column
@@ -172,27 +212,42 @@ func (g *Game) MoveFromColumnToColumn(from int, to int) {
 	}
 
 	// add all card from the king or the valid next card to the end of the from column to the to column
-
+	return nil
 }
 
-func (g *Game) pruneColumn(column int, index int) []deck.Card {
-	removed := g.Board[column][index:]
-	g.Board[column] = g.Board[column][:index]
-	return removed
-}
+func (g Game) DeepCopy() Game {
+	newState := Game{}
 
-func (g Game) getCurrentCard() deck.Card {
-	return g.Cards[g.CurrentCardIndex]
-}
-
-func CheckMove(card deck.Card, toCard deck.Card) bool {
-	if card.Value == toCard.Value-1 && card.Color != toCard.Color {
-		return true
-	} else if card.Value == 13 && toCard.Value == 0 {
-		return true
+	// Deep Copy Board (assuming board.Board is [][]deck.Card)
+	newState.Board = make(board.Board, len(g.Board))
+	for i, row := range g.Board {
+			newState.Board[i] = make([]deck.Card, len(row))
+			copy(newState.Board[i], row)
 	}
-	return false
+
+	// Deep Copy Cards
+	newState.Cards = make(deck.Cards, len(g.Cards))
+	copy(newState.Cards, g.Cards)
+
+	// Deep Copy Stacks (assuming stacks.Stacks is [][]deck.Card)
+	newState.Stacks = make(stacks.Stacks, len(g.Stacks))
+	for i, suitStack := range g.Stacks {
+			newState.Stacks[i] = make([]deck.Card, len(suitStack))
+			copy(newState.Stacks[i], suitStack)
+	}
+
+	newState.CurrentCardIndex = g.CurrentCardIndex
+
+	return newState
 }
+
+func (g *Game) SetState(gameState Game) {
+	g.Cards = gameState.Cards
+	g.Board = gameState.Board
+	g.Stacks = gameState.Stacks
+	g.CurrentCardIndex = gameState.CurrentCardIndex
+}
+
 
 // func GetLastCard(column []deck.Card) (int, deck.Card) {
 // 	// turn an array into a slice so it's the right type.
@@ -215,12 +270,14 @@ func CheckMove(card deck.Card, toCard deck.Card) bool {
 
 // take the current deck card and return columns that are possible moves
 // for the user the columns are 1 indexed instead of 0 indexed.
+
+
 func (g Game) GetDeckMoves() []int {
 	currentCard := g.getCurrentCard()
 	moves := []int{}
 	for index, _ := range g.Board {
 		_, lastCard := g.Board.GetLastCard(index)
-		if CheckMove(currentCard, lastCard) {
+		if checkMove(currentCard, lastCard) {
 			moves = append(moves, index)
 		}
 	}
