@@ -1,6 +1,7 @@
 package stacks
 
 import (
+	"fmt"
 	"solitaire/deck"
 	"testing"
 )
@@ -64,33 +65,35 @@ func TestIsEqual(t *testing.T) {
 	if equals1 {
 		t.Error("stacks should not match")
 	}
-	stack2[1] = append(stack1[1], card1)
+	stack2[1] = append(stack2[1], card1)
 	equals2 := stack1.IsEqual(stack2)
 	if equals2 {
 		t.Error("stacks should not match")
 	}
-	stack2[1] = append(stack1[1], card2)
+	stack2[1] = append(stack2[1], card2)
 	equals3 := stack1.IsEqual(stack2)
 	if equals3 {
 		t.Error("stacks should not match")
 	}
-	stack2[0] = append(stack1[0], card3)
+	stack2[0] = append(stack2[0], card3)
 	equals4 := stack1.IsEqual(stack2)
 	if equals4 {
 		t.Error("stacks should not match")
 	}
-	stack2[3] = append(stack1[3], card4)
+	stack2[3] = append(stack2[3], card4)
 	equals5 := stack1.IsEqual(stack2)
 	if equals5 {
 		t.Error("stacks should not match")
 	}
-	stack2[3] = append(stack1[3], card5)
+	stack2[3] = append(stack2[3], card5)
 	equals6 := stack1.IsEqual(stack2)
 	if equals6 {
 		t.Error("stacks should not match")
 	}
-	stack2[3] = append(stack1[3], card6)
+	stack2[3] = append(stack2[3], card6)
 	equals7 := stack1.IsEqual(stack2)
+	fmt.Println(stack1)
+	fmt.Println(stack2)
 	stack1.Display()
 	stack2.Display()
 	if !equals7 {

@@ -13,7 +13,7 @@ import (
 func main() {
 	game := game.NewGame()
 	gameStates := gamestates.NewGameStates()
-	// game.Cards.RandomShuffle()
+	game.Cards.RandomShuffle()
 	game.DealBoard()
 	gameStates.SaveState(game)
 	game.Display()
