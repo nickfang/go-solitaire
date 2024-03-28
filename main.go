@@ -28,7 +28,11 @@ func main() {
 				break
 			}
 			if input == "n" {
-				game.NextDeckCard()
+				nextErr := game.NextDeckCard()
+				if nextErr != nil {
+					fmt.Println(nextErr.Error())
+					continue
+				}
 				game.Display()
 				gameStates.SaveState(game)
 				continue

@@ -56,11 +56,6 @@ func (g *Game) Reset() {
 }
 
 func (g1 Game) IsEqual(g2 Game) bool {
-
-	fmt.Printf("Cards: %v\n", g1.Cards.IsEqual(g2.Cards))
-	fmt.Printf("Stacks: %v\n", g1.Stacks.IsEqual(g2.Stacks))
-	fmt.Printf("Board: %v\n", g1.Board.IsEqual(g2.Board))
-	fmt.Printf("Index: %v\n", g1.CurrentCardIndex == g2.CurrentCardIndex)
 	if g1.Cards.IsEqual(g2.Cards) &&
 		g1.Stacks.IsEqual(g2.Stacks) &&
 		g1.Board.IsEqual(g2.Board) &&
@@ -108,6 +103,9 @@ func (g *Game) DealBoard() {
 }
 
 func (g *Game) NextDeckCard() error {
+	if len(g.Cards) == 0 {
+		return errors.New("no more cards in the deck")
+	}
 	g.Cards[g.CurrentCardIndex].Shown = false
 	if g.CurrentCardIndex + 3 > len(g.Cards) - 1 {
 		g.CurrentCardIndex = 0
