@@ -24,6 +24,8 @@ type Card struct {
 
 type Cards []Card
 
+const DeckSize = 52
+
 func getCardDisplay(value int, suit string) (string, error) {
 	if value < 1 || value > 13 {
 		return "", fmt.Errorf("invalid value: %d", value)
@@ -147,11 +149,12 @@ func (c Card) Display() {
 }
 
 func (c Card) Print() {
-	fmt.Printf("[V: %d, S: %s, C: %s]", c.Value, c.Suit, c.Color)
+	fmt.Printf("[V: %d, S: %s, C: %s]", c.Value, c.Suit[:1], c.Color[:1])
 }
 
 func (d Cards) Print() {
 	for _, card := range d {
 		card.Print()
 	}
+	fmt.Println()
 }

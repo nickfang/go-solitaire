@@ -20,6 +20,7 @@ type Game struct {
 	Debug            bool
 }
 
+const NumCards = 52
 const NumColumns = 7
 
 func checkMove(card deck.Card, toCard deck.Card) bool {
@@ -355,4 +356,15 @@ func (g Game) DisplayHints() {
 	deckMoves := g.GetDeckHints()
 	stackMoves := g.GetStackHints()
 	fmt.Println("Moves:", append(deckMoves, stackMoves...))
+}
+
+func (g Game) Print() {
+	fmt.Println("Stacks:")
+	g.Stacks.Display()
+	fmt.Println("Board:")
+	g.Board.Print()
+	fmt.Println("Deck:")
+	g.Cards.Print()
+	fmt.Printf("Current Card Index: %d", g.CurrentCardIndex)
+	fmt.Println()
 }
