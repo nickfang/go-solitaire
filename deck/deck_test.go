@@ -177,8 +177,8 @@ func TestNewDeck(t *testing.T) {
 
 func TestRemoveCard(t *testing.T) {
 	deck := NewDeck()
-	card := deck.RemoveCard(0)
-	if len(card) != 51 {
+	deck.RemoveCard(0)
+	if len(deck) != 51 {
 		t.Error("Only 1 card should be removed.")
 	}
 }

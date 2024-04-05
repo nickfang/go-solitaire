@@ -12,6 +12,7 @@ import (
 
 func main() {
 	game := game.NewGame()
+	game.SetDebug(false)
 	gameStates := gamestates.NewGameStates()
 	game.Cards.RandomShuffle()
 	game.DealBoard()

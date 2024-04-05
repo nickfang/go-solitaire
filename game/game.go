@@ -33,6 +33,7 @@ func checkMove(card deck.Card, toCard deck.Card) bool {
 }
 
 func (g Game) getCurrentCard() deck.Card {
+
 	return g.Cards[g.CurrentCardIndex]
 }
 
@@ -57,10 +58,17 @@ func (g *Game) Reset() {
 }
 
 func (g1 Game) IsEqual(g2 Game) bool {
-	if g1.Cards.IsEqual(g2.Cards) &&
-		g1.Stacks.IsEqual(g2.Stacks) &&
-		g1.Board.IsEqual(g2.Board) &&
-		g1.CurrentCardIndex == g2.CurrentCardIndex {
+	equalCards := g1.Cards.IsEqual(g2.Cards)
+	equalStacks := g1.Stacks.IsEqual(g2.Stacks)
+	equalBoard :=	g1.Board.IsEqual(g2.Board)
+	equalCurrentCardIndex := 	g1.CurrentCardIndex == g2.CurrentCardIndex
+	if g1.Debug {
+		fmt.Printf("cards: %v\n", equalCards)
+		fmt.Printf("stacks: %v\n", equalStacks)
+		fmt.Printf("board: %v\n", equalBoard)
+		fmt.Printf("index: %v\n", equalCurrentCardIndex)
+	}
+	if equalCards && equalStacks && equalBoard && equalCurrentCardIndex {
 			return true
 	}
 	return false
@@ -118,14 +126,14 @@ func (g *Game) NextDeckCard() error {
 }
 
 // move the current card from the deck to a column
-func (g *Game) MoveFromDeckToBoard(column int) error{
+func (g *Game) MoveFromDeckToBoard(column int) error {
 	moves := g.GetDeckMoves()
 	if !slices.Contains(moves, column) {
 		return errors.New("invalid move")
 	}
 	g.Cards[g.CurrentCardIndex].Shown = true
 	g.Board[column] = append(g.Board[column], g.Cards[g.CurrentCardIndex])
-	g.Cards = g.Cards.RemoveCard(g.CurrentCardIndex)
+	g.Cards.RemoveCard(g.CurrentCardIndex)
 	if g.CurrentCardIndex > 0 {
 		g.CurrentCardIndex = g.CurrentCardIndex - 1
 	}
@@ -133,15 +141,13 @@ func (g *Game) MoveFromDeckToBoard(column int) error{
 }
 
 func (g *Game) MoveFromDeckToStacks() error {
-
-	currentCard := g.Cards[g.CurrentCardIndex]
-	suitIndex, validMove := g.GetStackMoves(currentCard)
+	suitIndex, validMove := g.GetStackMoves(g.Cards[g.CurrentCardIndex])
 	if !validMove {
 		return errors.New("invalid move")
 	}
-	currentCard.Shown = true
-	g.Stacks[suitIndex] = append(g.Stacks[suitIndex], currentCard)
-	g.Cards = g.Cards.RemoveCard(g.CurrentCardIndex)
+	movedCard := g.Cards.RemoveCard(g.CurrentCardIndex)
+	movedCard.Shown = true
+	g.Stacks[suitIndex] = append(g.Stacks[suitIndex], movedCard)
 	if g.CurrentCardIndex > 0 {
 		g.CurrentCardIndex = g.CurrentCardIndex - 1
 	}

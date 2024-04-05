@@ -1,6 +1,7 @@
 package game
 
 import (
+	"solitaire/testutils"
 	"testing"
 )
 
@@ -56,39 +57,41 @@ func TextCheckMove(t *testing.T) {
 
 }
 
+
+
 func TestDeepCopy(t *testing.T) {
 	game := NewGame()
 	gameShallow := game
 	gameDeep := game.DeepCopy()
 
 	// Checking each part of the game Cards, Board, Stacks and CurrentCardIndex
-	game.MoveFromDeckToStacks()
-	game.Display()
-	gameShallow.Display()
-	gameDeep.Display()
-	if !game.IsEqual(gameShallow) {
-		t.Error("Shallow copy should be updated when original is updated.")
+	testutils.AssertNoError(t, game.MoveFromDeckToStacks(), "MoveFromDeckToStacks")
+	if !game.Cards[0].IsEqual(gameShallow.Cards[0]) {
+		t.Error("Shallow copies behave unexpectedly.  If you need to make a copy of game, use deep copy.")
 	}
 	if game.IsEqual(gameDeep) {
 		t.Error("Deep copy should not be updated when original is updated.")
 	}
-	game.Cards.RandomShuffle()
-	if !game.IsEqual(gameShallow) {
-		t.Error("Shallow copy should be updated when original is updated.")
+
+	testutils.AssertNoError(t, game.Cards.RandomShuffle(), "RandomShuffle")
+	if game.Cards.IsEqual(gameShallow.Cards) {
+		t.Error("Shallow copies behave unexpectedly.  If you need to make a copy of game, use deep copy.")
 	}
 	if game.IsEqual(gameDeep) {
 		t.Error("Deep copy should not be updated when original is updated.")
 	}
+
 	game.DealBoard()
-	if !game.IsEqual(gameShallow) {
-		t.Error("Shallow copy should be updated when original is updated.")
+	if game.IsEqual(gameShallow) {
+		t.Error("Shallow copies behave unexpectedly.  If you need to make a copy of game, use deep copy.")
 	}
 	if game.IsEqual(gameDeep) {
 		t.Error("Deep copy should not be updated when original is updated.")
 	}
-	game.NextDeckCard()
-	if !game.IsEqual(gameShallow) {
-		t.Error("Shallow copy should be updated when original is updated.")
+
+	testutils.AssertNoError(t, game.NextDeckCard(), "NextDeckCard")
+	if game.IsEqual(gameShallow) {
+		t.Error("Shallow copies behave unexpectedly.  If you need to make a copy of game, use deep copy.")
 	}
 	if game.IsEqual(gameDeep) {
 		t.Error("Deep copy should not be updated when original is updated.")

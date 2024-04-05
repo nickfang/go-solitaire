@@ -1,6 +1,7 @@
 package deck
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"time"
@@ -52,10 +53,12 @@ func (d1 Cards) IsEqual(d2 Cards) bool {
 		return true
 	}
 	if len(d1) != len(d2) {
+		fmt.Println("lengths not equal", len(d1), len(d2))
 		return false
 	}
 	for i := range d1 {
 		if !d1[i].IsEqual(d2[i]) {
+			fmt.Println("card not equal at index", i, d1[i], d2[i])
 			return false
 		}
 	}
@@ -98,29 +101,33 @@ func NewDeck() Cards {
 	return deck
 }
 
-func (d Cards) RemoveCard(cardIndex int) Cards {
-	deck1 := d[:cardIndex]
-	deck2 := d[cardIndex+1:]
-	newDeck := append(deck1, deck2...)
-	return newDeck
+func (d *Cards) RemoveCard(cardIndex int) Card {
+	length := len(*d)
+	fmt.Println(length)
+	card := (*d)[cardIndex]
+	*d = append((*d)[:cardIndex], (*d)[cardIndex+1:length]...)
+	return  card
 }
 
-func (d Cards) RandomShuffle() {
-	// todo: implement shuffle like hand shuffle
+func (d *Cards) RandomShuffle() error {
+	if d == nil {
+		return errors.New("deck object required to shuffle cards")
+	}
 	source := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(source)
-	for i := range d {
-		newPosition := r.Intn(len(d) - 1)
-		d[i], d[newPosition] = d[newPosition], d[i]
+	for i := range *d {
+		newPosition := r.Intn(len(*d) - 1)
+		(*d)[i], (*d)[newPosition] = (*d)[newPosition], (*d)[i]
 	}
+	return nil
 }
 
-func (d Cards) PerfectShuffle() {
-	half1 := [26]Card(d[:len(d)/2])
-	half2 := [26]Card(d[len(d)/2:])
-	for i := 0; i < (len(d) / 2); i++ {
-		d[i*2] = half1[i]
-		d[(i*2)+1] = half2[i]
+func (d *Cards) PerfectShuffle() {
+	half1 := [26]Card((*d)[:len(*d)/2])
+	half2 := [26]Card((*d)[len(*d)/2:])
+	for i := 0; i < (len(*d) / 2); i++ {
+		(*d)[i*2] = half1[i]
+		(*d)[(i*2)+1] = half2[i]
 	}
 }
 
@@ -149,7 +156,7 @@ func (c Card) Display() {
 }
 
 func (c Card) Print() {
-	fmt.Printf("[V: %d, S: %s, C: %s]", c.Value, c.Suit[:1], c.Color[:1])
+	fmt.Printf("[%d, %s, %s]", c.Value, c.Suit[:1], c.Color[:1])
 }
 
 func (d Cards) Print() {
