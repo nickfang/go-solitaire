@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"errors"
 
-	"solitaire/board"
-	"solitaire/deck"
-	"solitaire/stacks"
+	"solitaire/game/board"
+	"solitaire/game/deck"
+	"solitaire/game/stacks"
 
 	"golang.org/x/exp/slices"
 )

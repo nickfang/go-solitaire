@@ -2,7 +2,7 @@ package board
 
 import (
 	"fmt"
-	"solitaire/deck"
+	"solitaire/game/deck"
 )
 
 type Board [][]deck.Card
