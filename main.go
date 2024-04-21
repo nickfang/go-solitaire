@@ -5,6 +5,8 @@ import (
 	"html/template"
 	"net/http"
 	"solitaire/game"
+	// "solitaire/gamemanagerapi"
+	"solitaire/handlers"
 )
 
 var currentGame *game.Game
@@ -40,5 +42,6 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/", gameHandler)
+	http.HandleFunc("/solitaire/new", handlers.CreateGameHandler)
 	http.ListenAndServe(":8888", nil)
 }
