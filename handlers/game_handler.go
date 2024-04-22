@@ -11,6 +11,13 @@ import (
 
 var currentGame *game.Game
 
+func LogRequest(r *http.Request) {
+	log.Info().
+		Str("method", r.Method).
+		Str("url", r.URL.Path).
+		Msg("Request received")
+}
+
 func GameHandler(w http.ResponseWriter, r *http.Request) {
 	log.Info().
         Str("method", r.Method).

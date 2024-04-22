@@ -5,16 +5,12 @@ import (
 	"io"
 	"net/http"
 	"encoding/json"
-	"github.com/rs/zerolog/log"
 
 	"solitaire/game"
 )
 
 func CreateHandler(w http.ResponseWriter, r *http.Request) {
-	log.Info().
-		Str("method", r.Method).
-		Str("url", r.URL.Path).
-		Msg("Request received")
+	LogRequest(r)
 	if r.Method != "POST" {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
