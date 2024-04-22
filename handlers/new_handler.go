@@ -1,15 +1,20 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"encoding/json"
+	"github.com/rs/zerolog/log"
 
 	"solitaire/game"
 )
 
-func CreateGameHandler(w http.ResponseWriter, r *http.Request) {
+func CreateHandler(w http.ResponseWriter, r *http.Request) {
+	log.Info().
+		Str("method", r.Method).
+		Str("url", r.URL.Path).
+		Msg("Request received")
 	if r.Method != "POST" {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -20,6 +25,8 @@ func CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Error decoding game data", http.StatusBadRequest)
 			return
 	}
+	fmt.Println("Body:")
+	fmt.Println(body)
 
 	newGame := game.NewGame()
 	w.Header().Set("Content-Type", "application/json")
@@ -27,8 +34,6 @@ func CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func postHandler(w http.ResponseWriter, r *http.Request) {
-
-
     // Read the request body
     requestBody, err := io.ReadAll(r.Body)
     if err != nil {
