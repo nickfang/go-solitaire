@@ -18,11 +18,15 @@ func LogRequest(r *http.Request) {
 		Msg("Request received")
 }
 
-func GameHandler(w http.ResponseWriter, r *http.Request) {
+func LogResponse(w http.ResponseWriter) {
+	// TODO: Handle different status and errors
 	log.Info().
-        Str("method", r.Method).
-        Str("url", r.URL.Path).
-        Msg("Request received")
+		Int("status", 200).
+		Msg("Move completed successfully")
+}
+
+func GameHandler(w http.ResponseWriter, r *http.Request) {
+	LogRequest(r)
 	if r.URL.Path != "/solitaire" {
 		http.NotFound(w, r)
 		return
@@ -43,3 +47,4 @@ func GameHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not supported", http.StatusMethodNotAllowed)
 	}
 }
+
