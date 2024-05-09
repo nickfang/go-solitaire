@@ -1,7 +1,7 @@
 package board
 
 import (
-	"solitaire/deck"
+	"solitaire/game/deck"
 	"testing"
 )
 

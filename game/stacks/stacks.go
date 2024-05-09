@@ -2,7 +2,7 @@ package stacks
 
 import (
 	"fmt"
-	"solitaire/deck"
+	"solitaire/game/deck"
 )
 
 // Stacks are where cards are put starting with aces.
