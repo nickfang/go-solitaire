@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
-	"encoding/json"
 
 	"solitaire/game"
+	"solitaire/game/gamestates"
+	"solitaire/solitairestore"
 )
 
 func CreateHandler(w http.ResponseWriter, r *http.Request) {
@@ -15,16 +17,22 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	var body interface{}
-	err := json.NewDecoder(r.Body).Decode(&body)
-	if err != nil {
-			http.Error(w, "Error decoding game data", http.StatusBadRequest)
-			return
-	}
-	fmt.Println("Body:")
-	fmt.Println(body)
+	// var body interface{}
+	// err := json.NewDecoder(r.Body).Decode(&body)
+	// if err != nil {
+	// 		http.Error(w, "Error decoding game data", http.StatusBadRequest)
+	// 		return
+	// }
+	// fmt.Println("Body:")
+	// fmt.Println(body)
 
 	newGame := game.NewGame()
+	newGameStates := gamestates.NewGameStates()
+	id, err := solitairestore.New().SaveGame(newGame, newGameStates)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	fmt.Println("Game ID: ", id)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(newGame)
 }

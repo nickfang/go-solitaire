@@ -1,15 +1,27 @@
 package handlers
 
 import (
-	"net/http"
-	"html/template"
 	"encoding/json"
+	"html/template"
+	"net/http"
+
 	"github.com/rs/zerolog/log"
 
 	"solitaire/game"
+	"solitaire/game/gamestates"
 )
 
 var currentGame *game.Game
+
+type ResponseData struct {
+	Message string `json:"message"`
+	Data 		any		 `json:"data"`
+}
+
+type GameData struct {
+	Game game.Game `json:"game.Game"`
+	GameStates gamestates.GameStates `json:"gameStates"`
+}
 
 func LogRequest(r *http.Request) {
 	log.Info().

@@ -23,3 +23,5 @@ go.work
 
 #other
 .DS_Store
+
+/gameinstances
