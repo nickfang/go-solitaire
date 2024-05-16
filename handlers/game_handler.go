@@ -18,9 +18,37 @@ type ResponseData struct {
 	Data 		any		 `json:"data"`
 }
 
-type GameData struct {
-	Game game.Game `json:"game.Game"`
-	GameStates gamestates.GameStates `json:"gameStates"`
+type DeckUser struct {
+	Card string `json:"card"`
+	NumBeforeCard int `json:"numBeforeCard"`
+	NumAfterCard int `json:"numAfterCard"`
+}
+type StacksUser struct {
+	Spades string `json:"spades"`
+	Hearts string `json:"hearts"`
+	Clubs string `json:"clubs"`
+	Diamonds string `json:"diamonds"`
+}
+type BoardUser struct {
+	Column1Cards []string `json:"column1Cards"`
+	Column1NumHidden int `json:"column1NumHidden"`
+	Column2Cards []string `json:"column2Cards"`
+	Column2NumHidden int `json:"column2NumHidden"`
+	Column3Cards []string `json:"column3Cards"`
+	Column3NumHidden int `json:"column3NumHidden"`
+	Column4Cards []string `json:"column4Cards"`
+	Column4NumHidden int `json:"column4NumHidden"`
+	Column5Cards []string `json:"column5Cards"`
+	Column5NumHidden int `json:"column5NumHidden"`
+	Column6Cards []string `json:"column6Cards"`
+	Column6NumHidden int `json:"column6NumHidden"`
+	Column7Cards []string `json:"column7Cards"`
+	Column7NumHidden int `json:"column7NumHidden"`
+}
+type GameUser struct {
+	Deck DeckUser
+	Stacks StacksUser
+	Board BoardUser
 }
 
 func LogRequest(r *http.Request) {
