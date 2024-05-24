@@ -60,7 +60,7 @@ func TestGetUserResponse(t *testing.T) {
 
 	for i := 0; i < 7; i++ {
 		for j := 0; j < 7; j++ {
-			b[i] = append(b[i], d[i + (j*7)])
+			b[i] = append(b[i], d[i+(j*7)])
 			if j > i {
 				b[i][j].Shown = true
 			}

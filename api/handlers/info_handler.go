@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"solitaire/solitairestore"
+	"solitaire/api/solitairestore"
 )
 
 func InfoHandler(w http.ResponseWriter, r *http.Request) {
