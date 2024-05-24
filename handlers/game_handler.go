@@ -8,7 +8,9 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"solitaire/game"
-	"solitaire/game/gamestates"
+	"solitaire/game/deck"
+	"solitaire/game/stacks"
+	// "solitaire/game/gamestates"
 )
 
 var currentGame *game.Game
@@ -19,15 +21,12 @@ type ResponseData struct {
 }
 
 type DeckUser struct {
-	Card string `json:"card"`
+	Card deck.Card `json:"card"`
 	NumBeforeCard int `json:"numBeforeCard"`
 	NumAfterCard int `json:"numAfterCard"`
 }
 type StacksUser struct {
-	Spades string `json:"spades"`
-	Hearts string `json:"hearts"`
-	Clubs string `json:"clubs"`
-	Diamonds string `json:"diamonds"`
+	Stacks stacks.Stacks `json:"topStackCards"`
 }
 type BoardUser struct {
 	Column1Cards []string `json:"column1Cards"`

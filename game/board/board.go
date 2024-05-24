@@ -61,6 +61,27 @@ func (b Board) GetLastCard(column int) (int, deck.Card) {
 	return lastIndex, lastCard
 }
 
+func (b Board) GetUserResponse() ([][]string, []int) {
+	columnCards := make([][]string, 7)
+	columnNumHidden := make([]int, 7)
+	for i, column := range b {
+		columnCards[i] = []string{}
+		numCards := len(column)
+		if numCards == 0 {
+			continue
+		}
+		for _, cell := range column {
+			if !cell.Shown {
+				columnNumHidden[i] += 1
+				continue
+			}
+			columnCards[i] = append(columnCards[i], cell.DisplayMini)
+		}
+	}
+	return columnCards, columnNumHidden
+
+}
+
 func (b Board) Display() {
 	displayBoard := [7][19]deck.Card{}
 	maxLen := 0 // add a space so the board isn't cramped with the deck.
