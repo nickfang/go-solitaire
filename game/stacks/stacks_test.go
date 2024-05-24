@@ -116,6 +116,16 @@ func TestGetTopCard(t *testing.T) {
 	stack.MoveToStack(card5)
 	fmt.Println(stack)
 	stacks := stack.GetTopCards()
-	stacks.Display()
-	t.Error("in progress")
+	if stacks[0][0] != card2 {
+		t.Error("top spades should be an ace")
+	}
+	if stacks[1][0] != card1 {
+		t.Error("top hearts should be an ace")
+	}
+	if len(stacks[2]) != 0 {
+		t.Error("there should be no top club card")
+	}
+	if stacks[3][0] != card5 {
+		t.Error("top diamonds should be an ace")
+	}
 }
