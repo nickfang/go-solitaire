@@ -61,6 +61,24 @@ func (s *Stacks) MoveToStack(card deck.Card) {
 	(*s)[suitIndex] = append((*s)[suitIndex], card)
 }
 
+func (s Stacks) GetTopCards() Stacks {
+	// handle error if index is > 3
+	// maybe find a better way to figure out which stack they are trying to access
+	stackTops := NewStacks()
+
+	for i, stack := range s {
+		if len(stack) == 0 {
+
+			continue
+		}
+		fmt.Println("test:", stack)
+		index := len(stack) -1
+		fmt.Println("index", index)
+		stackTops[i] = stack[index]
+	}
+	return stackTops
+}
+
 func (s Stacks) Display() {
 	fmt.Print("     [")
 	for _, stack := range s {

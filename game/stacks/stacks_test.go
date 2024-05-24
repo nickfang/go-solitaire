@@ -54,12 +54,12 @@ func TestIsEqual(t *testing.T) {
 	card4, _ := deck.NewCard(1, "Diamonds", true)
 	card5, _ := deck.NewCard(2, "Diamonds", true)
 	card6, _ := deck.NewCard(3, "Diamonds", true)
-	stack1[1] = append(stack1[1], card1)
-	stack1[1] = append(stack1[1], card2)
-	stack1[0] = append(stack1[0], card3)
-	stack1[3] = append(stack1[3], card4)
-	stack1[3] = append(stack1[3], card5)
-	stack1[3] = append(stack1[3], card6)
+	stack1.MoveToStack(card1)
+	stack1.MoveToStack(card2)
+	stack1.MoveToStack(card3)
+	stack1.MoveToStack(card4)
+	stack1.MoveToStack(card5)
+	stack1.MoveToStack(card6)
 
 	equals1 := stack1.IsEqual(stack2)
 	if equals1 {
@@ -99,4 +99,23 @@ func TestIsEqual(t *testing.T) {
 	if !equals7 {
 		t.Error("stacks should match")
 	}
+}
+
+func TestGetTopCard(t *testing.T) {
+	stack := NewStacks()
+	card1, _ := deck.NewCard(1, "Hearts", true)
+	card2, _ := deck.NewCard(1, "Spades", true)
+	card3, _ := deck.NewCard(1, "Diamonds", true)
+	card4, _ := deck.NewCard(2, "Diamonds", true)
+	card5, _ := deck.NewCard(3, "Diamonds", true)
+
+	stack.MoveToStack(card1)
+	stack.MoveToStack(card2)
+	stack.MoveToStack(card3)
+	stack.MoveToStack(card4)
+	stack.MoveToStack(card5)
+	fmt.Println(stack)
+	stacks := stack.GetTopCards()
+	stacks.Display()
+	t.Error("in progress")
 }

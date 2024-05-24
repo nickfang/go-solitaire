@@ -31,7 +31,17 @@ func InfoHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	gameResponse := ResponseData{"Game found.", GameData{game, gamestates}}
+	gameUser := GameUser{
+		DeckUser{
+			game.Cards[game.CurrentCardIndex],
+			game.CurrentCardIndex,
+			len(game.Cards) - game.CurrentCardIndex,
+		},
+		StacksUser{
+			game.Stacks
+		}
+	}
+	gameResponse := ResponseData{"Game found.", GameUser{game, gamestates}}
 	fmt.Println(gameResponse)
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(gameResponse)
