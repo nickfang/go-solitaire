@@ -1,10 +1,10 @@
 package solitairestore
 
 import (
-	"fmt"
 	"encoding/json"
-	"os"
 	"errors"
+	"fmt"
+	"os"
 
 	"solitaire/game"
 	"solitaire/game/gamestates"
@@ -12,7 +12,7 @@ import (
 	"github.com/rs/xid"
 )
 
-type fileStore struct {}
+type fileStore struct{}
 
 func (fs *fileStore) SaveGame(currentGameState game.Game, previousGameStates gamestates.GameStates) (string, error) {
 	// Generate a random identifier for the game

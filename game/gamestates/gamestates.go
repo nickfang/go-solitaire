@@ -31,8 +31,6 @@ func (s *GameStates) Reset() {
 	s.States = s.States[:0]
 }
 
-
-
 func (s *GameStates) SaveState(state game.Game) {
 	newState := state.DeepCopy()
 	s.push(newState)
@@ -40,7 +38,7 @@ func (s *GameStates) SaveState(state game.Game) {
 
 func (s *GameStates) Undo() game.Game {
 	numStates := len(s.States)
-	if (numStates <= 1) {
+	if numStates <= 1 {
 		return s.States[0]
 	}
 	s.pop()

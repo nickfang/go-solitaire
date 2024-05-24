@@ -40,9 +40,7 @@ func InfoHandler(w http.ResponseWriter, r *http.Request) {
 		StacksUser{
 			game.Stacks.GetTopCards(),
 		},
-		BoardUser{
-
-		},
+		BoardUser{},
 	}
 	gameResponse := ResponseData{"Game found.", GameUser{gameUser, gamestates}}
 	fmt.Println(gameResponse)

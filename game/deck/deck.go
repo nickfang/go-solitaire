@@ -106,7 +106,7 @@ func (d *Cards) RemoveCard(cardIndex int) Card {
 	fmt.Println(length)
 	card := (*d)[cardIndex]
 	*d = append((*d)[:cardIndex], (*d)[cardIndex+1:length]...)
-	return  card
+	return card
 }
 
 func (d *Cards) RandomShuffle() error {

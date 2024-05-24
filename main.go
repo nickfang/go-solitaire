@@ -2,11 +2,11 @@ package main
 
 import (
 	"net/http"
+
 	"github.com/rs/zerolog"
 
 	"solitaire/api"
 )
-
 
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix

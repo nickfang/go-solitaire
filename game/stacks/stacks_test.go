@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-
 func TestNewStacks(t *testing.T) {
 	s := NewStacks()
 	if len(s) != 4 {

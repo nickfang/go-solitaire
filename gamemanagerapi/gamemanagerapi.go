@@ -2,15 +2,14 @@ package gamemanagerapi
 
 import (
 	"fmt"
-	"strings"
 	"strconv"
+	"strings"
 
 	"solitaire/game"
 	"solitaire/game/gamestates"
 
 	"golang.org/x/exp/slices"
 )
-
 
 func CreateGame() (game.Game, gamestates.GameStates) {
 	game := game.NewGame()
@@ -114,4 +113,3 @@ func HandleMoves(game *game.Game, gameStates gamestates.GameStates) {
 		fmt.Println("Invalid Input.", input)
 	}
 }
-

@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"net/http"
 	"encoding/json"
+	"net/http"
 )
 
 func MoveHandler(w http.ResponseWriter, r *http.Request) {

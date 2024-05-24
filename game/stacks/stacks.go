@@ -22,7 +22,7 @@ func (stacks1 Stacks) IsEqual(stacks2 Stacks) bool {
 		if len(stack1) == 0 && len(stack2) == 0 {
 			continue
 		}
-		if (!stack1.IsEqual(stack2)) {
+		if !stack1.IsEqual(stack2) {
 			return false
 		}
 	}
@@ -54,7 +54,7 @@ func (s *Stacks) MoveToStack(card deck.Card) {
 			fmt.Printf("Only an ace can be moved to an empty stack.")
 			return
 		}
-	} else if ((*s)[suitIndex][len((*s)[suitIndex])-1].Value + 1 != card.Value) {
+	} else if (*s)[suitIndex][len((*s)[suitIndex])-1].Value+1 != card.Value {
 		fmt.Printf("No valid spots in the stack for this card.")
 		return
 	}
@@ -69,7 +69,7 @@ func (s Stacks) GetTopCards() Stacks {
 		if len(stack) == 0 {
 			continue
 		}
-		index := len(stack) -1
+		index := len(stack) - 1
 		stackTops[i] = append(stackTops[i], stack[index])
 	}
 	return stackTops

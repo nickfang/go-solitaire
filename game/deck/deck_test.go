@@ -98,7 +98,7 @@ func TestNewCard(t *testing.T) {
 	if err2 != nil {
 		t.Error("error while creating c1:", err2)
 	}
-	if  c2.Suit != "Hearts" || c2.Value != 13 || c2.Color != "Red" || c2.Shown != true {
+	if c2.Suit != "Hearts" || c2.Value != 13 || c2.Color != "Red" || c2.Shown != true {
 		t.Error("c2 not created correctly", c2)
 	}
 
@@ -236,4 +236,3 @@ func TestRandomShuffle(t *testing.T) {
 		t.Error("Card values do not sum up to the correct value.")
 	}
 }
-

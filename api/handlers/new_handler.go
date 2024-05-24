@@ -6,9 +6,9 @@ import (
 	"io"
 	"net/http"
 
+	"solitaire/api/solitairestore"
 	"solitaire/game"
 	"solitaire/game/gamestates"
-	"solitaire/solitairestore"
 )
 
 func CreateHandler(w http.ResponseWriter, r *http.Request) {
@@ -38,16 +38,16 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func postHandler(w http.ResponseWriter, r *http.Request) {
-    // Read the request body
-    requestBody, err := io.ReadAll(r.Body)
-    if err != nil {
-        http.Error(w, "Error reading request body", http.StatusInternalServerError)
-        return
-    }
+	// Read the request body
+	requestBody, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Error reading request body", http.StatusInternalServerError)
+		return
+	}
 
-    // Process the request body (replace this with your actual logic)
-    fmt.Println("Received POST data:", string(requestBody))
+	// Process the request body (replace this with your actual logic)
+	fmt.Println("Received POST data:", string(requestBody))
 
-    // Send a response
-    fmt.Fprint(w, "POST request received!")
+	// Send a response
+	fmt.Fprint(w, "POST request received!")
 }
