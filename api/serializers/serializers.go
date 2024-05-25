@@ -60,7 +60,7 @@ func SerializeDeck(d deck.Cards) *DeckResponse {
 func SerializeStacks(stacks stacks.Stacks) []StackResponse {
 	stackResponses := make([]StackResponse, len(stacks))
 	for i, stack := range stacks {
-		if stack != nil {
+		if len(stack) > 0 {
 			topCard := stack[len(stack)-1]
 			stackResponses[i] = StackResponse{
 				TopCard: &CardResponse{
