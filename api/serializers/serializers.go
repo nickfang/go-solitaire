@@ -46,20 +46,20 @@ type GameResponse struct {
 }
 
 // SerializeDeck creates a DeckResponse from a Deck
-func SerializeDeck(d deck.Cards) *DeckResponse {
+func SerializeDeck(deck deck.Cards, currentCardIndex int) *DeckResponse {
 	var currentCard *CardResponse
-	if len(d) > 0 { // Check if there are cards in the deck
+	if len(deck) > 0 { // Check if there are cards in the deck
 		currentCard = &CardResponse{
-			Value: d[0].Value, // Assuming you have a Rank field in your Card struct
-			Suit:  d[0].Suit,
+			Value: deck[currentCardIndex].Value,
+			Suit:  deck[currentCardIndex].Suit,
 		}
 	}
 	// Assuming CardsFlipped is managed in your deck logic, replace with your actual logic
-	cardsFlipped := 52 - len(d)
+	cardsFlipped := 52 - len(deck)
 	return &DeckResponse{
 		CurrentCard:    currentCard,
 		CardsFlipped:   cardsFlipped,
-		CardsRemaining: len(d),
+		CardsRemaining: len(deck),
 	}
 }
 
@@ -93,7 +93,7 @@ func SerializeBoard(board board.Board) *BoardResponse {
 		}
 		for _, card := range col {
 			if card.Value != -1 {
-				if card.Shown { // Assuming Shown is a field indicating if the card is visible
+				if card.Shown {
 					column.VisibleCards = append(column.VisibleCards, CardResponse{
 						Value: card.Value,
 						Suit:  card.Suit,
@@ -109,7 +109,7 @@ func SerializeBoard(board board.Board) *BoardResponse {
 }
 
 func SerializeGame(game game.Game) *GameResponse {
-	deckResponse := SerializeDeck(game.Cards)
+	deckResponse := SerializeDeck(game.Cards, game.CurrentCardIndex)
 	stackResponse := SerializeStacks(game.Stacks)
 	boardResponse := SerializeBoard(game.Board)
 
