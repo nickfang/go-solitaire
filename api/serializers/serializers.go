@@ -3,7 +3,10 @@ package serializers
 import (
 	"encoding/json"
 	"fmt"
-	"solitaire/game/deck" // Assuming this is your deck package
+
+	"solitaire/game/board"
+	"solitaire/game/deck"
+	"solitaire/game/stacks"
 )
 
 // DeckResponse represents the serialized data for the deck
@@ -15,7 +18,7 @@ type DeckResponse struct {
 
 // CardResponse represents the serialized data for a card
 type CardResponse struct {
-	Value string `json:"value"`
+	Value int    `json:"value"`
 	Suit  string `json:"suit"`
 }
 
@@ -36,32 +39,33 @@ type BoardResponse struct {
 }
 
 // SerializeDeck creates a DeckResponse from a Deck
-func SerializeDeck(d *deck.Deck) *DeckResponse {
+func SerializeDeck(d deck.Cards) *DeckResponse {
 	var currentCard *CardResponse
-	if len(d.Cards) > 0 { // Check if there are cards in the deck
+	if len(d) > 0 { // Check if there are cards in the deck
 		currentCard = &CardResponse{
-			Value: d.Cards[0].Rank, // Assuming you have a Rank field in your Card struct
-			Suit:  d.Cards[0].Suit,
+			Value: d[0].Value, // Assuming you have a Rank field in your Card struct
+			Suit:  d[0].Suit,
 		}
 	}
 	// Assuming CardsFlipped is managed in your deck logic, replace with your actual logic
-	cardsFlipped := 52 - len(d.Cards)
+	cardsFlipped := 52 - len(d)
 	return &DeckResponse{
 		CurrentCard:    currentCard,
 		CardsFlipped:   cardsFlipped,
-		CardsRemaining: len(d.Cards),
+		CardsRemaining: len(d),
 	}
 }
 
 // SerializeStacks creates an array of StackResponse from Stacks
-func SerializeStacks(stacks []*deck.Card) []StackResponse {
+func SerializeStacks(stacks stacks.Stacks) []StackResponse {
 	stackResponses := make([]StackResponse, len(stacks))
 	for i, stack := range stacks {
 		if stack != nil {
+			topCard := stack[len(stack)-1]
 			stackResponses[i] = StackResponse{
 				TopCard: &CardResponse{
-					Value: stack.Rank,
-					Suit:  stack.Suit,
+					Value: topCard.Value,
+					Suit:  topCard.Suit,
 				},
 			}
 		} else {
@@ -73,7 +77,7 @@ func SerializeStacks(stacks []*deck.Card) []StackResponse {
 }
 
 // SerializeBoard creates a BoardResponse from a Board
-func SerializeBoard(board [][]*deck.Card) *BoardResponse {
+func SerializeBoard(board board.Board) *BoardResponse {
 	columns := make([]ColumnResponse, len(board))
 	for i, col := range board {
 		column := ColumnResponse{
@@ -81,10 +85,10 @@ func SerializeBoard(board [][]*deck.Card) *BoardResponse {
 			VisibleCards: []CardResponse{},
 		}
 		for _, card := range col {
-			if card != nil {
+			if card.Value != -1 {
 				if card.Shown { // Assuming Shown is a field indicating if the card is visible
 					column.VisibleCards = append(column.VisibleCards, CardResponse{
-						Value: card.Rank,
+						Value: card.Value,
 						Suit:  card.Suit,
 					})
 				} else {
@@ -99,7 +103,9 @@ func SerializeBoard(board [][]*deck.Card) *BoardResponse {
 
 // Example usage
 func main() {
-	// ... (Assuming you have your deck, stacks, and board data)
+	deck := deck.NewDeck()
+	stacks := stacks.NewStacks()
+	board := board.NewBoard()
 
 	deckResponse := SerializeDeck(deck)
 	stackResponses := SerializeStacks(stacks)
