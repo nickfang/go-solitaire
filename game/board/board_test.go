@@ -1,7 +1,6 @@
 package board
 
 import (
-	"fmt"
 	"solitaire/game/deck"
 	"testing"
 )
@@ -52,25 +51,4 @@ func TestGetLastCard(t *testing.T) {
 	if card.Value != 1 {
 		t.Error("Card should be 1, but is ", card.Value)
 	}
-}
-
-func TestGetUserResponse(t *testing.T) {
-	d := deck.NewDeck()
-	b := NewBoard()
-
-	for i := 0; i < 7; i++ {
-		for j := 0; j < 7; j++ {
-			b[i] = append(b[i], d[i+(j*7)])
-			if j > i {
-				b[i][j].Shown = true
-			}
-		}
-	}
-	columnCards, numHidden := b.GetUserResponse()
-
-	for i, column := range columnCards {
-		fmt.Println(column)
-		fmt.Println(numHidden[i])
-	}
-	t.Error("in progress")
 }

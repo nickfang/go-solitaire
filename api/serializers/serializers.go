@@ -128,7 +128,7 @@ func main() {
 	stacks := stacks.NewStacks()
 	board := board.NewBoard()
 
-	deckResponse := SerializeDeck(deck)
+	deckResponse := SerializeDeck(deck, 0)
 	stackResponses := SerializeStacks(stacks)
 	boardResponse := SerializeBoard(board)
 

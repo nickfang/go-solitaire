@@ -10,7 +10,7 @@ import (
 func TestSerializeDeck(t *testing.T) {
 	// Test with an empty deck
 	emptyDeck := deck.Cards{}
-	emptyDeckResponse := SerializeDeck(emptyDeck)
+	emptyDeckResponse := SerializeDeck(emptyDeck, 0)
 
 	if emptyDeckResponse.CurrentCard != nil {
 		t.Error("Expected CurrentCard to be nil for empty deck")
@@ -24,7 +24,7 @@ func TestSerializeDeck(t *testing.T) {
 
 	// Test with a full deck
 	fullDeck := deck.NewDeck()
-	fullDeckResponse := SerializeDeck(fullDeck)
+	fullDeckResponse := SerializeDeck(fullDeck, 0)
 
 	if fullDeckResponse.CurrentCard.Value != fullDeck[0].Value || fullDeckResponse.CurrentCard.Suit != fullDeck[0].Suit {
 		t.Error("CurrentCard Value or Suit does not match expected values")
@@ -39,7 +39,7 @@ func TestSerializeDeck(t *testing.T) {
 	// Test with a partially flipped deck
 	partialDeck := deck.NewDeck()
 	partialDeck = partialDeck[10:] // Simulate 10 cards flipped
-	partialDeckResponse := SerializeDeck(partialDeck)
+	partialDeckResponse := SerializeDeck(partialDeck, 0)
 
 	if partialDeckResponse.CardsFlipped != 10 {
 		t.Error("Expected CardsFlipped to be 10")
@@ -137,3 +137,27 @@ func TestSerializeBoard(t *testing.T) {
 
 	// ... (Add more checks for other columns and scenarios)
 }
+
+// func TestSerializeBoard(t *testing.T) {
+// Making half the board hidden and making sure that the board is searlized correctly.
+// 	d := deck.NewDeck()
+// 	b := board.NewBoard()
+
+// 	for i := 0; i < 7; i++ {
+// 		for j := 0; j < 7; j++ {
+// 			b[i] = append(b[i], d[i+(j*7)])
+// 			if j > i {
+// 				b[i][j].Shown = true
+// 			}
+// 		}
+// 	}
+
+// 	SerializeGame()
+// 	columnCards, numHidden := b.GetUserResponse()
+
+// 	for i, column := range columnCards {
+// 		fmt.Println(column)
+// 		fmt.Println(numHidden[i])
+// 	}
+// 	t.Error("in progress")
+// }
