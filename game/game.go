@@ -1,9 +1,9 @@
 package game
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
-	"errors"
 
 	"solitaire/game/board"
 	"solitaire/game/deck"
@@ -43,7 +43,6 @@ func (g *Game) pruneColumn(column int, index int) []deck.Card {
 	return removed
 }
 
-
 /* Exported Functions */
 
 func NewGame() Game {
@@ -60,8 +59,8 @@ func (g *Game) Reset() {
 func (g1 Game) IsEqual(g2 Game) bool {
 	equalCards := g1.Cards.IsEqual(g2.Cards)
 	equalStacks := g1.Stacks.IsEqual(g2.Stacks)
-	equalBoard :=	g1.Board.IsEqual(g2.Board)
-	equalCurrentCardIndex := 	g1.CurrentCardIndex == g2.CurrentCardIndex
+	equalBoard := g1.Board.IsEqual(g2.Board)
+	equalCurrentCardIndex := g1.CurrentCardIndex == g2.CurrentCardIndex
 	if g1.Debug {
 		fmt.Printf("cards: %v\n", equalCards)
 		fmt.Printf("stacks: %v\n", equalStacks)
@@ -69,7 +68,7 @@ func (g1 Game) IsEqual(g2 Game) bool {
 		fmt.Printf("index: %v\n", equalCurrentCardIndex)
 	}
 	if equalCards && equalStacks && equalBoard && equalCurrentCardIndex {
-			return true
+		return true
 	}
 	return false
 }
@@ -116,7 +115,7 @@ func (g *Game) NextDeckCard() error {
 		return errors.New("no more cards in the deck")
 	}
 	g.Cards[g.CurrentCardIndex].Shown = false
-	if g.CurrentCardIndex + 3 > len(g.Cards) - 1 {
+	if g.CurrentCardIndex+3 > len(g.Cards)-1 {
 		g.CurrentCardIndex = 0
 	} else {
 		g.CurrentCardIndex += 3
@@ -226,8 +225,8 @@ func (g Game) DeepCopy() Game {
 	// Deep Copy Board (assuming board.Board is [][]deck.Card)
 	newState.Board = make(board.Board, len(g.Board))
 	for i, row := range g.Board {
-			newState.Board[i] = make([]deck.Card, len(row))
-			copy(newState.Board[i], row)
+		newState.Board[i] = make([]deck.Card, len(row))
+		copy(newState.Board[i], row)
 	}
 
 	// Deep Copy Cards
@@ -237,8 +236,8 @@ func (g Game) DeepCopy() Game {
 	// Deep Copy Stacks (assuming stacks.Stacks is [][]deck.Card)
 	newState.Stacks = make(stacks.Stacks, len(g.Stacks))
 	for i, suitStack := range g.Stacks {
-			newState.Stacks[i] = make([]deck.Card, len(suitStack))
-			copy(newState.Stacks[i], suitStack)
+		newState.Stacks[i] = make([]deck.Card, len(suitStack))
+		copy(newState.Stacks[i], suitStack)
 	}
 
 	newState.CurrentCardIndex = g.CurrentCardIndex
@@ -252,7 +251,6 @@ func (g *Game) SetState(gameState Game) {
 	g.Stacks = gameState.Stacks
 	g.CurrentCardIndex = gameState.CurrentCardIndex
 }
-
 
 // func GetLastCard(column []deck.Card) (int, deck.Card) {
 // 	// turn an array into a slice so it's the right type.
@@ -275,7 +273,6 @@ func (g *Game) SetState(gameState Game) {
 
 // take the current deck card and return columns that are possible moves
 // for the user the columns are 1 indexed instead of 0 indexed.
-
 
 func (g Game) GetDeckMoves() []int {
 	currentCard := g.getCurrentCard()

@@ -57,8 +57,6 @@ func TextCheckMove(t *testing.T) {
 
 }
 
-
-
 func TestDeepCopy(t *testing.T) {
 	game := NewGame()
 	gameShallow := game
