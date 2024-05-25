@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"solitaire/game"
 	"solitaire/game/board"
 	"solitaire/game/deck"
 	"solitaire/game/stacks"
@@ -36,6 +37,12 @@ type ColumnResponse struct {
 // BoardResponse represents the serialized data for the board
 type BoardResponse struct {
 	Columns []ColumnResponse `json:"columns"`
+}
+
+type GameResponse struct {
+	Deck   DeckResponse
+	Stacks []StackResponse
+	Board  BoardResponse
 }
 
 // SerializeDeck creates a DeckResponse from a Deck
@@ -99,6 +106,20 @@ func SerializeBoard(board board.Board) *BoardResponse {
 		columns[i] = column
 	}
 	return &BoardResponse{Columns: columns}
+}
+
+func SerializeGame(game game.Game) *GameResponse {
+	deckResponse := SerializeDeck(game.Cards)
+	stackResponse := SerializeStacks(game.Stacks)
+	boardResponse := SerializeBoard(game.Board)
+
+	gameResponse := GameResponse{
+		Deck:   *deckResponse,
+		Stacks: stackResponse,
+		Board:  *boardResponse,
+	}
+
+	return &gameResponse
 }
 
 // Example usage

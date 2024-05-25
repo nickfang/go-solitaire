@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"solitaire/api/serializers"
 	"solitaire/api/solitairestore"
 )
 
@@ -27,22 +28,12 @@ func InfoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	game, gamestates, err := solitairestore.New().LoadGame(gameId)
+	game, _, err := solitairestore.New().LoadGame(gameId)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	gameUser := GameUser{
-		DeckUser{
-			game.Cards[game.CurrentCardIndex],
-			game.CurrentCardIndex,
-			len(game.Cards) - game.CurrentCardIndex,
-		},
-		StacksUser{
-			game.Stacks.GetTopCards(),
-		},
-		BoardUser{},
-	}
-	gameResponse := ResponseData{"Game found.", GameUser{gameUser, gamestates}}
+	gameResponse := *serializers.SerializeGame(game)
+
 	fmt.Println(gameResponse)
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(gameResponse)
