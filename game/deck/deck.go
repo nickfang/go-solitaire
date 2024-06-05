@@ -90,6 +90,7 @@ func NewDeck() Cards {
 			card, cardErr := NewCard(value, suit, false)
 			if cardErr != nil {
 				fmt.Printf("new deck not created: %s", cardErr.Error())
+				return Cards{}
 			}
 			deck = append(
 				deck,
@@ -99,6 +100,38 @@ func NewDeck() Cards {
 	}
 
 	return deck
+}
+
+func NewTestingDeck() (Cards, error) {
+	deck := Cards{}
+	for i := 13; i >= 7; i-- {
+		for _, suit := range CardSuits {
+			card, cardErr := NewCard(i, suit, true)
+			if cardErr != nil {
+				return nil, fmt.Errorf("new deck not created: %s", cardErr.Error())
+			}
+			deck = append(deck, card)
+		}
+	}
+	for _, suit := range CardSuits {
+		for _, value := range []int{3, 2, 1, 6, 5, 4} {
+			card, cardErr := NewCard(value, suit, true)
+			if cardErr != nil {
+				return nil, fmt.Errorf("new deck not created: %s", cardErr.Error())
+			}
+			deck = append(deck, card)
+		}
+	}
+	// for _, suit := range CardSuits {
+	// 	for _, value := range []int{6, 5, 4} {
+	// 		card, cardErr := NewCard(value, suit, true)
+	// 		if cardErr != nil {
+	// 			return nil, fmt.Errorf("new deck not created: %s", cardErr.Error())
+	// 		}
+	// 		deck = append(deck, card)
+	// 	}
+	// }
+	return deck, nil
 }
 
 func (d *Cards) RemoveCard(cardIndex int) Card {

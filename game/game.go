@@ -40,7 +40,9 @@ func (g Game) getCurrentCard() (deck.Card, error) {
 	if g.CurrentCardIndex >= len(g.Cards) {
 		return deck.Card{}, errors.New("current card index out of range")
 	}
-
+	if g.CurrentCardIndex == -1 {
+		return deck.Card{}, nil
+	}
 	return g.Cards[g.CurrentCardIndex], nil
 }
 
@@ -53,14 +55,14 @@ func (g *Game) pruneColumn(column int, index int) []deck.Card {
 /* Exported Functions */
 
 func NewGame() Game {
-	return Game{deck.NewDeck(), board.NewBoard(), stacks.NewStacks(), 0, false}
+	return Game{deck.NewDeck(), board.NewBoard(), stacks.NewStacks(), 2, false}
 }
 
 func (g *Game) Reset() {
 	g.Cards = deck.NewDeck()
 	g.Board = board.NewBoard()
 	g.Stacks = stacks.NewStacks()
-	g.CurrentCardIndex = 0
+	g.CurrentCardIndex = 2
 }
 
 func (g1 Game) IsEqual(g2 Game) bool {
@@ -97,7 +99,7 @@ func (g *Game) DealBoard() {
 	// the first column has 1 card, the second has 2, etc.
 	cards := g.Cards
 	board := g.Board
-	currentCardIndex := 0
+	currentCardIndex := 2
 
 	for i := 0; i < NumColumns; i++ {
 		for j := i; j < NumColumns; j++ {
@@ -118,12 +120,17 @@ func (g *Game) DealBoard() {
 }
 
 func (g *Game) NextDeckCard() error {
-	if len(g.Cards) == 0 {
+	deckLength := len(g.Cards)
+	if deckLength == 0 {
 		return errors.New("no more cards in the deck")
 	}
 	g.Cards[g.CurrentCardIndex].Shown = false
-	if g.CurrentCardIndex+3 > len(g.Cards)-1 {
-		g.CurrentCardIndex = 0
+	if g.CurrentCardIndex+3 > deckLength-1 {
+		if deckLength < 3 {
+			g.CurrentCardIndex = deckLength - 1
+		} else {
+			g.CurrentCardIndex = 2
+		}
 	} else {
 		g.CurrentCardIndex += 3
 	}

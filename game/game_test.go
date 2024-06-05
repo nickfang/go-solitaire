@@ -1,6 +1,7 @@
 package game
 
 import (
+	"fmt"
 	"solitaire/game/deck"
 	"solitaire/testutils"
 	"testing"
@@ -12,8 +13,17 @@ func TestGetCurrentCard(t *testing.T) {
 	if err != nil {
 		t.Error("Expected no error.")
 	}
-	if card != game.Cards[0] {
-		t.Error("Expected current card to be the first card in the deck.")
+	if card != game.Cards[2] {
+		t.Error("Expected current card to be the third card in the deck.")
+	}
+
+	game.CurrentCardIndex = -1
+	card, err = game.getCurrentCard()
+	if err != nil {
+		t.Error("Expected no error.")
+	}
+	if card.Value != 0 || card.Suit != "" {
+		t.Error("Expected current card to be empty.")
 	}
 
 	game.CurrentCardIndex = 52
@@ -33,7 +43,6 @@ func TestGetCurrentCard(t *testing.T) {
 	if err.Error() != "no cards in the deck" {
 		t.Error("Expected error message not shown.")
 	}
-
 }
 
 func TestIsEqual(t *testing.T) {
@@ -71,13 +80,46 @@ func TestNewGame(t *testing.T) {
 	if len(g.Cards) != 52 {
 		t.Error("Wrong number of cards in the deck.")
 	}
+	if g.CurrentCardIndex != 2 {
+		t.Error("Expected current card index to be 2.", g.CurrentCardIndex)
+	}
 }
 
 func TestNextDeckCard(t *testing.T) {
 	g := NewGame()
 
-	g.Cards = g.Cards[:0]
 	err := g.NextDeckCard()
+	if err != nil {
+		t.Error("Expected no error.")
+	}
+	if g.CurrentCardIndex != 5 {
+		t.Error("Expected current card index to be 5.", g.CurrentCardIndex)
+	}
+
+	g.Cards = g.Cards[:2]
+	g.CurrentCardIndex = 0
+	fmt.Println(g.Cards)
+	err = g.NextDeckCard()
+	if err != nil {
+		t.Error("Expected no error.")
+	}
+	if g.CurrentCardIndex != 1 {
+		t.Error("Expected current card index to be 1 if there are only 2 cards left.", g.CurrentCardIndex)
+	}
+
+	g.Cards = g.Cards[:1]
+	g.CurrentCardIndex = 0
+	fmt.Println(g.Cards)
+	err = g.NextDeckCard()
+	if err != nil {
+		t.Error("Expected no error.")
+	}
+	if g.CurrentCardIndex != 0 {
+		t.Error("Expected current card index to be 0 if there are only 2 cards left.", g.CurrentCardIndex)
+	}
+
+	g.Cards = g.Cards[:0]
+	err = g.NextDeckCard()
 	if err.Error() != "no more cards in the deck" {
 		t.Error("Expected error message not shown.")
 	}
