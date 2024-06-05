@@ -7,6 +7,10 @@ import (
 func (g Game) DisplayCurrentCard() string {
 	card, error := g.getCurrentCard()
 	if error != nil {
+
+		if error.Error() == "no cards in the deck" {
+			return ""
+		}
 		return error.Error()
 	}
 	return card.DisplayMini
