@@ -1,9 +1,40 @@
 package game
 
 import (
+	"solitaire/game/deck"
 	"solitaire/testutils"
 	"testing"
 )
+
+func TestGetCurrentCard(t *testing.T) {
+	game := NewGame()
+	card, err := game.getCurrentCard()
+	if err != nil {
+		t.Error("Expected no error.")
+	}
+	if card != game.Cards[0] {
+		t.Error("Expected current card to be the first card in the deck.")
+	}
+
+	game.CurrentCardIndex = 52
+	_, err = game.getCurrentCard()
+	if err.Error() != "current card index out of range" {
+		t.Error("Expected error message not shown.")
+	}
+
+	game.Cards = nil
+	_, err = game.getCurrentCard()
+	if err.Error() != "deck not initialized" {
+		t.Error("Expected error message not shown.")
+	}
+
+	game.Cards = deck.Cards{}
+	_, err = game.getCurrentCard()
+	if err.Error() != "no cards in the deck" {
+		t.Error("Expected error message not shown.")
+	}
+
+}
 
 func TestIsEqual(t *testing.T) {
 	game1 := NewGame()

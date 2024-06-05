@@ -5,7 +5,11 @@ import (
 )
 
 func (g Game) DisplayCurrentCard() string {
-	return g.getCurrentCard().DisplayMini
+	card, error := g.getCurrentCard()
+	if error != nil {
+		return error.Error()
+	}
+	return card.DisplayMini
 }
 
 func (g Game) DisplayCards() {

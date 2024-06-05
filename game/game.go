@@ -30,9 +30,18 @@ func checkMove(card deck.Card, toCard deck.Card) bool {
 	return false
 }
 
-func (g Game) getCurrentCard() deck.Card {
+func (g Game) getCurrentCard() (deck.Card, error) {
+	if g.Cards == nil {
+		return deck.Card{}, errors.New("deck not initialized")
+	}
+	if len(g.Cards) == 0 {
+		return deck.Card{}, errors.New("no cards in the deck")
+	}
+	if g.CurrentCardIndex >= len(g.Cards) {
+		return deck.Card{}, errors.New("current card index out of range")
+	}
 
-	return g.Cards[g.CurrentCardIndex]
+	return g.Cards[g.CurrentCardIndex], nil
 }
 
 func (g *Game) pruneColumn(column int, index int) []deck.Card {
@@ -178,7 +187,11 @@ func (g *Game) SetState(gameState Game) {
 // for the user the columns are 1 indexed instead of 0 indexed.
 
 func (g Game) GetDeckMoves() []int {
-	currentCard := g.getCurrentCard()
+	currentCard, error := g.getCurrentCard()
+	if error != nil {
+		// no deck, no moves
+		return []int{}
+	}
 	moves := []int{}
 	for index, _ := range g.Board {
 		_, lastCard := g.Board.GetLastCard(index)
@@ -226,7 +239,11 @@ func (g Game) GetDeckHints() []string {
 func (g Game) GetStackHints() []string {
 	stackHints := []string{}
 	// check deck first
-	_, validDeckMove := g.GetStackMoves(g.getCurrentCard())
+	currentCard, error := g.getCurrentCard()
+	if error != nil {
+		// no current card, nothing to add to stackHints
+	}
+	_, validDeckMove := g.GetStackMoves(currentCard)
 	if validDeckMove {
 		stackHints = append(stackHints, "ds")
 	}
