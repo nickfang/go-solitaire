@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"solitaire/game"
+	"solitaire/game/deck"
 	"solitaire/game/gamestates"
 
 	"golang.org/x/exp/slices"
@@ -102,6 +103,19 @@ func HandleMoves(game *game.Game, gameStates gamestates.GameStates) {
 				toColumn, _ := strconv.ParseInt(input1, 10, 32)
 				game.MoveFromColumnToColumn(int(fromColumn), int(toColumn))
 				game.Display()
+				gameStates.SaveState(*game)
+				continue
+			}
+			if input[:2] == "rt" {
+				game.Reset()
+				deck, err := deck.NewTestingDeck()
+				if err != nil {
+					fmt.Println(err)
+				}
+				game.Cards = deck
+				game.DealBoard()
+				game.Display()
+				gameStates.Reset()
 				gameStates.SaveState(*game)
 				continue
 			}

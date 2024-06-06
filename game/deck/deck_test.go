@@ -175,6 +175,20 @@ func TestNewDeck(t *testing.T) {
 	}
 }
 
+func TestNewTestingDeck(t *testing.T) {
+	deck, err := NewTestingDeck()
+	if err != nil {
+		t.Error("Expected no error.")
+	}
+	// this order makes it easy to clear out the deck and board to test edge cases.
+	deckValues := []int{13, 13, 13, 13, 12, 12, 12, 12, 11, 11, 11, 11, 10, 10, 10, 10, 9, 9, 9, 9, 8, 8, 8, 8, 7, 7, 7, 7, 3, 2, 1, 6, 5, 4, 3, 2, 1, 6, 5, 4, 3, 2, 1, 6, 5, 4, 3, 2, 1, 6, 5, 4}
+	for i, card := range deck {
+		if card.Value != deckValues[i] {
+			t.Error("Card values are not correct.", card.Value, card)
+		}
+	}
+}
+
 func TestRemoveCard(t *testing.T) {
 	deck := NewDeck()
 	deck.RemoveCard(0)

@@ -16,13 +16,16 @@ func (g *Game) MoveFromDeckToBoard(column int) error {
 	g.Cards[g.CurrentCardIndex].Shown = true
 	g.Board[column] = append(g.Board[column], g.Cards[g.CurrentCardIndex])
 	g.Cards.RemoveCard(g.CurrentCardIndex)
-	if g.CurrentCardIndex > 0 {
+	if g.CurrentCardIndex >= 0 {
 		g.CurrentCardIndex = g.CurrentCardIndex - 1
 	}
 	return nil
 }
 
 func (g *Game) MoveFromDeckToStacks() error {
+	if g.CurrentCardIndex < 0 {
+		return errors.New("no cards in the deck")
+	}
 	suitIndex, validMove := g.GetStackMoves(g.Cards[g.CurrentCardIndex])
 	if !validMove {
 		return errors.New("invalid move")
@@ -30,7 +33,7 @@ func (g *Game) MoveFromDeckToStacks() error {
 	movedCard := g.Cards.RemoveCard(g.CurrentCardIndex)
 	movedCard.Shown = true
 	g.Stacks[suitIndex] = append(g.Stacks[suitIndex], movedCard)
-	if g.CurrentCardIndex > 0 {
+	if g.CurrentCardIndex >= 0 {
 		g.CurrentCardIndex = g.CurrentCardIndex - 1
 	}
 	return nil

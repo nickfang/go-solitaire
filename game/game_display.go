@@ -5,11 +5,19 @@ import (
 )
 
 func (g Game) DisplayCurrentCard() string {
-	return g.getCurrentCard().DisplayMini
+	card, error := g.getCurrentCard()
+	if error != nil {
+
+		if error.Error() == "no cards in the deck" {
+			return ""
+		}
+		return error.Error()
+	}
+	return card.DisplayMini
 }
 
 func (g Game) DisplayCards() {
-	fmt.Println(g.CurrentCardIndex, g.DisplayCurrentCard(), len(g.Cards)-g.CurrentCardIndex)
+	fmt.Println(g.CurrentCardIndex+1, g.DisplayCurrentCard(), len(g.Cards)-g.CurrentCardIndex)
 }
 
 func (g Game) Display() {
