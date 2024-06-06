@@ -17,7 +17,7 @@ func (g Game) DisplayCurrentCard() string {
 }
 
 func (g Game) DisplayCards() {
-	fmt.Println(g.CurrentCardIndex, g.DisplayCurrentCard(), len(g.Cards)-g.CurrentCardIndex)
+	fmt.Println(g.CurrentCardIndex+1, g.DisplayCurrentCard(), len(g.Cards)-g.CurrentCardIndex)
 }
 
 func (g Game) Display() {

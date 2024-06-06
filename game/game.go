@@ -124,12 +124,17 @@ func (g *Game) NextDeckCard() error {
 	if deckLength == 0 {
 		return errors.New("no more cards in the deck")
 	}
-	g.Cards[g.CurrentCardIndex].Shown = false
-	if g.CurrentCardIndex+3 > deckLength-1 {
-		if deckLength < 3 {
-			g.CurrentCardIndex = deckLength - 1
-		} else {
+	fmt.Println("index", g.CurrentCardIndex)
+	// if there is a current card, hide it
+	if g.CurrentCardIndex >= 0 {
+		g.Cards[g.CurrentCardIndex].Shown = false
+	}
+	// if the next card is out of bounds, set the current card back to the beginning
+	if g.CurrentCardIndex == -1 || g.CurrentCardIndex+3 > deckLength-1 {
+		if 2 < deckLength-1 {
 			g.CurrentCardIndex = 2
+		} else {
+			g.CurrentCardIndex = deckLength - 1
 		}
 	} else {
 		g.CurrentCardIndex += 3
@@ -194,12 +199,12 @@ func (g *Game) SetState(gameState Game) {
 // for the user the columns are 1 indexed instead of 0 indexed.
 
 func (g Game) GetDeckMoves() []int {
+	moves := []int{}
 	currentCard, error := g.getCurrentCard()
 	if error != nil {
 		// no deck, no moves
-		return []int{}
+		return moves
 	}
-	moves := []int{}
 	for index, _ := range g.Board {
 		_, lastCard := g.Board.GetLastCard(index)
 		if checkMove(currentCard, lastCard) {
