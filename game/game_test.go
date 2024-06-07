@@ -80,7 +80,7 @@ func TestNewGame(t *testing.T) {
 	if len(g.Cards) != 52 {
 		t.Error("Wrong number of cards in the deck.")
 	}
-	if g.CurrentCardIndex != 2 {
+	if g.CurrentCardIndex != DefaultFlipCount-1 {
 		t.Error("Expected current card index to be 2.", g.CurrentCardIndex)
 	}
 }
