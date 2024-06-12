@@ -34,9 +34,10 @@ func getCardDisplay(value int, suit string) (string, error) {
 	if suit != "♠" && suit != "♥" && suit != "♣" && suit != "♦" {
 		return "", fmt.Errorf("invalid suit: %s", suit)
 	}
-	// if value != 10 {
-	// 	return "  " + CardNumDisplay[value-1] + suit, nil
-	// }
+	// add a space if the card value is 2 digits
+	if value != 10 {
+		return "  " + CardNumDisplay[value-1] + suit, nil
+	}
 	return " " + CardNumDisplay[value-1] + suit, nil
 }
 

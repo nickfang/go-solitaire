@@ -65,6 +65,7 @@ func (g *Game) Reset() {
 	g.Board = board.NewBoard()
 	g.Stacks = stacks.NewStacks()
 	g.CurrentCardIndex = g.FlipCount - 1
+	g.FlipCount = DefaultFlipCount
 }
 
 func (g1 Game) IsEqual(g2 Game) bool {
