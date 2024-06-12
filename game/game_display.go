@@ -37,7 +37,7 @@ func (g Game) DisplayHints() {
 
 func (g Game) Print() {
 	fmt.Println("Stacks:")
-	g.Stacks.Display()
+	g.Stacks.Print()
 	fmt.Println("Board:")
 	g.Board.Print()
 	fmt.Println("Deck:")

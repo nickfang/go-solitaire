@@ -75,6 +75,7 @@ func (s Stacks) GetTopCards() Stacks {
 	return stackTops
 }
 
+// CLI Display
 func (s Stacks) Display() {
 	fmt.Print("     [")
 	for _, stack := range s {
@@ -86,4 +87,15 @@ func (s Stacks) Display() {
 		}
 	}
 	fmt.Println("]")
+}
+
+// for debugging
+func (s Stacks) Print() {
+	for i, stack := range s {
+		fmt.Printf("Stack %d: ", i)
+		for _, card := range stack {
+			card.Print()
+		}
+		fmt.Println()
+	}
 }
