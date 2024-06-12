@@ -185,7 +185,23 @@ func (c Card) Display() {
 
 // Used for debugging
 func (c Card) Print() {
-	fmt.Printf("[%d, %s, %s]", c.Value, c.Suit[:1], c.Color[:1])
+	suit := " "
+	if len(c.Suit) > 0 {
+		if c.Color == "Red" {
+			suit = "\033[31m" + c.Suit[:1] + "\033[0m"
+		} else {
+			suit = c.Suit[:1]
+		}
+	}
+	fmt.Print("[")
+	if c.Value >= 10 {
+		fmt.Printf("%d", c.Value)
+	} else if c.Value > 0 {
+		fmt.Printf(" %d", c.Value)
+	} else {
+		fmt.Print("  ")
+	}
+	fmt.Printf("%s]", suit)
 }
 
 // Used for debugging

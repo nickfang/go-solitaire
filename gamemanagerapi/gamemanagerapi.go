@@ -72,6 +72,7 @@ func HandleMoves(game *game.Game, gameStates gamestates.GameStates) {
 				fmt.Println("  ## - move fromcolumn to column")
 				fmt.Println("  r - reset")
 				fmt.Println("  h - hints")
+				fmt.Println("  fc1 - set flip count to 1 (easy mode)")
 				fmt.Println("  u - undo")
 				fmt.Println("  q - quit")
 				continue
@@ -118,8 +119,7 @@ func HandleMoves(game *game.Game, gameStates gamestates.GameStates) {
 				gameStates.SaveState(*game)
 				continue
 			}
-
-			if input[:2] == "rt" {
+			if input == "rt" {
 				game.Reset()
 				deck, err := deck.NewTestingDeck()
 				if err != nil {
@@ -132,9 +132,22 @@ func HandleMoves(game *game.Game, gameStates gamestates.GameStates) {
 				gameStates.SaveState(*game)
 				continue
 			}
+			if input == "ss" {
+				gameStates.Print()
+				continue
+			}
 			if input0 == "s" {
 				fmt.Printf("Not Implemented.\n")
 				// move from stacks to board.
+			}
+		}
+		if len(input) == 3 {
+			if input == "fc1" {
+				game.SetFlipCount(1)
+				fmt.Println("Easy mode.")
+				game.Display()
+				gameStates.SaveState(*game)
+				continue
 			}
 		}
 		fmt.Println("Invalid Input.", input)

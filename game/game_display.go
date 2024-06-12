@@ -36,12 +36,12 @@ func (g Game) DisplayHints() {
 }
 
 func (g Game) Print() {
-	fmt.Println("Stacks:")
 	g.Stacks.Print()
-	fmt.Println("Board:")
 	g.Board.Print()
-	fmt.Println("Deck:")
 	g.Cards.Print()
 	fmt.Printf("Current Card Index: %d", g.CurrentCardIndex)
 	fmt.Println()
+	fmt.Printf("Flip Count: %d", g.FlipCount)
+	fmt.Println()
+
 }

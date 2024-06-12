@@ -118,5 +118,4 @@ func (b Board) Print() {
 		}
 		fmt.Println()
 	}
-	fmt.Println()
 }

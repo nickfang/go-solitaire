@@ -57,15 +57,17 @@ func (g *Game) pruneColumn(column int, index int) []deck.Card {
 /* Exported Functions */
 
 func NewGame() Game {
+	fmt.Println("NewGame", DefaultFlipCount)
 	return Game{deck.NewDeck(), board.NewBoard(), stacks.NewStacks(), DefaultFlipCount - 1, DefaultFlipCount, false}
 }
 
 func (g *Game) Reset() {
+	fmt.Println("Reset", DefaultFlipCount)
 	g.Cards = deck.NewDeck()
 	g.Board = board.NewBoard()
 	g.Stacks = stacks.NewStacks()
-	g.CurrentCardIndex = g.FlipCount - 1
 	g.FlipCount = DefaultFlipCount
+	g.CurrentCardIndex = DefaultFlipCount - 1
 }
 
 func (g1 Game) IsEqual(g2 Game) bool {
@@ -169,6 +171,8 @@ func (g Game) DeepCopy() Game {
 
 	newState.CurrentCardIndex = g.CurrentCardIndex
 
+	newState.FlipCount = g.FlipCount
+
 	return newState
 }
 
@@ -177,6 +181,15 @@ func (g *Game) SetState(gameState Game) {
 	g.Board = gameState.Board
 	g.Stacks = gameState.Stacks
 	g.CurrentCardIndex = gameState.CurrentCardIndex
+	g.FlipCount = gameState.FlipCount
+}
+
+func (g *Game) SetFlipCount(flipCount int) error {
+	if flipCount != 1 && flipCount != 3 {
+		return errors.New("flip count must be 1 or 3")
+	}
+	g.FlipCount = flipCount
+	return nil
 }
 
 // func GetLastCard(column []deck.Card) (int, deck.Card) {
@@ -208,7 +221,7 @@ func (g Game) GetDeckMoves() []int {
 		// no deck, no moves
 		return moves
 	}
-	for index, _ := range g.Board {
+	for index := range g.Board {
 		_, lastCard := g.Board.GetLastCard(index)
 		if checkMove(currentCard, lastCard) {
 			moves = append(moves, index)
