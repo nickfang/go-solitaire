@@ -31,6 +31,10 @@ func getCardDisplay(value int, suit string) (string, error) {
 	if value < 1 || value > 13 {
 		return "", fmt.Errorf("invalid value: %d", value)
 	}
+	if suit != "♠" && suit != "♥" && suit != "♣" && suit != "♦" {
+		return "", fmt.Errorf("invalid suit: %s", suit)
+	}
+	// add a space if the card value is 2 digits
 	if value != 10 {
 		return "  " + CardNumDisplay[value-1] + suit, nil
 	}
@@ -40,8 +44,10 @@ func getCardDisplay(value int, suit string) (string, error) {
 func getCardColor(suit string) string {
 	if suit == "Spades" || suit == "Clubs" {
 		return "Black"
+	} else if suit == "Hearts" || suit == "Diamonds" {
+		return "Red"
 	}
-	return "Red"
+	return ""
 }
 
 func (c1 Card) IsEqual(c2 Card) bool {
@@ -164,18 +170,7 @@ func (d *Cards) PerfectShuffle() {
 	}
 }
 
-func (d Cards) displayAll() {
-	for _, card := range d {
-		if card.DisplayMini == "null" {
-			return
-		} else if card.Shown || card.Debug {
-			fmt.Print(card.DisplayMini)
-		} else {
-			fmt.Print("  * ")
-		}
-	}
-}
-
+// CLI display
 func (c Card) Display() {
 	if c.Value == 0 {
 		fmt.Print("    ")
@@ -188,10 +183,28 @@ func (c Card) Display() {
 	}
 }
 
+// Used for debugging
 func (c Card) Print() {
-	fmt.Printf("[%d, %s, %s]", c.Value, c.Suit[:1], c.Color[:1])
+	suit := " "
+	if len(c.Suit) > 0 {
+		if c.Color == "Red" {
+			suit = "\033[31m" + c.Suit[:1] + "\033[0m"
+		} else {
+			suit = c.Suit[:1]
+		}
+	}
+	fmt.Print("[")
+	if c.Value >= 10 {
+		fmt.Printf("%d", c.Value)
+	} else if c.Value > 0 {
+		fmt.Printf(" %d", c.Value)
+	} else {
+		fmt.Print("  ")
+	}
+	fmt.Printf("%s]", suit)
 }
 
+// Used for debugging
 func (d Cards) Print() {
 	for _, card := range d {
 		card.Print()

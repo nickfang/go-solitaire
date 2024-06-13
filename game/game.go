@@ -15,11 +15,13 @@ type Game struct {
 	Board            board.Board
 	Stacks           stacks.Stacks
 	CurrentCardIndex int
+	FlipCount        int
 	Debug            bool
 }
 
 const NumCards = 52
 const NumColumns = 7
+const DefaultFlipCount = 3
 
 func checkMove(card deck.Card, toCard deck.Card) bool {
 	if card.Value == toCard.Value-1 && card.Color != toCard.Color {
@@ -55,14 +57,15 @@ func (g *Game) pruneColumn(column int, index int) []deck.Card {
 /* Exported Functions */
 
 func NewGame() Game {
-	return Game{deck.NewDeck(), board.NewBoard(), stacks.NewStacks(), 2, false}
+	return Game{deck.NewDeck(), board.NewBoard(), stacks.NewStacks(), DefaultFlipCount - 1, DefaultFlipCount, false}
 }
 
 func (g *Game) Reset() {
 	g.Cards = deck.NewDeck()
 	g.Board = board.NewBoard()
 	g.Stacks = stacks.NewStacks()
-	g.CurrentCardIndex = 2
+	g.FlipCount = DefaultFlipCount
+	g.CurrentCardIndex = DefaultFlipCount - 1
 }
 
 func (g1 Game) IsEqual(g2 Game) bool {
@@ -99,7 +102,7 @@ func (g *Game) DealBoard() {
 	// the first column has 1 card, the second has 2, etc.
 	cards := g.Cards
 	board := g.Board
-	currentCardIndex := 2
+	currentCardIndex := DefaultFlipCount - 1
 
 	for i := 0; i < NumColumns; i++ {
 		for j := i; j < NumColumns; j++ {
@@ -130,14 +133,14 @@ func (g *Game) NextDeckCard() error {
 		g.Cards[g.CurrentCardIndex].Shown = false
 	}
 	// if the next card is out of bounds, set the current card back to the beginning
-	if g.CurrentCardIndex == -1 || g.CurrentCardIndex+3 > deckLength-1 {
+	if g.CurrentCardIndex == -1 || g.CurrentCardIndex+g.FlipCount > deckLength-1 {
 		if 2 < deckLength-1 {
-			g.CurrentCardIndex = 2
+			g.CurrentCardIndex = g.FlipCount - 1
 		} else {
 			g.CurrentCardIndex = deckLength - 1
 		}
 	} else {
-		g.CurrentCardIndex += 3
+		g.CurrentCardIndex += g.FlipCount
 	}
 	g.Cards[g.CurrentCardIndex].Shown = true
 	return nil
@@ -166,6 +169,8 @@ func (g Game) DeepCopy() Game {
 
 	newState.CurrentCardIndex = g.CurrentCardIndex
 
+	newState.FlipCount = g.FlipCount
+
 	return newState
 }
 
@@ -174,6 +179,15 @@ func (g *Game) SetState(gameState Game) {
 	g.Board = gameState.Board
 	g.Stacks = gameState.Stacks
 	g.CurrentCardIndex = gameState.CurrentCardIndex
+	g.FlipCount = gameState.FlipCount
+}
+
+func (g *Game) SetFlipCount(flipCount int) error {
+	if flipCount != 1 && flipCount != 3 {
+		return errors.New("flip count must be 1 or 3")
+	}
+	g.FlipCount = flipCount
+	return nil
 }
 
 // func GetLastCard(column []deck.Card) (int, deck.Card) {
@@ -205,7 +219,7 @@ func (g Game) GetDeckMoves() []int {
 		// no deck, no moves
 		return moves
 	}
-	for index, _ := range g.Board {
+	for index := range g.Board {
 		_, lastCard := g.Board.GetLastCard(index)
 		if checkMove(currentCard, lastCard) {
 			moves = append(moves, index)

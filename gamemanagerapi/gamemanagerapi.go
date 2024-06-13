@@ -64,6 +64,19 @@ func HandleMoves(game *game.Game, gameStates gamestates.GameStates) {
 				game.Display()
 				continue
 			}
+			if input == "?" {
+				fmt.Println("Commands: ")
+				fmt.Println("  n - next card")
+				fmt.Println("  d# - move from deck to column number")
+				fmt.Println("  ds - move from deck to stacks")
+				fmt.Println("  ## - move fromcolumn to column")
+				fmt.Println("  r - reset")
+				fmt.Println("  h - hints")
+				fmt.Println("  fc1 - set flip count to 1 (easy mode)")
+				fmt.Println("  u - undo")
+				fmt.Println("  q - quit")
+				continue
+			}
 		}
 		if len(input) == 2 {
 			input0 := string(input[0])
@@ -85,7 +98,7 @@ func HandleMoves(game *game.Game, gameStates gamestates.GameStates) {
 				}
 				continue
 			}
-			if input[1] == 's' {
+			if input1 == "s" {
 				// move from board to stacks
 				from := input0
 				columnIndex, _ := strconv.ParseInt(from, 10, 32)
@@ -106,7 +119,7 @@ func HandleMoves(game *game.Game, gameStates gamestates.GameStates) {
 				gameStates.SaveState(*game)
 				continue
 			}
-			if input[:2] == "rt" {
+			if input == "rt" {
 				game.Reset()
 				deck, err := deck.NewTestingDeck()
 				if err != nil {
@@ -119,9 +132,22 @@ func HandleMoves(game *game.Game, gameStates gamestates.GameStates) {
 				gameStates.SaveState(*game)
 				continue
 			}
-			if input[:1] == "s" {
+			if input == "ss" {
+				gameStates.Print()
+				continue
+			}
+			if input0 == "s" {
 				fmt.Printf("Not Implemented.\n")
 				// move from stacks to board.
+			}
+		}
+		if len(input) == 3 {
+			if input == "fc1" {
+				game.SetFlipCount(1)
+				fmt.Println("Easy mode.")
+				game.Display()
+				gameStates.SaveState(*game)
+				continue
 			}
 		}
 		fmt.Println("Invalid Input.", input)

@@ -45,3 +45,13 @@ func (s *GameStates) Undo() game.Game {
 	lastIndex := len(s.States) - 1
 	return s.States[lastIndex]
 }
+
+// for debugging
+func (s *GameStates) Print() {
+	for i, state := range s.States {
+		state.Print()
+		if i < len(s.States)-1 {
+			println()
+		}
+	}
+}

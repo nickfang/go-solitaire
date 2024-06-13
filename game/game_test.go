@@ -80,7 +80,7 @@ func TestNewGame(t *testing.T) {
 	if len(g.Cards) != 52 {
 		t.Error("Wrong number of cards in the deck.")
 	}
-	if g.CurrentCardIndex != 2 {
+	if g.CurrentCardIndex != DefaultFlipCount-1 {
 		t.Error("Expected current card index to be 2.", g.CurrentCardIndex)
 	}
 }
@@ -135,7 +135,7 @@ func TestDeepCopy(t *testing.T) {
 	gameShallow := game
 	gameDeep := game.DeepCopy()
 
-	// Checking each part of the game Cards, Board, Stacks and CurrentCardIndex
+	// Checking each part of the game Cards, Board, Stacks, CurrentCardIndex and FlipCount
 	testutils.AssertNoError(t, game.MoveFromDeckToStacks(), "MoveFromDeckToStacks")
 	if !game.Cards[0].IsEqual(gameShallow.Cards[0]) {
 		t.Error("Shallow copies behave unexpectedly.  If you need to make a copy of game, use deep copy.")
@@ -167,4 +167,10 @@ func TestDeepCopy(t *testing.T) {
 	if game.IsEqual(gameDeep) {
 		t.Error("Deep copy should not be updated when original is updated.")
 	}
+
+	// TODO: Test CurrentCardIndex and FlipCount
 }
+
+// TODO: test doing an undo and then trying to go to the next card
+
+// TODO: test

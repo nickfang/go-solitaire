@@ -42,7 +42,7 @@ func NewBoard() Board {
 // }
 
 func (b Board) getColumnInfo(column int) {
-
+	// TODO:
 }
 
 func (b Board) GetLastCard(column int) (int, deck.Card) {
@@ -82,6 +82,7 @@ func (b Board) GetUserResponse() ([][]string, []int) {
 
 }
 
+// CLI Display
 func (b Board) Display() {
 	displayBoard := [7][19]deck.Card{}
 	maxLen := 0 // add a space so the board isn't cramped with the deck.
@@ -101,6 +102,7 @@ func (b Board) Display() {
 	}
 }
 
+// for debugging
 func (b Board) Print() {
 	displayBoard := [7][19]deck.Card{}
 	maxLen := 0 // add a space so the board isn't cramped with the deck.
@@ -116,5 +118,4 @@ func (b Board) Print() {
 		}
 		fmt.Println()
 	}
-	fmt.Println()
 }

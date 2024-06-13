@@ -64,7 +64,7 @@ func TestReset(t *testing.T) {
 }
 
 func TestSaveState(t *testing.T) {
-	// Use an unshuffled deck to make sure the goard is organized the same each time.
+	// Use an unshuffled deck to make sure the board is organized the same each time.
 	// Made sure to test each type of move in game.
 	// TestUndo uses these same moves.  If any are updated here, update below.
 	gs := NewGameStates()
@@ -126,6 +126,9 @@ func TestSaveState(t *testing.T) {
 	gs.SaveState(game)
 	testutils.AssertNoError(t, game.MoveFromDeckToBoard(2), "Move deck to board")
 	gs.SaveState(game)
+	testutils.AssertNoError(t, game.SetFlipCount(1), "Set flip count to 1")
+	gs.SaveState(game)
+	// TODO: Finish testing SetFlipCount.
 }
 
 func TestUndo(t *testing.T) {
