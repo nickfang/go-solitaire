@@ -57,12 +57,10 @@ func (g *Game) pruneColumn(column int, index int) []deck.Card {
 /* Exported Functions */
 
 func NewGame() Game {
-	fmt.Println("NewGame", DefaultFlipCount)
 	return Game{deck.NewDeck(), board.NewBoard(), stacks.NewStacks(), DefaultFlipCount - 1, DefaultFlipCount, false}
 }
 
 func (g *Game) Reset() {
-	fmt.Println("Reset", DefaultFlipCount)
 	g.Cards = deck.NewDeck()
 	g.Board = board.NewBoard()
 	g.Stacks = stacks.NewStacks()
