@@ -10,7 +10,8 @@ type Game game.Game
 
 // Helper function to create a simple test game state
 func createTestGameState() game.Game {
-	return game.NewGame()
+	game := game.NewGame()
+	return game
 }
 
 // func (g1 Game) compareTo(g2 game.Game) bool {
@@ -70,65 +71,80 @@ func TestSaveState(t *testing.T) {
 	gs := NewGameStates()
 	game := createTestGameState()
 	game.DealBoard()
+	// game.CurrentCardIndex = 0
 	gs.SaveState(game)
 
 	if len(gs.States) != 1 {
 		t.Error("Expected 1 state after SaveState()")
 	}
+
 	testutils.AssertNoError(t, game.MoveFromBoardToStacks(0), "Move Board to Stacks failed")
 	gs.SaveState(game)
 	if len(gs.States) != 2 {
 		t.Error("Expected 2 states after SaveState()")
 	}
-	if game.IsEqual(gs.States[0]) {
+	if game.IsEqual(gs.States[len(gs.States)-2]) {
 		t.Error("Saved state is not a deep copy of the original state")
 	}
+
 	testutils.AssertNoError(t, game.MoveFromBoardToStacks(2), "Move board to stack failed")
 	gs.SaveState(game)
+
 	testutils.AssertNoError(t, game.MoveFromColumnToColumn(2, 4), "Move column to colum")
 	gs.SaveState(game)
-	if game.IsEqual(gs.States[2]) {
+	if game.IsEqual(gs.States[len(gs.States)-2]) {
 		t.Error("Saved state is not a deep copy of the original state")
 	}
+
 	testutils.AssertNoError(t, game.MoveFromColumnToColumn(5, 0), "")
 	gs.SaveState(game)
-	if game.IsEqual(gs.States[3]) {
+	if game.IsEqual(gs.States[len(gs.States)-2]) {
 		t.Error("Saved state is not a deep copy of the original state")
 	}
+
+	testutils.AssertNoError(t, game.MoveFromDeckToBoard(3), "Move deck to board")
+	gs.SaveState(game)
+	if game.IsEqual(gs.States[len(gs.States)-2]) {
+		t.Error("Saved state is not a deep copy of the original state")
+	}
+
 	testutils.AssertNoError(t, game.NextDeckCard(), "")
 	gs.SaveState(game)
-	if game.IsEqual(gs.States[4]) {
+	if game.IsEqual(gs.States[len(gs.States)-2]) {
 		t.Error("Saved state is not a deep copy of the original state")
 	}
+
 	testutils.AssertNoError(t, game.NextDeckCard(), "")
 	gs.SaveState(game)
 	testutils.AssertNoError(t, game.NextDeckCard(), "")
 	gs.SaveState(game)
-	testutils.AssertNoError(t, game.MoveFromDeckToBoard(0), "Move deck to board")
+
+	testutils.AssertNoError(t, game.MoveFromDeckToStacks(), "Move deck to stacks")
 	gs.SaveState(game)
-	if game.IsEqual(gs.States[7]) {
+	if game.IsEqual(gs.States[len(gs.States)-2]) {
 		t.Error("Saved state is not a deep copy of the original state")
 	}
-	testutils.AssertNoError(t, game.MoveFromColumnToColumn(5, 0), "")
+
+	testutils.AssertNoError(t, game.NextDeckCard(), "")
 	gs.SaveState(game)
-	testutils.AssertNoError(t, game.MoveFromColumnToColumn(5, 4), "")
+
+	testutils.AssertNoError(t, game.MoveFromDeckToBoard(3), "Move deck to board")
 	gs.SaveState(game)
-	testutils.AssertNoError(t, game.NextDeckCard(), "Next card")
-	gs.SaveState(game)
-	testutils.AssertNoError(t, game.MoveFromDeckToBoard(2), "Move deck to board")
-	gs.SaveState(game)
-	testutils.AssertNoError(t, game.MoveFromDeckToStacks(), "Move deck to stack")
-	gs.SaveState(game)
-	if game.IsEqual(gs.States[12]) {
+	if game.IsEqual(gs.States[len(gs.States)-2]) {
 		t.Error("Saved state is not a deep copy of the original state")
 	}
-	testutils.AssertNoError(t, game.MoveFromColumnToColumn(2, 5), "Move column to column")
+
+	testutils.AssertNoError(t, game.MoveFromColumnToColumn(2, 3), "")
 	gs.SaveState(game)
-	testutils.AssertNoError(t, game.MoveFromDeckToBoard(2), "Move deck to board")
+
+	testutils.AssertNoError(t, game.SetFlipCount(1), "Set Flip Count to 1")
 	gs.SaveState(game)
-	testutils.AssertNoError(t, game.SetFlipCount(1), "Set flip count to 1")
-	gs.SaveState(game)
-	// TODO: Finish testing SetFlipCount.
+	if game.IsEqual(gs.States[len(gs.States)-2]) {
+		t.Error("Saved state is not a deep copy of the original state")
+	}
+	if gs.States[len(gs.States)-1].FlipCount != 1 {
+		t.Error("Flip count should be 1")
+	}
 }
 
 func TestUndo(t *testing.T) {
@@ -146,29 +162,25 @@ func TestUndo(t *testing.T) {
 	gs.SaveState(game)
 	game.MoveFromColumnToColumn(5, 0)
 	gs.SaveState(game)
-	game.NextDeckCard()
+	game.MoveFromDeckToBoard(3)
 	gs.SaveState(game)
 	game.NextDeckCard()
 	gs.SaveState(game)
 	game.NextDeckCard()
 	gs.SaveState(game)
-	game.MoveFromDeckToBoard(0)
-	gs.SaveState(game)
-	game.MoveFromColumnToColumn(5, 0)
-	gs.SaveState(game)
-	game.MoveFromColumnToColumn(5, 4)
-	gs.SaveState(game)
 	game.NextDeckCard()
-	gs.SaveState(game)
-	game.MoveFromDeckToBoard(2)
 	gs.SaveState(game)
 	game.MoveFromDeckToStacks()
 	gs.SaveState(game)
-	game.MoveFromColumnToColumn(2, 5)
+	game.NextDeckCard()
+	gs.SaveState(game)
+	game.MoveFromDeckToBoard(3)
+	gs.SaveState(game)
+	game.MoveFromColumnToColumn(2, 3)
+	gs.SaveState(game)
+	game.SetFlipCount(1)
+	gs.SaveState(game)
 	prevGame := game.DeepCopy()
-	gs.SaveState(game)
-	game.MoveFromDeckToBoard(2)
-	gs.SaveState(game)
 
 	stateSize := len(gs.States)
 	undoState := gs.Undo()
