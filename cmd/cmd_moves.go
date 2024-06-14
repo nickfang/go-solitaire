@@ -35,12 +35,10 @@ func ResetGame(g *game.Game, gs gamestates.GameStates) {
 
 func ShowHints(g *game.Game) {
 	// if input == "h" {
-	hints := g.GetDeckHints()
-	fmt.Println("Deck Hints:", hints)
-	hints = append(hints, g.GetStackHints()...)
-	fmt.Println("Stack Hints:", hints)
-	hints = append(hints, g.GetBoardHints()...)
-	fmt.Println("Moves:", hints)
+	moves := g.GetDeckHints()
+	moves = append(moves, g.GetStackHints()...)
+	moves = append(moves, g.GetBoardHints()...)
+	fmt.Println("Moves:", moves)
 	// g.DisplayHints()
 }
 

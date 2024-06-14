@@ -186,6 +186,7 @@ func (g *Game) SetFlipCount(flipCount int) error {
 		return errors.New("flip count must be 1 or 3")
 	}
 	g.FlipCount = flipCount
+	g.CurrentCardIndex = flipCount - 1
 	return nil
 }
 
