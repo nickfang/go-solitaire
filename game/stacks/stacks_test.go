@@ -93,8 +93,8 @@ func TestIsEqual(t *testing.T) {
 	equals7 := stack1.IsEqual(stack2)
 	fmt.Println(stack1)
 	fmt.Println(stack2)
-	stack1.Display()
-	stack2.Display()
+	stack1.Print()
+	stack2.Print()
 	if !equals7 {
 		t.Error("stacks should match")
 	}

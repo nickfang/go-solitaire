@@ -51,4 +51,5 @@ func TestGetLastCard(t *testing.T) {
 	if card.Value != 1 {
 		t.Error("Card should be 1, but is ", card.Value)
 	}
+
 }
