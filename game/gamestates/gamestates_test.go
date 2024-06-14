@@ -184,8 +184,6 @@ func TestUndo(t *testing.T) {
 
 	stateSize := len(gs.States)
 	undoState := gs.Undo()
-	prevGame.Print()
-	undoState.Print()
 	if len(gs.States) != stateSize-1 {
 		t.Error("State size should have been reduced by 1 after undo.")
 	}
