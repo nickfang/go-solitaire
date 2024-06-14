@@ -9,7 +9,7 @@ import (
 
 func TestGetCurrentCard(t *testing.T) {
 	game := NewGame()
-	card, err := game.getCurrentCard()
+	card, err := game.GetCurrentCard()
 	if err != nil {
 		t.Error("Expected no error.")
 	}
@@ -18,7 +18,7 @@ func TestGetCurrentCard(t *testing.T) {
 	}
 
 	game.CurrentCardIndex = -1
-	card, err = game.getCurrentCard()
+	card, err = game.GetCurrentCard()
 	if err != nil {
 		t.Error("Expected no error.")
 	}
@@ -27,19 +27,19 @@ func TestGetCurrentCard(t *testing.T) {
 	}
 
 	game.CurrentCardIndex = 52
-	_, err = game.getCurrentCard()
+	_, err = game.GetCurrentCard()
 	if err.Error() != "current card index out of range" {
 		t.Error("Expected error message not shown.")
 	}
 
 	game.Cards = nil
-	_, err = game.getCurrentCard()
+	_, err = game.GetCurrentCard()
 	if err.Error() != "deck not initialized" {
 		t.Error("Expected error message not shown.")
 	}
 
 	game.Cards = deck.Cards{}
-	_, err = game.getCurrentCard()
+	_, err = game.GetCurrentCard()
 	if err.Error() != "no cards in the deck" {
 		t.Error("Expected error message not shown.")
 	}

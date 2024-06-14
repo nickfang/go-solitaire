@@ -32,7 +32,7 @@ func checkMove(card deck.Card, toCard deck.Card) bool {
 	return false
 }
 
-func (g Game) getCurrentCard() (deck.Card, error) {
+func (g Game) GetCurrentCard() (deck.Card, error) {
 	if g.Cards == nil {
 		return deck.Card{}, errors.New("deck not initialized")
 	}
@@ -127,7 +127,6 @@ func (g *Game) NextDeckCard() error {
 	if deckLength == 0 {
 		return errors.New("no more cards in the deck")
 	}
-	fmt.Println("index", g.CurrentCardIndex)
 	// if there is a current card, hide it
 	if g.CurrentCardIndex >= 0 {
 		g.Cards[g.CurrentCardIndex].Shown = false
@@ -214,7 +213,7 @@ func (g *Game) SetFlipCount(flipCount int) error {
 
 func (g Game) GetDeckMoves() []int {
 	moves := []int{}
-	currentCard, error := g.getCurrentCard()
+	currentCard, error := g.GetCurrentCard()
 	if error != nil {
 		// no deck, no moves
 		return moves
@@ -252,6 +251,30 @@ func (g Game) GetStackMoves(card deck.Card) (int, bool) {
 	return suitIndex, false
 }
 
+func (g Game) GetBoardMoves() []string {
+	moves := []string{}
+	lastCards := deck.Cards{}
+	for i := range g.Board {
+		_, lastCard := g.Board.GetLastCard(i)
+		lastCards = append(lastCards, lastCard)
+	}
+	for i, column := range g.Board {
+		for _, card := range column {
+			if !card.Shown || card.Value == 13 {
+				continue
+			}
+			// see if current shown card can be moved to any of the last cards
+			for k, lastCard := range lastCards {
+				if checkMove(card, lastCard) {
+					moveStr := strconv.FormatInt(int64(i), 10) + strconv.FormatInt(int64(k), 10)
+					moves = append(moves, moveStr)
+				}
+			}
+		}
+	}
+	return moves
+}
+
 func (g Game) GetDeckHints() []string {
 	deckHints := []string{}
 	for _, move := range g.GetDeckMoves() {
@@ -265,7 +288,7 @@ func (g Game) GetDeckHints() []string {
 func (g Game) GetStackHints() []string {
 	stackHints := []string{}
 	// check deck first
-	currentCard, error := g.getCurrentCard()
+	currentCard, error := g.GetCurrentCard()
 	if error != nil {
 		// no current card, nothing to add to stackHints
 	}
@@ -282,4 +305,8 @@ func (g Game) GetStackHints() []string {
 		}
 	}
 	return stackHints
+}
+
+func (g Game) GetBoardHints() []string {
+	return g.GetBoardMoves()
 }

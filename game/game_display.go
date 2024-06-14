@@ -5,7 +5,7 @@ import (
 )
 
 func (g Game) DisplayCurrentCard() string {
-	card, error := g.getCurrentCard()
+	card, error := g.GetCurrentCard()
 	if error != nil {
 
 		if error.Error() == "no cards in the deck" {
