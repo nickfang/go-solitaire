@@ -108,38 +108,6 @@ func NewDeck() Cards {
 	return deck
 }
 
-func NewTestingDeck() (Cards, error) {
-	deck := Cards{}
-	for i := 13; i >= 7; i-- {
-		for _, suit := range CardSuits {
-			card, cardErr := NewCard(i, suit, true)
-			if cardErr != nil {
-				return nil, fmt.Errorf("new deck not created: %s", cardErr.Error())
-			}
-			deck = append(deck, card)
-		}
-	}
-	for _, suit := range CardSuits {
-		for _, value := range []int{3, 2, 1, 6, 5, 4} {
-			card, cardErr := NewCard(value, suit, true)
-			if cardErr != nil {
-				return nil, fmt.Errorf("new deck not created: %s", cardErr.Error())
-			}
-			deck = append(deck, card)
-		}
-	}
-	// for _, suit := range CardSuits {
-	// 	for _, value := range []int{6, 5, 4} {
-	// 		card, cardErr := NewCard(value, suit, true)
-	// 		if cardErr != nil {
-	// 			return nil, fmt.Errorf("new deck not created: %s", cardErr.Error())
-	// 		}
-	// 		deck = append(deck, card)
-	// 	}
-	// }
-	return deck, nil
-}
-
 func (d *Cards) RemoveCard(cardIndex int) Card {
 	length := len(*d)
 	fmt.Println(length)
@@ -161,25 +129,47 @@ func (d *Cards) RandomShuffle() error {
 	return nil
 }
 
+func (d *Cards) TestingShuffle() error {
+	// d = &Cards{}
+	index := 0
+	for i := 13; i >= 7; i-- {
+		for _, suit := range CardSuits {
+			card, cardErr := NewCard(i, suit, true)
+			if cardErr != nil {
+				return fmt.Errorf("new deck not created: %s", cardErr.Error())
+			}
+			(*d)[index] = card
+			index++
+		}
+	}
+	for _, suit := range CardSuits {
+		for _, value := range []int{3, 2, 1, 6, 5, 4} {
+			card, cardErr := NewCard(value, suit, true)
+			if cardErr != nil {
+				return fmt.Errorf("new deck not created: %s", cardErr.Error())
+			}
+			(*d)[index] = card
+			index++
+		}
+	}
+	return nil
+	// for _, suit := range CardSuits {
+	// 	for _, value := range []int{6, 5, 4} {
+	// 		card, cardErr := NewCard(value, suit, true)
+	// 		if cardErr != nil {
+	// 			return nil, fmt.Errorf("new deck not created: %s", cardErr.Error())
+	// 		}
+	// 		deck = append(deck, card)
+	// 	}
+	// }
+}
+
 func (d *Cards) PerfectShuffle() {
 	half1 := [26]Card((*d)[:len(*d)/2])
 	half2 := [26]Card((*d)[len(*d)/2:])
 	for i := 0; i < (len(*d) / 2); i++ {
 		(*d)[i*2] = half1[i]
 		(*d)[(i*2)+1] = half2[i]
-	}
-}
-
-// CLI display
-func (c Card) Display() {
-	if c.Value == 0 {
-		fmt.Print("    ")
-		return
-	}
-	if c.Shown || c.Debug {
-		fmt.Print(c.DisplayMini)
-	} else {
-		fmt.Print("  * ")
 	}
 }
 

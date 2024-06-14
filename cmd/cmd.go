@@ -39,33 +39,34 @@ func HandleMoves(game *game.Game, gameStates gamestates.GameStates) {
 			ShowHelp()
 			continue
 		}
+		if input == "ds" {
+			MoveDeckToStacks(game, gameStates)
+			continue
+		}
+		if input == "rt" {
+			DealTest(game, gameStates)
+			continue
+		}
 		if input == "ss" {
 			ShowGameStates(gameStates)
 			continue
 		}
-		if input == "rt" {
-			fmt.Printf("Not Implemented.\n")
-			// 	DealTest(game, gameStates)
-			// 	continue
-		}
+
 		if input == "fc1" {
 			ChangeFlipCount(game, gameStates)
 			continue
 		}
+		// if moving to and/or from a column
 		if len(input) == 2 {
 			from := string(input[0])
 			to := string(input[1])
 			if from == "d" {
-				if to == "s" {
-					MoveDeckToStacks(game, gameStates)
-					continue
-				} else if slices.Contains(validColumns, to) {
+				if slices.Contains(validColumns, to) {
 					MoveDeckToBoard(to, game, gameStates)
 					continue
 				}
 			}
 			if to == "s" {
-				fmt.Println("from", from, "to", to)
 				if slices.Contains(validColumns, from) {
 					MoveBoardToStacks(from, game, gameStates)
 					continue

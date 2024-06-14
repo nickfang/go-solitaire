@@ -176,7 +176,8 @@ func TestNewDeck(t *testing.T) {
 }
 
 func TestNewTestingDeck(t *testing.T) {
-	deck, err := NewTestingDeck()
+	deck := NewDeck()
+	err := deck.TestingShuffle()
 	if err != nil {
 		t.Error("Expected no error.")
 	}

@@ -75,20 +75,6 @@ func (s Stacks) GetTopCards() Stacks {
 	return stackTops
 }
 
-// CLI Display
-func (s Stacks) Display() {
-	fmt.Print("     [")
-	for _, stack := range s {
-		numCards := len(stack)
-		if numCards == 0 {
-			fmt.Print("    ")
-		} else {
-			stack[numCards-1].Display()
-		}
-	}
-	fmt.Println("]")
-}
-
 // for debugging
 func (s Stacks) Print() {
 	for i, stack := range s {

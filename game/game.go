@@ -190,28 +190,8 @@ func (g *Game) SetFlipCount(flipCount int) error {
 	return nil
 }
 
-// func GetLastCard(column []deck.Card) (int, deck.Card) {
-// 	// turn an array into a slice so it's the right type.
-// 	columnCopy := make([]deck.Card, len(column))
-// 	copy(columnCopy, column[:])
-// 	var lastIndex int
-// 	var lastCard deck.Card
-// 	for i, card := range columnCopy {
-// 		lastIndex = i
-// 		lastCard = card
-// 		if card.Value == 0 {
-// 			if i == 0 {
-// 				return i, card
-// 			}
-// 			return i - 1, columnCopy[i-1]
-// 		}
-// 	}
-// 	return lastIndex, lastCard
-// }
-
 // take the current deck card and return columns that are possible moves
 // for the user the columns are 1 indexed instead of 0 indexed.
-
 func (g Game) GetDeckMoves() []int {
 	moves := []int{}
 	currentCard, error := g.GetCurrentCard()

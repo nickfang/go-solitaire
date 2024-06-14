@@ -104,19 +104,15 @@ func MoveColumnToColumn(input0, input1 string, g *game.Game, gs gamestates.GameS
 	}
 }
 
-// func DealTest(g *game.Game, gs gamestates.GameStates) {
-// 	// if input == "rt" {
-// 	g.Reset()
-// 	deck, err := deck.NewTestingDeck()
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	g.Cards = deck
-// 	g.DealBoard()
-// 	g.Display()
-// 	gs.Reset()
-// 	gs.SaveState(*g)
-// }
+func DealTest(g *game.Game, gs gamestates.GameStates) {
+	// if input == "rt" {
+	g.Reset()
+	g.Cards.TestingShuffle()
+	g.DealBoard()
+	DisplayGame(*g)
+	gs.Reset()
+	gs.SaveState(*g)
+}
 
 func ShowGameStates(gs gamestates.GameStates) {
 	// if input == "ss" {

@@ -82,26 +82,6 @@ func (b Board) GetUserResponse() ([][]string, []int) {
 
 }
 
-// CLI Display
-func (b Board) Display() {
-	displayBoard := [7][19]deck.Card{}
-	maxLen := 0 // add a space so the board isn't cramped with the deck.
-	for i, column := range b {
-		if len(column) > maxLen {
-			maxLen = len(column)
-		}
-		for j, card := range column {
-			displayBoard[i][j] = card
-		}
-	}
-	for y := 0; y < maxLen; y++ {
-		for x := 0; x < 7; x++ {
-			displayBoard[x][y].Display()
-		}
-		fmt.Println()
-	}
-}
-
 // for debugging
 func (b Board) Print() {
 	displayBoard := [7][19]deck.Card{}

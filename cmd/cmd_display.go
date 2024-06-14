@@ -8,26 +8,6 @@ import (
 	"solitaire/game/stacks"
 )
 
-// CLI Display
-func DisplayBoard(b board.Board) {
-	displayBoard := [7][19]deck.Card{}
-	maxLen := 0 // add a space so the board isn't cramped with the deck.
-	for i, column := range b {
-		if len(column) > maxLen {
-			maxLen = len(column)
-		}
-		for j, card := range column {
-			displayBoard[i][j] = card
-		}
-	}
-	for y := 0; y < maxLen; y++ {
-		for x := 0; x < 7; x++ {
-			displayBoard[x][y].Display()
-		}
-		fmt.Println()
-	}
-}
-
 // CLI display
 func DisplayCard(c deck.Card) {
 	if c.Value == 0 {
@@ -42,6 +22,24 @@ func DisplayCard(c deck.Card) {
 }
 
 // CLI Display
+func DisplayBoard(b board.Board) {
+	displayBoard := [7][19]deck.Card{}
+	maxLen := 0 // add a space so the board isn't cramped with the deck.
+	for i, column := range b {
+		if len(column) > maxLen {
+			maxLen = len(column)
+		}
+		copy(displayBoard[i][:], column)
+	}
+	for y := 0; y < maxLen; y++ {
+		for x := 0; x < 7; x++ {
+			DisplayCard(displayBoard[x][y])
+		}
+		fmt.Println()
+	}
+}
+
+// CLI Display
 func DisplayStacks(s stacks.Stacks) {
 	fmt.Print("     [")
 	for _, stack := range s {
@@ -49,7 +47,7 @@ func DisplayStacks(s stacks.Stacks) {
 		if numCards == 0 {
 			fmt.Print("    ")
 		} else {
-			stack[numCards-1].Display()
+			DisplayCard(stack[numCards-1])
 		}
 	}
 	fmt.Println("]")
