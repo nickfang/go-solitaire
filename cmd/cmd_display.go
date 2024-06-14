@@ -8,7 +8,6 @@ import (
 	"solitaire/game/stacks"
 )
 
-// CLI display
 func DisplayCard(c deck.Card) {
 	if c.Value == 0 {
 		fmt.Print("    ")
@@ -21,7 +20,6 @@ func DisplayCard(c deck.Card) {
 	}
 }
 
-// CLI Display
 func DisplayBoard(b board.Board) {
 	displayBoard := [7][19]deck.Card{}
 	maxLen := 0 // add a space so the board isn't cramped with the deck.
@@ -39,7 +37,6 @@ func DisplayBoard(b board.Board) {
 	}
 }
 
-// CLI Display
 func DisplayStacks(s stacks.Stacks) {
 	fmt.Print("     [")
 	for _, stack := range s {
