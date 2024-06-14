@@ -75,9 +75,26 @@ func DisplayGame(g game.Game) {
 	}
 }
 
+func incrementDigits(input string) string {
+	var result []byte
+	for _, char := range input {
+		if char >= '0' && char <= '6' {
+			digit := int(char - '0')
+			digit++
+			result = append(result, byte(digit+'0'))
+		} else {
+			result = append(result, byte(char))
+		}
+	}
+	return string(result)
+}
+
 func DisplayHints(g game.Game) {
 	hints := g.GetDeckHints()
 	hints = append(hints, g.GetStackHints()...)
 	hints = append(hints, g.GetBoardHints()...)
+	for i, hint := range hints {
+		hints[i] = incrementDigits(hint)
+	}
 	fmt.Println("Moves:", hints)
 }
