@@ -126,6 +126,36 @@ func TestNextDeckCard(t *testing.T) {
 
 }
 
+func TestSetFlipcount(t *testing.T) {
+	g := NewGame()
+
+	err := g.SetFlipCount(1)
+	if err != nil {
+		t.Error("Expected no error.")
+	}
+	if g.FlipCount != 1 {
+		t.Error("Expected flip count to be 1.", g.FlipCount)
+	}
+
+	err = g.SetFlipCount(3)
+	if err != nil {
+		t.Error("Expected no error.")
+	}
+	if g.FlipCount != 3 {
+		t.Error("Expected flip count to be 3.", g.FlipCount)
+	}
+
+	err = g.SetFlipCount(0)
+	if err.Error() != "flip count must be 1 or 3" {
+		t.Error("Expected error message not shown.")
+	}
+
+	err = g.SetFlipCount(-1)
+	if err.Error() != "flip count must be 1 or 3" {
+		t.Error("Expected error message not shown.")
+	}
+}
+
 func TextCheckMove(t *testing.T) {
 
 }
@@ -134,8 +164,8 @@ func TestDeepCopy(t *testing.T) {
 	game := NewGame()
 	gameShallow := game
 	gameDeep := game.DeepCopy()
-
 	// Checking each part of the game Cards, Board, Stacks, CurrentCardIndex and FlipCount
+	game.CurrentCardIndex = 0
 	testutils.AssertNoError(t, game.MoveFromDeckToStacks(), "MoveFromDeckToStacks")
 	if !game.Cards[0].IsEqual(gameShallow.Cards[0]) {
 		t.Error("Shallow copies behave unexpectedly.  If you need to make a copy of game, use deep copy.")
@@ -168,6 +198,13 @@ func TestDeepCopy(t *testing.T) {
 		t.Error("Deep copy should not be updated when original is updated.")
 	}
 
+	testutils.AssertNoError(t, game.SetFlipCount(1), "FlipCount")
+	if game.IsEqual(gameShallow) {
+		t.Error("Shallow copies behave unexpectedly.  If you need to make a copy of game, use deep copy.")
+	}
+	if game.IsEqual(gameDeep) {
+		t.Error("Deep copy should not be updated when original is updated.")
+	}
 	// TODO: Test CurrentCardIndex and FlipCount
 }
 

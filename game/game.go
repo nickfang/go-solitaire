@@ -73,13 +73,15 @@ func (g1 Game) IsEqual(g2 Game) bool {
 	equalStacks := g1.Stacks.IsEqual(g2.Stacks)
 	equalBoard := g1.Board.IsEqual(g2.Board)
 	equalCurrentCardIndex := g1.CurrentCardIndex == g2.CurrentCardIndex
+	equalFlipCount := g1.FlipCount == g2.FlipCount
 	if g1.Debug {
 		fmt.Printf("cards: %v\n", equalCards)
 		fmt.Printf("stacks: %v\n", equalStacks)
 		fmt.Printf("board: %v\n", equalBoard)
 		fmt.Printf("index: %v\n", equalCurrentCardIndex)
+		fmt.Printf("flip count: %v\n", equalFlipCount)
 	}
-	if equalCards && equalStacks && equalBoard && equalCurrentCardIndex {
+	if equalCards && equalStacks && equalBoard && equalCurrentCardIndex && equalFlipCount {
 		return true
 	}
 	return false
