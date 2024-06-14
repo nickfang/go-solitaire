@@ -178,9 +178,9 @@ func TestUndo(t *testing.T) {
 	gs.SaveState(game)
 	game.MoveFromColumnToColumn(2, 3)
 	gs.SaveState(game)
+	prevGame := game.DeepCopy()
 	game.SetFlipCount(1)
 	gs.SaveState(game)
-	prevGame := game.DeepCopy()
 
 	stateSize := len(gs.States)
 	undoState := gs.Undo()
