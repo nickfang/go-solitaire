@@ -68,13 +68,13 @@ func DisplayCurrentCard(g game.Game) string {
 }
 
 func DisplayCards(g game.Game) {
-	fmt.Println(g.CurrentCardIndex+1, g.DisplayCurrentCard(), len(g.Cards)-g.CurrentCardIndex)
+	fmt.Println(g.CurrentCardIndex+1, DisplayCurrentCard(g), len(g.Cards)-g.CurrentCardIndex)
 }
 
 func DisplayGame(g game.Game) {
-	g.Stacks.Display()
-	g.Board.Display()
-	g.DisplayCards()
+	DisplayStacks(g.Stacks)
+	DisplayBoard(g.Board)
+	DisplayCards(g)
 	if g.Debug {
 		fmt.Println(g.GetDeckMoves())
 	}

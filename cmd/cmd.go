@@ -91,6 +91,6 @@ func main() {
 	game.Cards.RandomShuffle()
 	game.DealBoard()
 	gameStates.SaveState(game)
-	game.Display()
+	DisplayGame(game)
 	HandleMoves(&game, gameStates)
 }
