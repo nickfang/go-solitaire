@@ -10,9 +10,11 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-func HandleMoves(game *game.Game, gameStates gamestates.GameStates) {
+var ValidColumns = []string{"1", "2", "3", "4", "5", "6", "7"}
+
+func HandleMoves(game *game.Game, gameStates *gamestates.GameStates) {
 	var i string
-	validColumns := []string{"0", "1", "2", "3", "4", "5", "6"}
+	// validColumns := []string{"1", "2", "3", "4", "5", "6", "7"}
 	for {
 		fmt.Scanln(&i)
 		input := strings.ToLower(i)
@@ -28,7 +30,7 @@ func HandleMoves(game *game.Game, gameStates gamestates.GameStates) {
 			continue
 		}
 		if input == "h" {
-			ShowHints(game)
+			DisplayHints(*game)
 			continue
 		}
 		if input == "u" {
@@ -61,18 +63,18 @@ func HandleMoves(game *game.Game, gameStates gamestates.GameStates) {
 			from := string(input[0])
 			to := string(input[1])
 			if from == "d" {
-				if slices.Contains(validColumns, to) {
+				if slices.Contains(ValidColumns, to) {
 					MoveDeckToBoard(to, game, gameStates)
 					continue
 				}
 			}
 			if to == "s" {
-				if slices.Contains(validColumns, from) {
+				if slices.Contains(ValidColumns, from) {
 					MoveBoardToStacks(from, game, gameStates)
 					continue
 				}
 			}
-			if (slices.Contains(validColumns, from) && slices.Contains(validColumns, to)) && from != to {
+			if (slices.Contains(ValidColumns, from) && slices.Contains(ValidColumns, to)) && from != to {
 				MoveColumnToColumn(from, to, game, gameStates)
 				continue
 			}
@@ -93,5 +95,5 @@ func main() {
 	game.DealBoard()
 	gameStates.SaveState(game)
 	DisplayGame(game)
-	HandleMoves(&game, gameStates)
+	HandleMoves(&game, &gameStates)
 }
