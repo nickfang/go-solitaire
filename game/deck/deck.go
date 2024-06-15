@@ -8,9 +8,7 @@ import (
 )
 
 // var CardNumDisplay = [13]string{"Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"}
-var CardNumDisplay = [13]string{"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"}
 var CardSuits = []string{"Spades", "Hearts", "Clubs", "Diamonds"}
-var CardSuitsIcons = []string{"♠", "♥", "♣", "♦"}
 var CardValues = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}
 
 type Card struct {
@@ -19,27 +17,11 @@ type Card struct {
 	Value int
 	Suit  string
 	Color string
-	// display     string
-	DisplayMini string
 }
 
 type Cards []Card
 
 const DeckSize = 52
-
-func getCardDisplay(value int, suit string) (string, error) {
-	if value < 1 || value > 13 {
-		return "", fmt.Errorf("invalid value: %d", value)
-	}
-	if suit != "♠" && suit != "♥" && suit != "♣" && suit != "♦" {
-		return "", fmt.Errorf("invalid suit: %s", suit)
-	}
-	// add a space if the card value is 2 digits
-	if value != 10 {
-		return "  " + CardNumDisplay[value-1] + suit, nil
-	}
-	return " " + CardNumDisplay[value-1] + suit, nil
-}
 
 func getCardColor(suit string) string {
 	if suit == "Spades" || suit == "Clubs" {
@@ -81,11 +63,7 @@ func NewCard(value int, suit string, shown bool) (Card, error) {
 	if suitIndex == -1 {
 		return Card{}, fmt.Errorf("invalid suit: %s", suit)
 	}
-	displayMini, err := getCardDisplay(value, CardSuitsIcons[suitIndex])
-	if err != nil {
-		return Card{}, fmt.Errorf("invalid card display: %s", err)
-	}
-	return Card{false, shown, value, suit, getCardColor(suit), displayMini}, nil
+	return Card{false, shown, value, suit, getCardColor(suit)}, nil
 }
 
 func NewDeck() Cards {

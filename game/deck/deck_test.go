@@ -12,7 +12,6 @@ func TestIsEqualCard(t *testing.T) {
 		1,
 		"Spades",
 		getCardColor("Spades"),
-		"",
 	}
 	card2 := Card{
 		false,
@@ -20,7 +19,6 @@ func TestIsEqualCard(t *testing.T) {
 		1,
 		"Spades",
 		getCardColor("Spades"),
-		"",
 	}
 	if !card1.IsEqual(card2) {
 		t.Error("IsEqual should return true.")

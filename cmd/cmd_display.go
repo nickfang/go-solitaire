@@ -8,13 +8,53 @@ import (
 	"solitaire/game/stacks"
 )
 
+var CardNumDisplay = [13]string{"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"}
+var CardSuitsIcons = []string{"♠", "♥", "♣", "♦"}
+
+func getCardDisplay(value int, suit string) string {
+	if value < 1 || value > 13 {
+		return "Invalid Value for Card"
+	}
+	if suit != "Spades" && suit != "Hearts" && suit != "Clubs" && suit != "Diamonds" {
+		return "Invalid Suit for Card"
+	}
+	displayValue := ""
+	switch {
+	case value == 1:
+		displayValue = " " + CardNumDisplay[0]
+	case value < 10:
+		displayValue = " " + CardNumDisplay[value-1]
+	case value == 10:
+		displayValue = CardNumDisplay[value-1]
+	case value == 11:
+		displayValue = " " + CardNumDisplay[10]
+	case value == 12:
+		displayValue = " " + CardNumDisplay[11]
+	case value == 13:
+		displayValue = " " + CardNumDisplay[12]
+	}
+	switch suit {
+	case "Spades":
+		displayValue += CardSuitsIcons[0]
+	case "Hearts":
+		displayValue += CardSuitsIcons[1]
+	case "Clubs":
+		displayValue += CardSuitsIcons[2]
+	case "Diamonds":
+		displayValue += CardSuitsIcons[3]
+	default:
+		// do nothing, maybe throw error.
+	}
+	return displayValue
+}
+
 func DisplayCard(c deck.Card) {
 	if c.Value == 0 {
 		fmt.Print("    ")
 		return
 	}
 	if c.Shown || c.Debug {
-		fmt.Print(c.DisplayMini)
+		fmt.Print(" " + getCardDisplay(c.Value, c.Suit))
 	} else {
 		fmt.Print("  * ")
 	}
@@ -59,7 +99,7 @@ func DisplayCurrentCard(g game.Game) string {
 		}
 		return error.Error()
 	}
-	return card.DisplayMini
+	return getCardDisplay(card.Value, card.Suit)
 }
 
 func DisplayCards(g game.Game) {
