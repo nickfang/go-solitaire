@@ -12,27 +12,22 @@ var CardNumDisplay = [13]string{"A", "2", "3", "4", "5", "6", "7", "8", "9", "10
 var CardSuitsIcons = []string{"♠", "♥", "♣", "♦"}
 
 func getCardDisplay(value int, suit string) string {
+	if value == 0 {
+		return ""
+	}
 	if value < 1 || value > 13 {
 		return "Invalid Value for Card"
 	}
 	if suit != "Spades" && suit != "Hearts" && suit != "Clubs" && suit != "Diamonds" {
 		return "Invalid Suit for Card"
 	}
+
 	displayValue := ""
-	switch {
-	case value == 1:
-		displayValue = " " + CardNumDisplay[0]
-	case value < 10:
-		displayValue = " " + CardNumDisplay[value-1]
-	case value == 10:
-		displayValue = CardNumDisplay[value-1]
-	case value == 11:
-		displayValue = " " + CardNumDisplay[10]
-	case value == 12:
-		displayValue = " " + CardNumDisplay[11]
-	case value == 13:
-		displayValue = " " + CardNumDisplay[12]
+	if value != 10 {
+		displayValue = " "
 	}
+	displayValue += CardNumDisplay[value-1]
+
 	switch suit {
 	case "Spades":
 		displayValue += CardSuitsIcons[0]
@@ -43,6 +38,7 @@ func getCardDisplay(value int, suit string) string {
 	case "Diamonds":
 		displayValue += CardSuitsIcons[3]
 	default:
+		return "invalid suit: " + suit
 		// do nothing, maybe throw error.
 	}
 	return displayValue
