@@ -104,7 +104,7 @@ func TestNewCard(t *testing.T) {
 	if !c3.IsEqual(Card{}) {
 		t.Error("error while creating card should return default card.")
 	}
-	if err3.Error() != "invalid card display: invalid value: 0" {
+	if err3.Error() != "invalid value: 0" {
 		t.Error("Incorrect error message when value outside range.")
 	}
 
@@ -112,7 +112,7 @@ func TestNewCard(t *testing.T) {
 	if !c4.IsEqual(Card{}) {
 		t.Error("error while creating card should return default card.")
 	}
-	if err4.Error() != "invalid card display: invalid value: 14" {
+	if err4.Error() != "invalid value: 14" {
 		t.Error("Incorrect error message when value outside range.")
 	}
 

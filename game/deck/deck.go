@@ -63,6 +63,9 @@ func NewCard(value int, suit string, shown bool) (Card, error) {
 	if suitIndex == -1 {
 		return Card{}, fmt.Errorf("invalid suit: %s", suit)
 	}
+	if value < 1 || value > 13 {
+		return Card{}, fmt.Errorf("invalid value: %d", value)
+	}
 	return Card{false, shown, value, suit, getCardColor(suit)}, nil
 }
 
