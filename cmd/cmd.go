@@ -12,79 +12,74 @@ import (
 
 var ValidColumns = []string{"1", "2", "3", "4", "5", "6", "7"}
 
-func HandleMoves(game *game.Game, gameStates *gamestates.GameStates) {
-	var i string
-	// validColumns := []string{"1", "2", "3", "4", "5", "6", "7"}
-	for {
-		fmt.Scanln(&i)
-		input := strings.ToLower(i)
-		if input == "q" {
-			break
-		}
-		if input == "n" {
-			NextCard(game, gameStates)
-			continue
-		}
-		if input == "r" {
-			ResetGame(game, gameStates)
-			continue
-		}
-		if input == "h" {
-			DisplayHints(*game)
-			continue
-		}
-		if input == "u" {
-			Undo(game, gameStates)
-			continue
-		}
-		if input == "?" {
-			ShowHelp()
-			continue
-		}
-		if input == "ds" {
-			MoveDeckToStacks(game, gameStates)
-			continue
-		}
-		if input == "rt" {
-			DealTest(game, gameStates)
-			continue
-		}
-		if input == "ss" {
-			ShowGameStates(gameStates)
-			continue
-		}
-
-		if input == "fc1" {
-			ChangeFlipCount(game, gameStates)
-			continue
-		}
-		// if moving to and/or from a column
-		if len(input) == 2 {
-			from := string(input[0])
-			to := string(input[1])
-			if from == "d" {
-				if slices.Contains(ValidColumns, to) {
-					MoveDeckToBoard(to, game, gameStates)
-					continue
-				}
-			}
-			if to == "s" {
-				if slices.Contains(ValidColumns, from) {
-					MoveBoardToStacks(from, game, gameStates)
-					continue
-				}
-			}
-			if (slices.Contains(ValidColumns, from) && slices.Contains(ValidColumns, to)) && from != to {
-				MoveColumnToColumn(from, to, game, gameStates)
-				continue
-			}
-			if from == "s" {
-				// move from stacks to board.
-				fmt.Printf("Not Implemented.\n")
-			}
-		}
-		fmt.Println("Invalid Input.", input)
+func HandleMoves(input string, game *game.Game, gameStates *gamestates.GameStates) error {
+	if input == "q" {
+		return fmt.Errorf("quitting")
 	}
+	if input == "n" {
+		NextCard(game, gameStates)
+		return nil
+	}
+	if input == "r" {
+		ResetGame(game, gameStates)
+		return nil
+	}
+	if input == "h" {
+		DisplayHints(*game)
+		return nil
+	}
+	if input == "u" {
+		Undo(game, gameStates)
+		return nil
+	}
+	if input == "?" {
+		ShowHelp()
+		return nil
+	}
+	if input == "ds" {
+		MoveDeckToStacks(game, gameStates)
+		return nil
+	}
+	if input == "rt" {
+		DealTest(game, gameStates)
+		return nil
+	}
+	if input == "ss" {
+		ShowGameStates(gameStates)
+		return nil
+	}
+
+	if input == "fc1" {
+		ChangeFlipCount(game, gameStates)
+		return nil
+	}
+	// if moving to and/or from a column
+	if len(input) == 2 {
+		from := string(input[0])
+		to := string(input[1])
+		if from == "d" {
+			if slices.Contains(ValidColumns, to) {
+				MoveDeckToBoard(to, game, gameStates)
+				return nil
+			}
+		}
+		if to == "s" {
+			if slices.Contains(ValidColumns, from) {
+				MoveBoardToStacks(from, game, gameStates)
+				return nil
+			}
+		}
+		if (slices.Contains(ValidColumns, from) && slices.Contains(ValidColumns, to)) && from != to {
+			MoveColumnToColumn(from, to, game, gameStates)
+			return nil
+		}
+		if from == "s" {
+			// move from stacks to board.
+			// fmt.Printf("Not Implemented.\n")
+			return fmt.Errorf("not Implemented: %s", input)
+		}
+	}
+	return fmt.Errorf(`invalid Input: %s`, input)
 }
 
 func main() {
@@ -95,5 +90,17 @@ func main() {
 	game.DealBoard()
 	gameStates.SaveState(game)
 	DisplayGame(game)
-	HandleMoves(&game, &gameStates)
+	var i string
+	// validColumns := []string{"1", "2", "3", "4", "5", "6", "7"}
+	for {
+		fmt.Scanln(&i)
+		input := strings.ToLower(i)
+		err := HandleMoves(input, &game, &gameStates)
+		if err != nil {
+			if err.Error() == "quitting" {
+				break
+			}
+			fmt.Println(err)
+		}
+	}
 }

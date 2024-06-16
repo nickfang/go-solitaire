@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"solitaire/game"
+	"solitaire/game/gamestates"
 
 	"testing"
 )
@@ -29,4 +30,25 @@ func TestGetCardDisplay(t *testing.T) {
 			t.Errorf("Expected %s, got %s", expected[i], cardDisplay)
 		}
 	}
+}
+
+func TestFullGame(t *testing.T) {
+	g := game.NewGame()
+	g.Cards.TestingShuffle()
+	g.DealBoard()
+	gs := gamestates.NewGameStates()
+	moves := []string{
+		"ds", "ds", "ds", "n", "ds", "ds", "ds", "n",
+		"ds", "ds", "ds", "n", "ds", "ds", "ds", "n",
+		"ds", "ds", "ds", "n", "ds", "ds", "ds", "n",
+		"ds", "ds", "ds", "n", "ds", "ds", "ds",
+		"7s", "7s", "6s", "76", "64", "7s", "5s", "7s", "3s",
+		"57", "53", "52", "21", "45", "52", "2s", "2s", "6s",
+		"7s", "6s", "2s", "7s", "3s", "2s", "6s", "3s", "2s",
+		"1s", "7s", "6s", "2s", "1s", "4s", "3s", "2s", "1s",
+	}
+	for _, move := range moves {
+		HandleMoves(move, &g, &gs)
+	}
+	t.Fail()
 }
