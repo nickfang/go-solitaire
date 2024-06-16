@@ -99,7 +99,13 @@ func DisplayCurrentCard(g game.Game) string {
 }
 
 func DisplayCards(g game.Game) {
-	fmt.Println(g.CurrentCardIndex+1, DisplayCurrentCard(g), len(g.Cards)-g.CurrentCardIndex)
+	discardLength := g.CurrentCardIndex
+	cardsLeft := len(g.Cards) - g.CurrentCardIndex - 1
+	if g.CurrentCardIndex == -1 {
+		discardLength = 0
+		cardsLeft = len(g.Cards)
+	}
+	fmt.Println(discardLength, DisplayCurrentCard(g), cardsLeft)
 }
 
 func DisplayGame(g game.Game) {
@@ -107,7 +113,8 @@ func DisplayGame(g game.Game) {
 	DisplayBoard(g.Board)
 	DisplayCards(g)
 	if g.Debug {
-		fmt.Println(g.GetDeckMoves())
+		DisplayHints(g)
+
 	}
 }
 

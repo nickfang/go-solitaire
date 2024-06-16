@@ -16,7 +16,6 @@ func NextCard(g *game.Game, gs *gamestates.GameStates) {
 		fmt.Println(nextErr.Error())
 		return
 	}
-	DisplayGame(*g)
 	gs.SaveState(*g)
 }
 
@@ -24,7 +23,6 @@ func ResetGame(g *game.Game, gs *gamestates.GameStates) {
 	g.Reset()
 	g.Cards.RandomShuffle()
 	g.DealBoard()
-	DisplayGame(*g)
 	gs.Reset()
 	gs.SaveState(*g)
 }
@@ -43,7 +41,6 @@ func Undo(g *game.Game, gs *gamestates.GameStates) {
 		lastGameState := gs.Undo()
 		g.SetState(lastGameState)
 	}
-	DisplayGame(*g)
 }
 
 func ShowHelp() {
@@ -63,21 +60,18 @@ func MoveDeckToBoard(input1 string, g *game.Game, gs *gamestates.GameStates) {
 	if slices.Contains(ValidColumns, input1) {
 		columnIndex, _ := strconv.ParseInt(input1, 10, 32)
 		g.MoveFromDeckToBoard(int(columnIndex - 1))
-		DisplayGame(*g)
 		gs.SaveState(*g)
 	}
 }
 
 func MoveDeckToStacks(g *game.Game, gs *gamestates.GameStates) {
 	g.MoveFromDeckToStacks()
-	DisplayGame(*g)
 	gs.SaveState(*g)
 }
 
 func MoveBoardToStacks(input0 string, g *game.Game, gs *gamestates.GameStates) {
 	columnIndex, _ := strconv.ParseInt(input0, 10, 32)
 	g.MoveFromBoardToStacks(int(columnIndex - 1))
-	DisplayGame(*g)
 	gs.SaveState(*g)
 }
 
@@ -86,7 +80,6 @@ func MoveColumnToColumn(input0, input1 string, g *game.Game, gs *gamestates.Game
 		fromColumn, _ := strconv.ParseInt(input0, 10, 32)
 		toColumn, _ := strconv.ParseInt(input1, 10, 32)
 		g.MoveFromColumnToColumn(int(fromColumn-1), int(toColumn-1))
-		DisplayGame(*g)
 		gs.SaveState(*g)
 	}
 }
@@ -95,7 +88,6 @@ func DealTest(g *game.Game, gs *gamestates.GameStates) {
 	g.Reset()
 	g.Cards.TestingShuffle()
 	g.DealBoard()
-	DisplayGame(*g)
 	gs.Reset()
 	gs.SaveState(*g)
 }
@@ -107,6 +99,5 @@ func ShowGameStates(gs *gamestates.GameStates) {
 func ChangeFlipCount(g *game.Game, gs *gamestates.GameStates) {
 	g.SetFlipCount(1)
 	fmt.Println("Easy mode.")
-	DisplayGame(*g)
 	gs.SaveState(*g)
 }
