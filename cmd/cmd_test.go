@@ -31,11 +31,6 @@ func TestGetCardDisplay(t *testing.T) {
 		}
 	}
 }
-<<<<<<< Updated upstream
-=======
-<<<<<<< Updated upstream
-=======
->>>>>>> Stashed changes
 
 func TestFullGame(t *testing.T) {
 	g := game.NewGame()
@@ -53,7 +48,7 @@ func TestFullGame(t *testing.T) {
 		"1s", "7s", "6s", "2s", "1s", "4s", "3s", "2s", "1s",
 	}
 	for _, move := range moves {
-  // TODO: return error from HandleMoves so the moves can be tested.
+		// TODO: return error from HandleMoves so the moves can be tested.
 		HandleMoves(move, &g, &gs)
 	}
 }

@@ -105,5 +105,6 @@ func main() {
 		if input != "ss" && input != "h" && input != "?" {
 			DisplayGame(game)
 		}
+
 	}
 }
