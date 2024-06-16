@@ -110,6 +110,16 @@ func (d *Cards) RandomShuffle() error {
 	return nil
 }
 
+func (d *Cards) PerfectShuffle() {
+	half1 := [26]Card((*d)[:len(*d)/2])
+	half2 := [26]Card((*d)[len(*d)/2:])
+	for i := 0; i < (len(*d) / 2); i++ {
+		(*d)[i*2] = half1[i]
+		(*d)[(i*2)+1] = half2[i]
+	}
+}
+
+// Used for debugging and testing.  Changes to this function will break tests
 func (d *Cards) TestingShuffle() error {
 	// d = &Cards{}
 	index := 0
@@ -134,24 +144,6 @@ func (d *Cards) TestingShuffle() error {
 		}
 	}
 	return nil
-	// for _, suit := range CardSuits {
-	// 	for _, value := range []int{6, 5, 4} {
-	// 		card, cardErr := NewCard(value, suit, true)
-	// 		if cardErr != nil {
-	// 			return nil, fmt.Errorf("new deck not created: %s", cardErr.Error())
-	// 		}
-	// 		deck = append(deck, card)
-	// 	}
-	// }
-}
-
-func (d *Cards) PerfectShuffle() {
-	half1 := [26]Card((*d)[:len(*d)/2])
-	half2 := [26]Card((*d)[len(*d)/2:])
-	for i := 0; i < (len(*d) / 2); i++ {
-		(*d)[i*2] = half1[i]
-		(*d)[(i*2)+1] = half2[i]
-	}
 }
 
 // Used for debugging
