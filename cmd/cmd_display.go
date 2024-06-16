@@ -113,7 +113,8 @@ func DisplayGame(g game.Game) {
 	DisplayBoard(g.Board)
 	DisplayCards(g)
 	if g.Debug {
-		fmt.Println(g.GetDeckMoves())
+		DisplayHints(g)
+
 	}
 }
 
