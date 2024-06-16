@@ -100,7 +100,7 @@ func DisplayCurrentCard(g game.Game) string {
 
 func DisplayCards(g game.Game) {
 	discardLength := g.CurrentCardIndex
-	cardsLeft := len(g.Cards) - g.CurrentCardIndex
+	cardsLeft := len(g.Cards) - g.CurrentCardIndex - 1
 	if g.CurrentCardIndex == -1 {
 		discardLength = 0
 		cardsLeft = len(g.Cards)

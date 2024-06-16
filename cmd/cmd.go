@@ -102,5 +102,8 @@ func main() {
 			}
 			fmt.Println(err)
 		}
+		if input != "ss" && input != "h" && input != "?" {
+			DisplayGame(game)
+		}
 	}
 }
