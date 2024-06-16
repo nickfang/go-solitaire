@@ -58,7 +58,7 @@ func TestIsEqual(t *testing.T) {
 		t.Error("Shuffled decks should not be equal.")
 	}
 
-	for i := 0; i < NumCards; i++ {
+	for i := 0; i < deck.DeckSize; i++ {
 		game1.Cards.RemoveCard(0)
 	}
 	if game1.IsEqual(game2) {
@@ -66,7 +66,7 @@ func TestIsEqual(t *testing.T) {
 	}
 
 	game1 = NewGame()
-	for i := 0; i < NumCards; i++ {
+	for i := 0; i < deck.DeckSize; i++ {
 		game1.MoveFromDeckToStacks()
 	}
 	if game1.IsEqual(game2) {

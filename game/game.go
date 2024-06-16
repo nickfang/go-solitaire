@@ -19,8 +19,6 @@ type Game struct {
 	Debug            bool
 }
 
-const NumCards = 52
-const NumColumns = 7
 const DefaultFlipCount = 3
 
 func checkMove(card deck.Card, toCard deck.Card) bool {
@@ -102,25 +100,22 @@ func (g *Game) SetDebug(onOff bool) {
 func (g *Game) DealBoard() {
 	// a board of solitare is 7 columns of cards
 	// the first column has 1 card, the second has 2, etc.
-	cards := g.Cards
-	board := g.Board
+	gameCards := g.Cards
+	gameBoard := g.Board
 	currentCardIndex := DefaultFlipCount - 1
 
-	for i := 0; i < NumColumns; i++ {
-		for j := i; j < NumColumns; j++ {
-			// fmt.Println(i, j, cards[j-i])
-			board[j] = append(board[j], cards[j-i])
-			// fmt.Println(board[j])
+	for i := 0; i < board.NumColumns; i++ {
+		for j := i; j < board.NumColumns; j++ {
+			gameBoard[j] = append(gameBoard[j], gameCards[j-i])
 			if j == i {
-				board[i][j].Shown = true
+				gameBoard[i][j].Shown = true
 			}
 		}
-		cards = cards[7-i:]
-		// fmt.Println(cards)
+		gameCards = gameCards[7-i:]
 	}
-	cards[currentCardIndex].Shown = true
-	g.Cards = cards
-	g.Board = board
+	gameCards[currentCardIndex].Shown = true
+	g.Cards = gameCards
+	g.Board = gameBoard
 	g.CurrentCardIndex = currentCardIndex
 }
 
