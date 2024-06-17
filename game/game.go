@@ -11,6 +11,7 @@ import (
 )
 
 type Game struct {
+	Id               string
 	Cards            deck.Cards
 	Board            board.Board
 	Stacks           stacks.Stacks
@@ -54,8 +55,12 @@ func (g *Game) pruneColumn(column int, index int) []deck.Card {
 
 /* Exported Functions */
 
-func NewGame() Game {
-	return Game{deck.NewDeck(), board.NewBoard(), stacks.NewStacks(), DefaultFlipCount - 1, DefaultFlipCount, false}
+func NewGame(id string) Game {
+	newId := id
+	if id == "" {
+		newId = "main"
+	}
+	return Game{newId, deck.NewDeck(), board.NewBoard(), stacks.NewStacks(), DefaultFlipCount - 1, DefaultFlipCount, false}
 }
 
 func (g *Game) Reset() {

@@ -9,7 +9,7 @@ import (
 )
 
 func TestDealBoard(t *testing.T) {
-	g := game.NewGame()
+	g := game.NewGame("")
 	fmt.Println(g)
 	g.DealBoard()
 	// g.SetDebug(true)
@@ -33,7 +33,7 @@ func TestGetCardDisplay(t *testing.T) {
 }
 
 func TestFullGame(t *testing.T) {
-	g := game.NewGame()
+	g := game.NewGame("")
 	g.Cards.TestingShuffle()
 	g.DealBoard()
 	gs := gamestates.NewGameStates()

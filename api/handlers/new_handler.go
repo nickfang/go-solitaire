@@ -26,7 +26,7 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 	// fmt.Println("Body:")
 	// fmt.Println(body)
 
-	newGame := game.NewGame()
+	newGame := game.NewGame("")
 	newGameStates := gamestates.NewGameStates()
 	id, err := solitairestore.New().SaveGame(newGame, newGameStates)
 	if err != nil {
