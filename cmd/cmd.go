@@ -29,8 +29,8 @@ func HandleMoves(input string, game *game.Game, gameStates *gamestates.GameState
 		return nil
 	}
 	if input == "u" {
-		Undo(game, gameStates)
-		return nil
+		err := Undo(game, gameStates)
+		return err
 	}
 	if input == "?" {
 		ShowHelp()
