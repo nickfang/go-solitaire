@@ -20,12 +20,19 @@ type Game struct {
 	Debug            bool
 }
 
+type BoardMove struct {
+	FromColumn int
+	FromRow    int
+	ToColumn   int
+}
+
 const DefaultFlipCount = 3
 
 func checkMove(card deck.Card, toCard deck.Card) bool {
 	if card.Value == toCard.Value-1 && card.Color != toCard.Color {
 		return true
 	} else if card.Value == 13 && toCard.Value == 0 {
+		// special case, if a column is empty, we return a default card which has a value of 0
 		return true
 	}
 	return false
@@ -127,6 +134,15 @@ func (g *Game) SetFlipCount(flipCount int) error {
 	return nil
 }
 
+func (g Game) IsWon() bool {
+	for _, stack := range g.Stacks {
+		if len(stack) != 13 {
+			return false
+		}
+	}
+	return true
+}
+
 // take the current deck card and return columns that are possible moves
 // for the user the columns are 1 indexed instead of 0 indexed.
 func (g Game) GetDeckMoves() []int {
@@ -169,23 +185,25 @@ func (g Game) GetStackMoves(card deck.Card) (int, bool) {
 	return suitIndex, false
 }
 
-func (g Game) GetBoardMoves() []string {
-	moves := []string{}
+func (g Game) GetBoardMoves() []BoardMove {
+	moves := []BoardMove{}
 	lastCards := deck.Cards{}
 	for i := range g.Board {
 		_, lastCard := g.Board.GetLastCard(i)
 		lastCards = append(lastCards, lastCard)
 	}
 	for i, column := range g.Board {
-		for _, card := range column {
-			if !card.Shown || card.Value == 13 {
+		for j, card := range column {
+			if !card.Shown {
 				continue
 			}
+			// fmt.Println("card", card, i, j)
 			// see if current shown card can be moved to any of the last cards
 			for k, lastCard := range lastCards {
 				if checkMove(card, lastCard) {
-					moveStr := strconv.FormatInt(int64(i), 10) + strconv.FormatInt(int64(k), 10)
-					moves = append(moves, moveStr)
+					boardMove := BoardMove{i, j, k}
+					// moveStr := strconv.FormatInt(int64(i), 10) + strconv.FormatInt(int64(k), 10)
+					moves = append(moves, boardMove)
 				}
 			}
 		}
@@ -226,5 +244,10 @@ func (g Game) GetStackHints() []string {
 }
 
 func (g Game) GetBoardHints() []string {
-	return g.GetBoardMoves()
+	hints := []string{}
+	for _, move := range g.GetBoardMoves() {
+		moveStr := strconv.FormatInt(int64(move.FromColumn), 10) + strconv.FormatInt(int64(move.ToColumn), 10)
+		hints = append(hints, moveStr)
+	}
+	return hints
 }

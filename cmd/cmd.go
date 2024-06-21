@@ -59,18 +59,27 @@ func HandleMoves(input string, game *game.Game, gameStates *gamestates.GameState
 		to := string(input[1])
 		if from == "d" {
 			if slices.Contains(ValidColumns, to) {
-				MoveDeckToBoard(to, game, gameStates)
+				error := MoveDeckToBoard(to, game, gameStates)
+				if error != nil {
+					return error
+				}
 				return nil
 			}
 		}
 		if to == "s" {
 			if slices.Contains(ValidColumns, from) {
-				MoveBoardToStacks(from, game, gameStates)
+				error := MoveBoardToStacks(from, game, gameStates)
+				if error != nil {
+					return error
+				}
 				return nil
 			}
 		}
 		if (slices.Contains(ValidColumns, from) && slices.Contains(ValidColumns, to)) && from != to {
-			MoveColumnToColumn(from, to, game, gameStates)
+			error := MoveColumnToColumn(from, to, game, gameStates)
+			if error != nil {
+				return error
+			}
 			return nil
 		}
 		if from == "s" {

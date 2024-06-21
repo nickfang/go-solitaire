@@ -1,6 +1,7 @@
 package board
 
 import (
+	"fmt"
 	"solitaire/game/deck"
 	"testing"
 )
@@ -35,13 +36,14 @@ func TestNewBoard(t *testing.T) {
 func TestGetLastCard(t *testing.T) {
 	b := NewBoard()
 	index, card := b.GetLastCard(0)
-	if index != 0 {
-		t.Error("Index should be 0, but is ", index)
+	fmt.Println(index, card)
+	if index != -1 {
+		t.Error("Index should be -1, but is ", index)
 	}
 	if card.Value != 0 {
 		t.Error("Card should be 0, but is ", card.Value)
 	}
-
+	t.Fail()
 	card1, _ := deck.NewCard(1, "Spades", false)
 	b[1] = append(b[1], card1)
 	index, card = b.GetLastCard(1)

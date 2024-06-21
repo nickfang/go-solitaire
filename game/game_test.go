@@ -7,6 +7,34 @@ import (
 	"testing"
 )
 
+func TestCheckMove(t *testing.T) {
+	g := NewGame("")
+	card1, _ := deck.NewCard(1, "Spades", false)
+	card2, _ := deck.NewCard(2, "Spades", false)
+	card3, _ := deck.NewCard(2, "Hearts", false)
+	card4, _ := deck.NewCard(13, "Spades", false)
+	card5, _ := deck.NewCard(13, "Hearts", false)
+
+	g.Board[0] = append(g.Board[0], card1)
+	g.Board[1] = append(g.Board[1], card2)
+	g.Board[2] = append(g.Board[2], card3)
+	g.Board[3] = append(g.Board[3], card4)
+	g.Board[4] = append(g.Board[4], card5)
+	g.Board[5] = append(g.Board[5], deck.Card{})
+	if checkMove(g.Board[0][0], g.Board[1][0]) {
+		t.Error("Move should be invalid.")
+	}
+	if !checkMove(g.Board[0][0], g.Board[2][0]) {
+		t.Error("Move should be valid.")
+	}
+	if !checkMove(g.Board[3][0], g.Board[5][0]) {
+		t.Error("Move should be valid.")
+	}
+	if !checkMove(g.Board[4][0], g.Board[5][0]) {
+		t.Error("Move should be valid.")
+	}
+}
+
 func TestNewGame(t *testing.T) {
 	g := NewGame("")
 
@@ -224,3 +252,10 @@ func TestDeepCopy(t *testing.T) {
 // TODO: test doing an undo and then trying to go to the next card
 
 // TODO: test
+
+func TestMoveColumnToColumn(t *testing.T) {
+	g := NewGame("")
+	g.Cards.TestingShuffle()
+	g.DealBoard()
+	// moves := []string{"54", "53"}
+}

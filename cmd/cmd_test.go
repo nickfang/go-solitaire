@@ -33,6 +33,7 @@ func TestGetCardDisplay(t *testing.T) {
 }
 
 func TestFullGame(t *testing.T) {
+	// This really only needs to test that the move strings call the correct functions.
 	g := game.NewGame("")
 	g.Cards.TestingShuffle()
 	g.DealBoard()
@@ -43,12 +44,18 @@ func TestFullGame(t *testing.T) {
 		"ds", "ds", "ds", "n", "ds", "ds", "ds", "n",
 		"ds", "ds", "ds", "n", "ds", "ds", "ds",
 		"7s", "7s", "6s", "76", "64", "7s", "5s", "7s", "3s",
-		"57", "53", "52", "21", "45", "52", "2s", "2s", "6s",
-		"7s", "6s", "2s", "7s", "3s", "2s", "6s", "3s", "2s",
-		"1s", "7s", "6s", "2s", "1s", "4s", "3s", "2s", "1s",
+		"57", "53", "52", "21", "52", "43", "3s", "3s", "6s",
+		"7s", "6s", "3s", "7s", "3s", "4s", "6s", "3s", "2s",
+		"1s", "4s", "6s", "2s", "74", "12", "2s", "4s", "2s", "3s", "4s",
 	}
 	for _, move := range moves {
-		// TODO: return error from HandleMoves so the moves can be tested.
-		HandleMoves(move, &g, &gs)
+		error := HandleMoves(move, &g, &gs)
+		if error != nil {
+			t.Errorf("Error making move: %s - %s", move, error)
+			return
+		}
+	}
+	if !g.IsWon() {
+		t.Errorf("Game not won")
 	}
 }

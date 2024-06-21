@@ -71,3 +71,18 @@ func (g *Game) pruneColumn(column int, index int) []deck.Card {
 	g.Board[column] = g.Board[column][:index]
 	return removed
 }
+
+func (g Game) CheckGame() error {
+	numCards := 0
+	for _, stack := range g.Stacks {
+		numCards += len(stack)
+	}
+	for _, column := range g.Board {
+		numCards += len(column)
+	}
+	numCards += len(g.Cards)
+	if numCards != 52 {
+		return fmt.Errorf("invalid game state: %d cards", numCards)
+	}
+	return nil
+}

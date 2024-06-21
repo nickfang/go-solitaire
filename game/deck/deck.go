@@ -125,6 +125,33 @@ func (d *Cards) TestingShuffle() error {
 	index := 0
 	for i := 13; i >= 7; i-- {
 		for _, suit := range CardSuits {
+			card, cardErr := NewCard(i, suit, false)
+			if cardErr != nil {
+				return fmt.Errorf("new deck not created: %s", cardErr.Error())
+			}
+			(*d)[index] = card
+			index++
+		}
+	}
+	for _, suit := range CardSuits {
+		for _, value := range []int{3, 2, 1, 6, 5, 4} {
+			card, cardErr := NewCard(value, suit, false)
+			if cardErr != nil {
+				return fmt.Errorf("new deck not created: %s", cardErr.Error())
+			}
+			(*d)[index] = card
+			index++
+		}
+	}
+	return nil
+}
+
+// Used for debugging and testing.  Changes to this function will break tests
+func (d *Cards) DebugShuffle() error {
+	// d = &Cards{}
+	index := 0
+	for i := 13; i >= 7; i-- {
+		for _, suit := range CardSuits {
 			card, cardErr := NewCard(i, suit, true)
 			if cardErr != nil {
 				return fmt.Errorf("new deck not created: %s", cardErr.Error())
@@ -148,6 +175,10 @@ func (d *Cards) TestingShuffle() error {
 
 // Used for debugging
 func (c Card) Print() {
+	if !c.Shown && c.Value != 0 {
+		fmt.Print("[ * ]")
+		return
+	}
 	suit := " "
 	if len(c.Suit) > 0 {
 		if c.Color == "Red" {

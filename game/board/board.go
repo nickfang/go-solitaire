@@ -48,6 +48,9 @@ func (b Board) getColumnInfo(column int) {
 func (b Board) GetLastCard(column int) (int, deck.Card) {
 	var lastIndex int
 	var lastCard deck.Card
+	if len(b[column]) == 0 {
+		return -1, deck.Card{}
+	}
 	for i, card := range b[column] {
 		lastIndex = i
 		lastCard = card
@@ -60,28 +63,6 @@ func (b Board) GetLastCard(column int) (int, deck.Card) {
 	}
 	return lastIndex, lastCard
 }
-
-// TODO: This goes in the serializer
-// func (b Board) GetUserResponse() ([][]string, []int) {
-// 	columnCards := make([][]string, 7)
-// 	columnNumHidden := make([]int, 7)
-// 	for i, column := range b {
-// 		columnCards[i] = []string{}
-// 		numCards := len(column)
-// 		if numCards == 0 {
-// 			continue
-// 		}
-// 		for _, cell := range column {
-// 			if !cell.Shown {
-// 				columnNumHidden[i] += 1
-// 				continue
-// 			}
-// 			columnCards[i] = append(columnCards[i], cell.DisplayMini)
-// 		}
-// 	}
-// 	return columnCards, columnNumHidden
-
-// }
 
 // for debugging
 func (b Board) Print() {

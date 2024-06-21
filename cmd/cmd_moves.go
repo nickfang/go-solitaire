@@ -39,23 +39,23 @@ func ShowHints(g *game.Game) {
 func Undo(g *game.Game, gs *gamestates.GameStates) error {
 	if len(gs.States) <= 1 {
 		return errors.New("no moves to undo")
-	} else {
-		lastGameState := gs.Undo()
-		g.GetState(lastGameState)
 	}
+	lastGameState := gs.Undo()
+	g.GetState(lastGameState)
 	return nil
 }
 
 func MoveDeckToBoard(input1 string, g *game.Game, gs *gamestates.GameStates) error {
-	if slices.Contains(ValidColumns, input1) {
-		columnIndex, _ := strconv.ParseInt(input1, 10, 32)
-		error := g.MoveFromDeckToBoard(int(columnIndex - 1))
-		if error != nil {
-			return error
-		}
-		gs.SaveState(*g)
+	if !slices.Contains(ValidColumns, input1) {
+		return errors.New("invalid column: " + input1)
 	}
-	return errors.New("invalid column: " + input1)
+	columnIndex, _ := strconv.ParseInt(input1, 10, 32)
+	error := g.MoveFromDeckToBoard(int(columnIndex - 1))
+	if error != nil {
+		return error
+	}
+	gs.SaveState(*g)
+	return nil
 }
 
 func MoveDeckToStacks(g *game.Game, gs *gamestates.GameStates) error {
@@ -78,16 +78,19 @@ func MoveBoardToStacks(input0 string, g *game.Game, gs *gamestates.GameStates) e
 }
 
 func MoveColumnToColumn(input0, input1 string, g *game.Game, gs *gamestates.GameStates) error {
-	if (slices.Contains(ValidColumns, input0) && slices.Contains(ValidColumns, input1)) && input0 != input1 {
-		fromColumn, _ := strconv.ParseInt(input0, 10, 32)
-		toColumn, _ := strconv.ParseInt(input1, 10, 32)
-		error := g.MoveFromColumnToColumn(int(fromColumn-1), int(toColumn-1))
-		if error != nil {
-			return error
-		}
-		gs.SaveState(*g)
+	if (!slices.Contains(ValidColumns, input0) || !slices.Contains(ValidColumns, input1)) || input0 == input1 {
+		return errors.New("invalid move input")
 	}
-	return errors.New("invalid move")
+
+	fromColumn, _ := strconv.ParseInt(input0, 10, 32)
+	toColumn, _ := strconv.ParseInt(input1, 10, 32)
+	error := g.MoveFromColumnToColumn(int(fromColumn-1), int(toColumn-1))
+	if error != nil {
+		return error
+	}
+
+	gs.SaveState(*g)
+	return nil
 }
 
 func DealTest(g *game.Game, gs *gamestates.GameStates) {
@@ -98,8 +101,12 @@ func DealTest(g *game.Game, gs *gamestates.GameStates) {
 	gs.SaveState(*g)
 }
 
+func ShowGameState(gs *gamestates.GameStates) {
+	gs.PrintLast()
+}
+
 func ShowGameStates(gs *gamestates.GameStates) {
-	gs.Print()
+	gs.PrintAll()
 }
 
 func ChangeFlipCount(g *game.Game, gs *gamestates.GameStates) {
