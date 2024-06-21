@@ -98,9 +98,6 @@ func (d *Cards) RemoveCard(cardIndex int) Card {
 }
 
 func (d *Cards) RandomShuffle() error {
-	if d == nil {
-		return errors.New("deck object required to shuffle cards")
-	}
 	source := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(source)
 	for i := range *d {

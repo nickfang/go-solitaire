@@ -41,9 +41,9 @@ func NewBoard() Board {
 // 	return removed
 // }
 
-func (b Board) getColumnInfo(column int) {
-	// TODO:
-}
+// func (b Board) getColumnInfo(column int) {
+// 	// TODO:
+// }
 
 func (b Board) GetLastCard(column int) (int, deck.Card) {
 	var lastIndex int
