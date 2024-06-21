@@ -5,6 +5,7 @@ import (
 )
 
 func (g Game) Print() {
+	fmt.Println("ID: ", g.Id)
 	g.Stacks.Print()
 	g.Board.Print()
 	g.Cards.Print()

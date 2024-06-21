@@ -1,7 +1,7 @@
 package deck
 
 import (
-	"errors"
+	// "errors"
 	"fmt"
 	"math/rand"
 	"time"
@@ -89,18 +89,20 @@ func NewDeck() Cards {
 	return deck
 }
 
-func (d *Cards) RemoveCard(cardIndex int) Card {
+func (d *Cards) RemoveCard(cardIndex int) (Card, error) {
+	if len(*d) == 0 {
+		return Card{}, fmt.Errorf("deck is empty")
+	}
+	if cardIndex < 0 || cardIndex >= len(*d) {
+		return Card{}, fmt.Errorf("invalid card index: %d", cardIndex)
+	}
 	length := len(*d)
-	fmt.Println(length)
 	card := (*d)[cardIndex]
 	*d = append((*d)[:cardIndex], (*d)[cardIndex+1:length]...)
-	return card
+	return card, nil
 }
 
 func (d *Cards) RandomShuffle() error {
-	if d == nil {
-		return errors.New("deck object required to shuffle cards")
-	}
 	source := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(source)
 	for i := range *d {
@@ -121,6 +123,33 @@ func (d *Cards) PerfectShuffle() {
 
 // Used for debugging and testing.  Changes to this function will break tests
 func (d *Cards) TestingShuffle() error {
+	// d = &Cards{}
+	index := 0
+	for i := 13; i >= 7; i-- {
+		for _, suit := range CardSuits {
+			card, cardErr := NewCard(i, suit, false)
+			if cardErr != nil {
+				return fmt.Errorf("new deck not created: %s", cardErr.Error())
+			}
+			(*d)[index] = card
+			index++
+		}
+	}
+	for _, suit := range CardSuits {
+		for _, value := range []int{3, 2, 1, 6, 5, 4} {
+			card, cardErr := NewCard(value, suit, false)
+			if cardErr != nil {
+				return fmt.Errorf("new deck not created: %s", cardErr.Error())
+			}
+			(*d)[index] = card
+			index++
+		}
+	}
+	return nil
+}
+
+// Used for debugging and testing.  Changes to this function will break tests
+func (d *Cards) DebugShuffle() error {
 	// d = &Cards{}
 	index := 0
 	for i := 13; i >= 7; i-- {
@@ -148,6 +177,10 @@ func (d *Cards) TestingShuffle() error {
 
 // Used for debugging
 func (c Card) Print() {
+	if !c.Shown && c.Value != 0 {
+		fmt.Print("[ * ]")
+		return
+	}
 	suit := " "
 	if len(c.Suit) > 0 {
 		if c.Color == "Red" {

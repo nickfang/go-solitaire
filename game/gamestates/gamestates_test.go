@@ -10,7 +10,7 @@ type Game game.Game
 
 // Helper function to create a simple test game state
 func createTestGameState() game.Game {
-	game := game.NewGame()
+	game := game.NewGame("")
 	return game
 }
 

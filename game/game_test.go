@@ -7,8 +7,60 @@ import (
 	"testing"
 )
 
+func TestCheckMove(t *testing.T) {
+	g := NewGame("")
+	card1, _ := deck.NewCard(1, "Spades", false)
+	card2, _ := deck.NewCard(2, "Spades", false)
+	card3, _ := deck.NewCard(2, "Hearts", false)
+	card4, _ := deck.NewCard(13, "Spades", false)
+	card5, _ := deck.NewCard(13, "Hearts", false)
+
+	g.Board[0] = append(g.Board[0], card1)
+	g.Board[1] = append(g.Board[1], card2)
+	g.Board[2] = append(g.Board[2], card3)
+	g.Board[3] = append(g.Board[3], card4)
+	g.Board[4] = append(g.Board[4], card5)
+	g.Board[5] = append(g.Board[5], deck.Card{})
+	if checkMove(g.Board[0][0], g.Board[1][0]) {
+		t.Error("Move should be invalid.")
+	}
+	if !checkMove(g.Board[0][0], g.Board[2][0]) {
+		t.Error("Move should be valid.")
+	}
+	if !checkMove(g.Board[3][0], g.Board[5][0]) {
+		t.Error("Move should be valid.")
+	}
+	if !checkMove(g.Board[4][0], g.Board[5][0]) {
+		t.Error("Move should be valid.")
+	}
+}
+
+func TestNewGame(t *testing.T) {
+	g := NewGame("")
+
+	g.Print()
+	if g.Id != "main" {
+		t.Error("Expected game id to be 'main'.")
+	}
+	if len(g.Cards) != 52 {
+		t.Error("Wrong number of cards in the deck.")
+	}
+	if g.CurrentCardIndex != DefaultFlipCount-1 {
+		t.Error("Expected current card index to be 2.", g.CurrentCardIndex)
+	}
+	if g.FlipCount != DefaultFlipCount {
+		t.Error("Expected flip count to be 3.", g.FlipCount)
+	}
+
+	g = NewGame("test")
+	if g.Id != "test" {
+		t.Error("Expected game id to be 'test'.")
+	}
+
+}
+
 func TestGetCurrentCard(t *testing.T) {
-	game := NewGame()
+	game := NewGame("")
 	card, err := game.GetCurrentCard()
 	if err != nil {
 		t.Error("Expected no error.")
@@ -46,8 +98,8 @@ func TestGetCurrentCard(t *testing.T) {
 }
 
 func TestIsEqual(t *testing.T) {
-	game1 := NewGame()
-	game2 := NewGame()
+	game1 := NewGame("")
+	game2 := NewGame("")
 	if !game1.IsEqual(game2) {
 		t.Error("Initial game state should be equal.")
 	}
@@ -65,7 +117,7 @@ func TestIsEqual(t *testing.T) {
 		t.Error("Empty deck should not be equal to another deck.")
 	}
 
-	game1 = NewGame()
+	game1 = NewGame("")
 	for i := 0; i < deck.DeckSize; i++ {
 		game1.MoveFromDeckToStacks()
 	}
@@ -74,19 +126,8 @@ func TestIsEqual(t *testing.T) {
 	}
 }
 
-func TestNewGame(t *testing.T) {
-	g := NewGame()
-
-	if len(g.Cards) != 52 {
-		t.Error("Wrong number of cards in the deck.")
-	}
-	if g.CurrentCardIndex != DefaultFlipCount-1 {
-		t.Error("Expected current card index to be 2.", g.CurrentCardIndex)
-	}
-}
-
 func TestNextDeckCard(t *testing.T) {
-	g := NewGame()
+	g := NewGame("")
 
 	err := g.NextDeckCard()
 	if err != nil {
@@ -127,7 +168,7 @@ func TestNextDeckCard(t *testing.T) {
 }
 
 func TestSetFlipcount(t *testing.T) {
-	g := NewGame()
+	g := NewGame("")
 
 	err := g.SetFlipCount(1)
 	if err != nil {
@@ -161,7 +202,7 @@ func TextCheckMove(t *testing.T) {
 }
 
 func TestDeepCopy(t *testing.T) {
-	game := NewGame()
+	game := NewGame("")
 	gameShallow := game
 	gameDeep := game.DeepCopy()
 	// Checking each part of the game Cards, Board, Stacks, CurrentCardIndex and FlipCount
@@ -211,3 +252,10 @@ func TestDeepCopy(t *testing.T) {
 // TODO: test doing an undo and then trying to go to the next card
 
 // TODO: test
+
+func TestMoveColumnToColumn(t *testing.T) {
+	g := NewGame("")
+	g.Cards.TestingShuffle()
+	g.DealBoard()
+	// moves := []string{"54", "53"}
+}

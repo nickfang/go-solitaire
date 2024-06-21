@@ -12,6 +12,23 @@ func TestIsEqual(t *testing.T) {
 	if !equal {
 		t.Error("Empty boards should be equal.")
 	}
+	card1, _ := deck.NewCard(1, "Spades", false)
+	card2, _ := deck.NewCard(2, "Spades", false)
+	board[0] = append(board[0], card1)
+	equal = board.IsEqual(board2)
+	if equal {
+		t.Error("Boards should not be equal.")
+	}
+	board2[0] = append(board2[0], card1)
+	equal = board.IsEqual(board2)
+	if !equal {
+		t.Error("Boards should be equal.")
+	}
+	board2[0][0] = card2
+	equal = board.IsEqual(board2)
+	if equal {
+		t.Error("Boards should not be equal.")
+	}
 
 }
 
@@ -35,13 +52,12 @@ func TestNewBoard(t *testing.T) {
 func TestGetLastCard(t *testing.T) {
 	b := NewBoard()
 	index, card := b.GetLastCard(0)
-	if index != 0 {
-		t.Error("Index should be 0, but is ", index)
+	if index != -1 {
+		t.Error("Index should be -1, but is ", index)
 	}
 	if card.Value != 0 {
 		t.Error("Card should be 0, but is ", card.Value)
 	}
-
 	card1, _ := deck.NewCard(1, "Spades", false)
 	b[1] = append(b[1], card1)
 	index, card = b.GetLastCard(1)
@@ -51,5 +67,14 @@ func TestGetLastCard(t *testing.T) {
 	if card.Value != 1 {
 		t.Error("Card should be 1, but is ", card.Value)
 	}
-
+	b[1] = append(b[1], deck.Card{})
+	index, card = b.GetLastCard(1)
+	if index != 0 {
+		t.Error("Index should be 0, but is ", index)
+	}
+	b[2] = append(b[2], deck.Card{})
+	index, card = b.GetLastCard(2)
+	if index != 0 {
+		t.Error("Index should be 0, but is ", index)
+	}
 }

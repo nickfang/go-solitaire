@@ -44,6 +44,20 @@ func getCardDisplay(value int, suit string) string {
 	return displayValue
 }
 
+func incrementDigits(input string) string {
+	var result []byte
+	for _, char := range input {
+		if char >= '0' && char <= '6' {
+			digit := int(char - '0')
+			digit++
+			result = append(result, byte(digit+'0'))
+		} else {
+			result = append(result, byte(char))
+		}
+	}
+	return string(result)
+}
+
 func DisplayCard(c deck.Card) {
 	if c.Value == 0 {
 		fmt.Print("    ")
@@ -118,18 +132,17 @@ func DisplayGame(g game.Game) {
 	}
 }
 
-func incrementDigits(input string) string {
-	var result []byte
-	for _, char := range input {
-		if char >= '0' && char <= '6' {
-			digit := int(char - '0')
-			digit++
-			result = append(result, byte(digit+'0'))
-		} else {
-			result = append(result, byte(char))
-		}
-	}
-	return string(result)
+func ShowHelp() {
+	fmt.Println("Commands: ")
+	fmt.Println("  n - next card")
+	fmt.Println("  d# - move from deck to column number")
+	fmt.Println("  ds - move from deck to stacks")
+	fmt.Println("  ## - move fromcolumn to column")
+	fmt.Println("  r - reset")
+	fmt.Println("  h - hints")
+	fmt.Println("  fc1 - set flip count to 1 (easy mode)")
+	fmt.Println("  u - undo")
+	fmt.Println("  q - quit")
 }
 
 func DisplayHints(g game.Game) {

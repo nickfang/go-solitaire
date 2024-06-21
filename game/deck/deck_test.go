@@ -190,10 +190,25 @@ func TestNewTestingDeck(t *testing.T) {
 
 func TestRemoveCard(t *testing.T) {
 	deck := NewDeck()
-	deck.RemoveCard(0)
+	card, error := deck.RemoveCard(0)
+	if error != nil {
+		t.Error("Error should be nil.")
+	}
+	if card.Value != 1 {
+		t.Error("Card value should be 1.")
+	}
 	if len(deck) != 51 {
 		t.Error("Only 1 card should be removed.")
 	}
+	card, error = deck.RemoveCard(52)
+	// fmt.Println(error)
+	if error.Error() != "invalid card index: 52" {
+		t.Error("error should be: invalid card index: 52")
+	}
+	if card.Value != 0 {
+		t.Error("Card value should be 0.")
+	}
+
 }
 
 func TestRandomShuffle(t *testing.T) {

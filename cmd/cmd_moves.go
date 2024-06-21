@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -10,21 +11,25 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-func NextCard(g *game.Game, gs *gamestates.GameStates) {
+func NextCard(g *game.Game, gs *gamestates.GameStates) error {
 	nextErr := g.NextDeckCard()
 	if nextErr != nil {
-		fmt.Println(nextErr.Error())
-		return
+		return nextErr
 	}
 	gs.SaveState(*g)
+	return nil
 }
 
-func ResetGame(g *game.Game, gs *gamestates.GameStates) {
+func ResetGame(g *game.Game, gs *gamestates.GameStates) error {
 	g.Reset()
-	g.Cards.RandomShuffle()
+	shuffleError := g.Cards.RandomShuffle()
+	if shuffleError != nil {
+		return shuffleError
+	}
 	g.DealBoard()
 	gs.Reset()
 	gs.SaveState(*g)
+	return nil
 }
 
 func ShowHints(g *game.Game) {
@@ -34,54 +39,64 @@ func ShowHints(g *game.Game) {
 	fmt.Println("Moves:", moves)
 }
 
-func Undo(g *game.Game, gs *gamestates.GameStates) {
+func Undo(g *game.Game, gs *gamestates.GameStates) error {
 	if len(gs.States) <= 1 {
-		fmt.Println("No moves to undo.")
-	} else {
-		lastGameState := gs.Undo()
-		g.SetState(lastGameState)
+		return errors.New("no moves to undo")
 	}
-}
-
-func ShowHelp() {
-	fmt.Println("Commands: ")
-	fmt.Println("  n - next card")
-	fmt.Println("  d# - move from deck to column number")
-	fmt.Println("  ds - move from deck to stacks")
-	fmt.Println("  ## - move fromcolumn to column")
-	fmt.Println("  r - reset")
-	fmt.Println("  h - hints")
-	fmt.Println("  fc1 - set flip count to 1 (easy mode)")
-	fmt.Println("  u - undo")
-	fmt.Println("  q - quit")
-}
-
-func MoveDeckToBoard(input1 string, g *game.Game, gs *gamestates.GameStates) {
-	if slices.Contains(ValidColumns, input1) {
-		columnIndex, _ := strconv.ParseInt(input1, 10, 32)
-		g.MoveFromDeckToBoard(int(columnIndex - 1))
-		gs.SaveState(*g)
+	lastGameState := gs.Undo()
+	error := g.UpdateState(lastGameState)
+	if error != nil {
+		return error
 	}
+	return nil
 }
 
-func MoveDeckToStacks(g *game.Game, gs *gamestates.GameStates) {
-	g.MoveFromDeckToStacks()
+func MoveDeckToBoard(input1 string, g *game.Game, gs *gamestates.GameStates) error {
+	if !slices.Contains(ValidColumns, input1) {
+		return errors.New("invalid column: " + input1)
+	}
+	columnIndex, _ := strconv.ParseInt(input1, 10, 32)
+	error := g.MoveFromDeckToBoard(int(columnIndex - 1))
+	if error != nil {
+		return error
+	}
 	gs.SaveState(*g)
+	return nil
 }
 
-func MoveBoardToStacks(input0 string, g *game.Game, gs *gamestates.GameStates) {
+func MoveDeckToStacks(g *game.Game, gs *gamestates.GameStates) error {
+	error := g.MoveFromDeckToStacks()
+	if error != nil {
+		return error
+	}
+	gs.SaveState(*g)
+	return nil
+}
+
+func MoveBoardToStacks(input0 string, g *game.Game, gs *gamestates.GameStates) error {
 	columnIndex, _ := strconv.ParseInt(input0, 10, 32)
-	g.MoveFromBoardToStacks(int(columnIndex - 1))
+	error := g.MoveFromBoardToStacks(int(columnIndex - 1))
+	if error != nil {
+		return error
+	}
 	gs.SaveState(*g)
+	return nil
 }
 
-func MoveColumnToColumn(input0, input1 string, g *game.Game, gs *gamestates.GameStates) {
-	if (slices.Contains(ValidColumns, input0) && slices.Contains(ValidColumns, input1)) && input0 != input1 {
-		fromColumn, _ := strconv.ParseInt(input0, 10, 32)
-		toColumn, _ := strconv.ParseInt(input1, 10, 32)
-		g.MoveFromColumnToColumn(int(fromColumn-1), int(toColumn-1))
-		gs.SaveState(*g)
+func MoveColumnToColumn(input0, input1 string, g *game.Game, gs *gamestates.GameStates) error {
+	if (!slices.Contains(ValidColumns, input0) || !slices.Contains(ValidColumns, input1)) || input0 == input1 {
+		return errors.New("invalid move input")
 	}
+
+	fromColumn, _ := strconv.ParseInt(input0, 10, 32)
+	toColumn, _ := strconv.ParseInt(input1, 10, 32)
+	error := g.MoveFromColumnToColumn(int(fromColumn-1), int(toColumn-1))
+	if error != nil {
+		return error
+	}
+
+	gs.SaveState(*g)
+	return nil
 }
 
 func DealTest(g *game.Game, gs *gamestates.GameStates) {
@@ -92,8 +107,12 @@ func DealTest(g *game.Game, gs *gamestates.GameStates) {
 	gs.SaveState(*g)
 }
 
+func ShowGameState(gs *gamestates.GameStates) {
+	gs.PrintLast()
+}
+
 func ShowGameStates(gs *gamestates.GameStates) {
-	gs.Print()
+	gs.PrintAll()
 }
 
 func ChangeFlipCount(g *game.Game, gs *gamestates.GameStates) {

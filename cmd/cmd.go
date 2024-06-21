@@ -29,8 +29,8 @@ func HandleMoves(input string, game *game.Game, gameStates *gamestates.GameState
 		return nil
 	}
 	if input == "u" {
-		Undo(game, gameStates)
-		return nil
+		err := Undo(game, gameStates)
+		return err
 	}
 	if input == "?" {
 		ShowHelp()
@@ -59,18 +59,27 @@ func HandleMoves(input string, game *game.Game, gameStates *gamestates.GameState
 		to := string(input[1])
 		if from == "d" {
 			if slices.Contains(ValidColumns, to) {
-				MoveDeckToBoard(to, game, gameStates)
+				error := MoveDeckToBoard(to, game, gameStates)
+				if error != nil {
+					return error
+				}
 				return nil
 			}
 		}
 		if to == "s" {
 			if slices.Contains(ValidColumns, from) {
-				MoveBoardToStacks(from, game, gameStates)
+				error := MoveBoardToStacks(from, game, gameStates)
+				if error != nil {
+					return error
+				}
 				return nil
 			}
 		}
 		if (slices.Contains(ValidColumns, from) && slices.Contains(ValidColumns, to)) && from != to {
-			MoveColumnToColumn(from, to, game, gameStates)
+			error := MoveColumnToColumn(from, to, game, gameStates)
+			if error != nil {
+				return error
+			}
 			return nil
 		}
 		if from == "s" {
@@ -83,7 +92,7 @@ func HandleMoves(input string, game *game.Game, gameStates *gamestates.GameState
 }
 
 func main() {
-	game := game.NewGame()
+	game := game.NewGame("")
 	game.SetDebug(false)
 	gameStates := gamestates.NewGameStates()
 	game.Cards.RandomShuffle()
@@ -95,12 +104,12 @@ func main() {
 	for {
 		fmt.Scanln(&i)
 		input := strings.ToLower(i)
-		err := HandleMoves(input, &game, &gameStates)
-		if err != nil {
-			if err.Error() == "quitting" {
+		error := HandleMoves(input, &game, &gameStates)
+		if error != nil {
+			if error.Error() == "quitting" {
 				break
 			}
-			fmt.Println(err)
+			fmt.Println(error)
 		}
 		if input != "ss" && input != "h" && input != "?" {
 			DisplayGame(game)

@@ -3,8 +3,7 @@ package game
 import (
 	"errors"
 	"slices"
-
-	"solitaire/game/deck"
+	// "solitaire/game/deck"
 )
 
 // move the current card from the deck to a column
@@ -30,7 +29,10 @@ func (g *Game) MoveFromDeckToStacks() error {
 	if !validMove {
 		return errors.New("invalid move")
 	}
-	movedCard := g.Cards.RemoveCard(g.CurrentCardIndex)
+	movedCard, error := g.Cards.RemoveCard(g.CurrentCardIndex)
+	if error != nil {
+		return error
+	}
 	movedCard.Shown = true
 	g.Stacks[suitIndex] = append(g.Stacks[suitIndex], movedCard)
 	if g.CurrentCardIndex >= 0 {
@@ -42,6 +44,9 @@ func (g *Game) MoveFromDeckToStacks() error {
 func (g *Game) MoveFromBoardToStacks(column int) error {
 	// move card from bottom of column to stacks
 	lastIndex, lastCard := g.Board.GetLastCard(column)
+	if lastIndex == -1 {
+		return errors.New("nothing to move")
+	}
 	suitIndex, validMove := g.GetStackMoves(lastCard)
 	if !validMove {
 		return errors.New("invalid move")
@@ -58,40 +63,18 @@ func (g *Game) MoveFromBoardToStacks(column int) error {
 func (g *Game) MoveFromColumnToColumn(from int, to int) error {
 	// move cards from one column to another column
 
-	// get the last card of the to column and figure out what value and color can be placed on top of it.
-	// if it is an empty column, the card must be a king of any color.
-	var validCard deck.Card
-	if len(g.Board[to]) == 0 {
-		validCard.Value = 13
-	} else {
-		lastCard := g.Board[to][len(g.Board[to])-1]
-		if lastCard.Value != 1 {
-			validCard.Value = lastCard.Value - 1
-			if lastCard.Color == "Black" {
-				validCard.Color = "Red"
-			} else {
-				validCard.Color = "Black"
-			}
-		}
-	}
-
-	if validCard.Value == 0 {
-		return errors.New("invalid move - cannot place a card on an ace")
-	}
-
 	validIndex := -1
-	for index, card := range g.Board[from] {
-		if card.Shown {
-			if validCard.Value == 13 && card.Value == 13 {
-				validIndex = index
-			} else if card.Value == validCard.Value && card.Color == validCard.Color {
-				validIndex = index
-			}
+	moves := g.GetBoardMoves()
+
+	for _, move := range moves {
+		if move.FromColumn == from && move.ToColumn == to {
+			validIndex = move.FromRow
+			break
 		}
 	}
 
 	if validIndex == -1 {
-		return errors.New("invalid move - no valid cards to move")
+		return errors.New("invalid board move")
 	}
 
 	// remove the cards from the from column that were added to the to column

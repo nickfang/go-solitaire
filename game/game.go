@@ -11,6 +11,7 @@ import (
 )
 
 type Game struct {
+	Id               string
 	Cards            deck.Cards
 	Board            board.Board
 	Stacks           stacks.Stacks
@@ -19,12 +20,19 @@ type Game struct {
 	Debug            bool
 }
 
+type BoardMove struct {
+	FromColumn int
+	FromRow    int
+	ToColumn   int
+}
+
 const DefaultFlipCount = 3
 
 func checkMove(card deck.Card, toCard deck.Card) bool {
 	if card.Value == toCard.Value-1 && card.Color != toCard.Color {
 		return true
 	} else if card.Value == 13 && toCard.Value == 0 {
+		// special case, if a column is empty, we return a default card which has a value of 0
 		return true
 	}
 	return false
@@ -46,16 +54,14 @@ func (g Game) GetCurrentCard() (deck.Card, error) {
 	return g.Cards[g.CurrentCardIndex], nil
 }
 
-func (g *Game) pruneColumn(column int, index int) []deck.Card {
-	removed := g.Board[column][index:]
-	g.Board[column] = g.Board[column][:index]
-	return removed
-}
-
 /* Exported Functions */
 
-func NewGame() Game {
-	return Game{deck.NewDeck(), board.NewBoard(), stacks.NewStacks(), DefaultFlipCount - 1, DefaultFlipCount, false}
+func NewGame(id string) Game {
+	newId := id
+	if id == "" {
+		newId = "main"
+	}
+	return Game{newId, deck.NewDeck(), board.NewBoard(), stacks.NewStacks(), DefaultFlipCount - 1, DefaultFlipCount, false}
 }
 
 func (g *Game) Reset() {
@@ -64,37 +70,6 @@ func (g *Game) Reset() {
 	g.Stacks = stacks.NewStacks()
 	g.FlipCount = DefaultFlipCount
 	g.CurrentCardIndex = DefaultFlipCount - 1
-}
-
-func (g1 Game) IsEqual(g2 Game) bool {
-	equalCards := g1.Cards.IsEqual(g2.Cards)
-	equalStacks := g1.Stacks.IsEqual(g2.Stacks)
-	equalBoard := g1.Board.IsEqual(g2.Board)
-	equalCurrentCardIndex := g1.CurrentCardIndex == g2.CurrentCardIndex
-	equalFlipCount := g1.FlipCount == g2.FlipCount
-	if g1.Debug {
-		fmt.Printf("cards: %v\n", equalCards)
-		fmt.Printf("stacks: %v\n", equalStacks)
-		fmt.Printf("board: %v\n", equalBoard)
-		fmt.Printf("index: %v\n", equalCurrentCardIndex)
-		fmt.Printf("flip count: %v\n", equalFlipCount)
-	}
-	if equalCards && equalStacks && equalBoard && equalCurrentCardIndex && equalFlipCount {
-		return true
-	}
-	return false
-}
-
-func (g *Game) SetDebug(onOff bool) {
-	g.Debug = onOff
-	for i := range g.Cards {
-		g.Cards[i].Debug = onOff
-	}
-	for i, column := range g.Board {
-		for j := range column {
-			g.Board[i][j].Debug = onOff
-		}
-	}
 }
 
 func (g *Game) DealBoard() {
@@ -142,40 +117,17 @@ func (g *Game) NextDeckCard() error {
 	return nil
 }
 
-func (g Game) DeepCopy() Game {
-	newState := Game{}
-
-	// Deep Copy Board (assuming board.Board is [][]deck.Card)
-	newState.Board = make(board.Board, len(g.Board))
-	for i, row := range g.Board {
-		newState.Board[i] = make([]deck.Card, len(row))
-		copy(newState.Board[i], row)
+func (g *Game) UpdateState(gameState Game) error {
+	error := gameState.CheckGame()
+	if error != nil {
+		return errors.New("game state is nil")
 	}
-
-	// Deep Copy Cards
-	newState.Cards = make(deck.Cards, len(g.Cards))
-	copy(newState.Cards, g.Cards)
-
-	// Deep Copy Stacks (assuming stacks.Stacks is [][]deck.Card)
-	newState.Stacks = make(stacks.Stacks, len(g.Stacks))
-	for i, suitStack := range g.Stacks {
-		newState.Stacks[i] = make([]deck.Card, len(suitStack))
-		copy(newState.Stacks[i], suitStack)
-	}
-
-	newState.CurrentCardIndex = g.CurrentCardIndex
-
-	newState.FlipCount = g.FlipCount
-
-	return newState
-}
-
-func (g *Game) SetState(gameState Game) {
 	g.Cards = gameState.Cards
 	g.Board = gameState.Board
 	g.Stacks = gameState.Stacks
 	g.CurrentCardIndex = gameState.CurrentCardIndex
 	g.FlipCount = gameState.FlipCount
+	return nil
 }
 
 func (g *Game) SetFlipCount(flipCount int) error {
@@ -185,6 +137,15 @@ func (g *Game) SetFlipCount(flipCount int) error {
 	g.FlipCount = flipCount
 	g.CurrentCardIndex = flipCount - 1
 	return nil
+}
+
+func (g Game) IsFinished() bool {
+	for _, stack := range g.Stacks {
+		if len(stack) != 13 {
+			return false
+		}
+	}
+	return true
 }
 
 // take the current deck card and return columns that are possible moves
@@ -229,23 +190,23 @@ func (g Game) GetStackMoves(card deck.Card) (int, bool) {
 	return suitIndex, false
 }
 
-func (g Game) GetBoardMoves() []string {
-	moves := []string{}
+func (g Game) GetBoardMoves() []BoardMove {
+	moves := []BoardMove{}
 	lastCards := deck.Cards{}
 	for i := range g.Board {
 		_, lastCard := g.Board.GetLastCard(i)
 		lastCards = append(lastCards, lastCard)
 	}
 	for i, column := range g.Board {
-		for _, card := range column {
-			if !card.Shown || card.Value == 13 {
+		for j, card := range column {
+			if !card.Shown {
 				continue
 			}
 			// see if current shown card can be moved to any of the last cards
 			for k, lastCard := range lastCards {
 				if checkMove(card, lastCard) {
-					moveStr := strconv.FormatInt(int64(i), 10) + strconv.FormatInt(int64(k), 10)
-					moves = append(moves, moveStr)
+					boardMove := BoardMove{i, j, k}
+					moves = append(moves, boardMove)
 				}
 			}
 		}
@@ -286,5 +247,10 @@ func (g Game) GetStackHints() []string {
 }
 
 func (g Game) GetBoardHints() []string {
-	return g.GetBoardMoves()
+	hints := []string{}
+	for _, move := range g.GetBoardMoves() {
+		moveStr := strconv.FormatInt(int64(move.FromColumn), 10) + strconv.FormatInt(int64(move.ToColumn), 10)
+		hints = append(hints, moveStr)
+	}
+	return hints
 }

@@ -47,7 +47,12 @@ func (s *GameStates) Undo() game.Game {
 }
 
 // for debugging
-func (s *GameStates) Print() {
+func (s *GameStates) PrintLast() {
+	lastIndex := len(s.States) - 1
+	s.States[lastIndex].Print()
+}
+
+func (s *GameStates) PrintAll() {
 	for i, state := range s.States {
 		state.Print()
 		if i < len(s.States)-1 {
