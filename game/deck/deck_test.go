@@ -201,9 +201,9 @@ func TestRemoveCard(t *testing.T) {
 		t.Error("Only 1 card should be removed.")
 	}
 	card, error = deck.RemoveCard(52)
-	fmt.Println(error)
-	if error.Error() != "error should be: invalid card index: 52" {
-		t.Error()
+	// fmt.Println(error)
+	if error.Error() != "invalid card index: 52" {
+		t.Error("error should be: invalid card index: 52")
 	}
 	if card.Value != 0 {
 		t.Error("Card value should be 0.")

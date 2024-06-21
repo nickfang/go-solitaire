@@ -117,12 +117,17 @@ func (g *Game) NextDeckCard() error {
 	return nil
 }
 
-func (g *Game) GetState(gameState Game) {
+func (g *Game) UpdateState(gameState Game) error {
+	error := gameState.CheckGame()
+	if error != nil {
+		return errors.New("game state is nil")
+	}
 	g.Cards = gameState.Cards
 	g.Board = gameState.Board
 	g.Stacks = gameState.Stacks
 	g.CurrentCardIndex = gameState.CurrentCardIndex
 	g.FlipCount = gameState.FlipCount
+	return nil
 }
 
 func (g *Game) SetFlipCount(flipCount int) error {
@@ -197,12 +202,10 @@ func (g Game) GetBoardMoves() []BoardMove {
 			if !card.Shown {
 				continue
 			}
-			// fmt.Println("card", card, i, j)
 			// see if current shown card can be moved to any of the last cards
 			for k, lastCard := range lastCards {
 				if checkMove(card, lastCard) {
 					boardMove := BoardMove{i, j, k}
-					// moveStr := strconv.FormatInt(int64(i), 10) + strconv.FormatInt(int64(k), 10)
 					moves = append(moves, boardMove)
 				}
 			}

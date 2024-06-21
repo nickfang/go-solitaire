@@ -71,8 +71,8 @@ func TestGetLastCard(t *testing.T) {
 	}
 	b[1] = append(b[1], deck.Card{})
 	index, card = b.GetLastCard(1)
-	if index != 1 {
-		t.Error("Index should be 1, but is ", index)
+	if index != 0 {
+		t.Error("Index should be 0, but is ", index)
 	}
 	b[2] = append(b[2], deck.Card{})
 	index, card = b.GetLastCard(2)

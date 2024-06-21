@@ -22,7 +22,10 @@ func NextCard(g *game.Game, gs *gamestates.GameStates) error {
 
 func ResetGame(g *game.Game, gs *gamestates.GameStates) error {
 	g.Reset()
-	g.Cards.RandomShuffle()
+	shuffleError := g.Cards.RandomShuffle()
+	if shuffleError != nil {
+		return shuffleError
+	}
 	g.DealBoard()
 	gs.Reset()
 	gs.SaveState(*g)
@@ -41,7 +44,10 @@ func Undo(g *game.Game, gs *gamestates.GameStates) error {
 		return errors.New("no moves to undo")
 	}
 	lastGameState := gs.Undo()
-	g.GetState(lastGameState)
+	error := g.UpdateState(lastGameState)
+	if error != nil {
+		return error
+	}
 	return nil
 }
 

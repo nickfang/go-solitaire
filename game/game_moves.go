@@ -72,41 +72,6 @@ func (g *Game) MoveFromColumnToColumn(from int, to int) error {
 			break
 		}
 	}
-	// if !slices.Contains(moves, moveStr) {
-	// 	return errors.New("invalid move")
-	// }
-
-	// get the last card of the to column and figure out what value and color can be placed on top of it.
-	// if it is an empty column, the card must be a king of any color.
-	// var validCard deck.Card
-	// if len(g.Board[to]) == 0 {
-	// 	validCard.Value = 13
-	// } else {
-	// 	lastCard := g.Board[to][len(g.Board[to])-1]
-	// 	if lastCard.Value != 1 {
-	// 		validCard.Value = lastCard.Value - 1
-	// 		if lastCard.Color == "Black" {
-	// 			validCard.Color = "Red"
-	// 		} else {
-	// 			validCard.Color = "Black"
-	// 		}
-	// 	}
-	// }
-
-	// if validCard.Value == 0 {
-	// 	return errors.New("invalid move - cannot place a card on an ace")
-	// }
-
-	// validIndex := -1
-	// for index, card := range g.Board[from] {
-	// 	if card.Shown {
-	// 		if validCard.Value == 13 && card.Value == 13 {
-	// 			validIndex = index
-	// 		} else if card.Value == validCard.Value && card.Color == validCard.Color {
-	// 			validIndex = index
-	// 		}
-	// 	}
-	// }
 
 	if validIndex == -1 {
 		return errors.New("invalid board move")
