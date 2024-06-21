@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"solitaire/game"
-	"solitaire/game/gamestates"
+	"solitaire/gamestates"
 
 	"golang.org/x/exp/slices"
 )
@@ -21,12 +21,10 @@ func NextCard(g *game.Game, gs *gamestates.GameStates) error {
 }
 
 func ResetGame(g *game.Game, gs *gamestates.GameStates) error {
-	g.Reset()
-	shuffleError := g.Cards.RandomShuffle()
-	if shuffleError != nil {
-		return shuffleError
+	error := g.Reset()
+	if error != nil {
+		return error
 	}
-	g.DealBoard()
 	gs.Reset()
 	gs.SaveState(*g)
 	return nil

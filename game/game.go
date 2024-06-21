@@ -17,7 +17,8 @@ type Game struct {
 	Stacks           stacks.Stacks
 	CurrentCardIndex int
 	FlipCount        int
-	Debug            bool
+
+	Debug bool
 }
 
 type BoardMove struct {
@@ -64,12 +65,18 @@ func NewGame(id string) Game {
 	return Game{newId, deck.NewDeck(), board.NewBoard(), stacks.NewStacks(), DefaultFlipCount - 1, DefaultFlipCount, false}
 }
 
-func (g *Game) Reset() {
+func (g *Game) Reset() error {
 	g.Cards = deck.NewDeck()
 	g.Board = board.NewBoard()
 	g.Stacks = stacks.NewStacks()
 	g.FlipCount = DefaultFlipCount
 	g.CurrentCardIndex = DefaultFlipCount - 1
+	error := g.Cards.RandomShuffle()
+	if error != nil {
+		return errors.New("error shuffling deck")
+	}
+	g.DealBoard()
+	return nil
 }
 
 func (g *Game) DealBoard() {

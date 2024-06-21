@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"solitaire/game"
-	"solitaire/game/gamestates"
+	"solitaire/gamestates"
 
 	"testing"
 )

@@ -8,7 +8,7 @@ import (
 
 	"solitaire/api/solitairestore"
 	"solitaire/game"
-	"solitaire/game/gamestates"
+	"solitaire/gamestates"
 )
 
 func CreateHandler(w http.ResponseWriter, r *http.Request) {

@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"solitaire/game"
-	"solitaire/game/gamestates"
+	"solitaire/gamestates"
 
 	"golang.org/x/exp/slices"
 )
