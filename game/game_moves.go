@@ -29,7 +29,10 @@ func (g *Game) MoveFromDeckToStacks() error {
 	if !validMove {
 		return errors.New("invalid move")
 	}
-	movedCard := g.Cards.RemoveCard(g.CurrentCardIndex)
+	movedCard, error := g.Cards.RemoveCard(g.CurrentCardIndex)
+	if error != nil {
+		return error
+	}
 	movedCard.Shown = true
 	g.Stacks[suitIndex] = append(g.Stacks[suitIndex], movedCard)
 	if g.CurrentCardIndex >= 0 {

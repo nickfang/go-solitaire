@@ -1,7 +1,7 @@
 package deck
 
 import (
-	"errors"
+	// "errors"
 	"fmt"
 	"math/rand"
 	"time"
@@ -89,12 +89,17 @@ func NewDeck() Cards {
 	return deck
 }
 
-func (d *Cards) RemoveCard(cardIndex int) Card {
+func (d *Cards) RemoveCard(cardIndex int) (Card, error) {
+	if len(*d) == 0 {
+		return Card{}, fmt.Errorf("deck is empty")
+	}
+	if cardIndex < 0 || cardIndex >= len(*d) {
+		return Card{}, fmt.Errorf("invalid card index: %d", cardIndex)
+	}
 	length := len(*d)
-	fmt.Println(length)
 	card := (*d)[cardIndex]
 	*d = append((*d)[:cardIndex], (*d)[cardIndex+1:length]...)
-	return card
+	return card, nil
 }
 
 func (d *Cards) RandomShuffle() error {
