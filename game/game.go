@@ -139,7 +139,7 @@ func (g *Game) SetFlipCount(flipCount int) error {
 	return nil
 }
 
-func (g Game) IsWon() bool {
+func (g Game) IsFinished() bool {
 	for _, stack := range g.Stacks {
 		if len(stack) != 13 {
 			return false

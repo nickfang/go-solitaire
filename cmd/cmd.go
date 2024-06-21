@@ -104,12 +104,12 @@ func main() {
 	for {
 		fmt.Scanln(&i)
 		input := strings.ToLower(i)
-		err := HandleMoves(input, &game, &gameStates)
-		if err != nil {
-			if err.Error() == "quitting" {
+		error := HandleMoves(input, &game, &gameStates)
+		if error != nil {
+			if error.Error() == "quitting" {
 				break
 			}
-			fmt.Println(err)
+			fmt.Println(error)
 		}
 		if input != "ss" && input != "h" && input != "?" {
 			DisplayGame(game)

@@ -55,7 +55,7 @@ func TestFullGame(t *testing.T) {
 			return
 		}
 	}
-	if !g.IsWon() {
+	if !g.IsFinished() {
 		t.Errorf("Game not won")
 	}
 }
