@@ -10,17 +10,21 @@ import (
 	"github.com/rs/xid"
 )
 
+type GameSession struct {
+	gameId     string
+	game       *game.Game
+	gameStates *gamestates.GameStates
+}
+
 type GameManager struct {
-	games      map[string]*game.Game
-	gameStates map[string]*gamestates.GameStates
-	mu         sync.RWMutex
+	Sessions map[string]GameSession
+	mu       sync.RWMutex
 }
 
 func NewGameManager() *GameManager {
 	return &GameManager{
-		games:      make(map[string]*game.Game),
-		gameStates: make(map[string]*gamestates.GameStates),
-		mu:         sync.RWMutex{},
+		Sessions: make(map[string]GameSession),
+		mu:       sync.RWMutex{},
 	}
 }
 
@@ -30,32 +34,22 @@ func (gm *GameManager) CreateGame() (string, error) {
 
 	gameId := xid.New().String()
 	newGame := game.NewGame(gameId)
-	newGameStates := gamestates.NewGameStates()
 	newGame.Cards.RandomShuffle()
+	newGameStates := gamestates.NewGameStates()
 	newGameStates.SaveState(newGame)
 
-	gm.games[gameId] = &newGame
-	gm.gameStates[gameId] = &newGameStates
+	session := GameSession{gameId, &newGame, &newGameStates}
+	gm.Sessions[gameId] = session
 
 	return gameId, nil
 }
 
-func (gm *GameManager) GetGame(gameId string) (*game.Game, error) {
+func (gm *GameManager) GetSession(gameId string) (*GameSession, error) {
 	gm.mu.RLock()
 	defer gm.mu.RUnlock()
 
-	if game, ok := gm.games[gameId]; ok {
-		return game, nil
+	if session, ok := gm.Sessions[gameId]; ok {
+		return &session, nil
 	}
-	return nil, errors.New("game not found")
-}
-
-func (gm *GameManager) GetGameStates(gameId string) (*gamestates.GameStates, error) {
-	gm.mu.RLock()
-	defer gm.mu.RUnlock()
-
-	if gameStates, ok := gm.gameStates[gameId]; ok {
-		return gameStates, nil
-	}
-	return nil, errors.New("game states not found")
+	return nil, errors.New("session not found")
 }

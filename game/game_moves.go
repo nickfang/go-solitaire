@@ -3,7 +3,6 @@ package game
 import (
 	"errors"
 	"slices"
-	// "solitaire/game/deck"
 )
 
 // move the current card from the deck to a column
@@ -13,8 +12,11 @@ func (g *Game) MoveFromDeckToBoard(column int) error {
 		return errors.New("invalid move")
 	}
 	g.Cards[g.CurrentCardIndex].Shown = true
-	g.Board[column] = append(g.Board[column], g.Cards[g.CurrentCardIndex])
-	g.Cards.RemoveCard(g.CurrentCardIndex)
+	card, error := g.Cards.RemoveCard(g.CurrentCardIndex)
+	if error != nil {
+		return error
+	}
+	g.Board[column] = append(g.Board[column], card)
 	if g.CurrentCardIndex >= 0 {
 		g.CurrentCardIndex = g.CurrentCardIndex - 1
 	}
