@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"solitaire/game"
+	"solitaire/gamemanager"
 	"solitaire/gamestates"
 
 	"golang.org/x/exp/slices"
@@ -92,19 +93,26 @@ func HandleMoves(input string, game *game.Game, gameStates *gamestates.GameState
 }
 
 func main() {
-	game := game.NewGame("")
-	game.SetDebug(false)
-	gameStates := gamestates.NewGameStates()
-	game.Cards.RandomShuffle()
-	game.DealBoard()
-	gameStates.SaveState(game)
-	DisplayGame(game)
+
+	gm := gamemanager.NewGameManager()
+	gameId, error := gm.CreateGame()
+	if error != nil {
+		fmt.Println(error)
+		return
+	}
+	session, err := gm.GetSession(gameId)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	game := session.Game
+	DisplayGame(*game)
 	var i string
 	// validColumns := []string{"1", "2", "3", "4", "5", "6", "7"}
 	for {
 		fmt.Scanln(&i)
 		input := strings.ToLower(i)
-		error := HandleMoves(input, &game, &gameStates)
+		error := gm.HandleMoves(input, gameId)
 		if error != nil {
 			if error.Error() == "quitting" {
 				break
@@ -112,7 +120,7 @@ func main() {
 			fmt.Println(error)
 		}
 		if input != "ss" && input != "h" && input != "?" {
-			DisplayGame(game)
+			DisplayGame(*game)
 		}
 
 	}

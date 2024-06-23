@@ -101,29 +101,6 @@ func (g *Game) DealBoard() {
 	g.CurrentCardIndex = currentCardIndex
 }
 
-func (g *Game) NextDeckCard() error {
-	deckLength := len(g.Cards)
-	if deckLength == 0 {
-		return errors.New("no more cards in the deck")
-	}
-	// if there is a current card, hide it
-	if g.CurrentCardIndex >= 0 {
-		g.Cards[g.CurrentCardIndex].Shown = false
-	}
-	// if the next card is out of bounds, set the current card back to the beginning
-	if g.CurrentCardIndex == -1 || g.CurrentCardIndex+g.FlipCount > deckLength-1 {
-		if 2 < deckLength-1 {
-			g.CurrentCardIndex = g.FlipCount - 1
-		} else {
-			g.CurrentCardIndex = deckLength - 1
-		}
-	} else {
-		g.CurrentCardIndex += g.FlipCount
-	}
-	g.Cards[g.CurrentCardIndex].Shown = true
-	return nil
-}
-
 func (g *Game) UpdateState(gameState Game) error {
 	error := gameState.CheckGame()
 	if error != nil {
