@@ -11,24 +11,33 @@ func main() {
 	gm := gamemanager.NewGameManager()
 	go gm.ProcessRequests()
 
-	gameId, error := gm.CreateSession()
+	sessionId, error := gm.CreateSession()
 	if error != nil {
 		fmt.Println(error)
 		return
 	}
-	session, err := gm.GetSession(gameId)
+
+	error = gm.InitializeGame(sessionId)
+	if error != nil {
+		fmt.Println(error)
+		return
+	}
+
+	session, err := gm.GetSession(sessionId)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+
 	game := session.Game
 	DisplayGame(*game)
 	var i string
 	responseChan := make(chan gamemanager.GameResponse)
+
 	for {
 		fmt.Scanln(&i)
 		input := strings.ToLower(i)
-		gr := gamemanager.GameRequest{SessionId: gameId, Action: input, Response: responseChan}
+		gr := gamemanager.GameRequest{SessionId: sessionId, Action: input, Response: responseChan}
 		gm.Requests <- gr
 
 		response := <-responseChan

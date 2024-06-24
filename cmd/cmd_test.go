@@ -35,17 +35,23 @@ func TestGetCardDisplay(t *testing.T) {
 func TestFullGame(t *testing.T) {
 	// This really only needs to test that the move strings call the correct functions.
 	gm := gamemanager.NewGameManager()
+	go gm.ProcessRequests()
+
 	sessionId, error := gm.CreateSession()
 	if error != nil {
 		t.Errorf("Error creating game: %s", error)
 	}
+
+	error = gm.InitializeTestGame(sessionId)
+	if error != nil {
+		t.Errorf("Error initializing test game: %s", error)
+	}
+
 	session, error := gm.GetSession(sessionId)
 	if error != nil {
 		t.Errorf("Error getting session: %s", error)
 	}
-	g := session.Game
-	g.Cards.TestingShuffle()
-	g.DealBoard()
+	g := *session.Game
 	moves := []string{
 		"ds", "ds", "ds", "n", "ds", "ds", "ds", "n",
 		"ds", "ds", "ds", "n", "ds", "ds", "ds", "n",
@@ -61,8 +67,8 @@ func TestFullGame(t *testing.T) {
 	for _, move := range moves {
 		gr := gamemanager.GameRequest{SessionId: sessionId, Action: move, Response: responseChan}
 		gm.Requests <- gr
+
 		response := <-responseChan
-		DisplayGame(*response.Game)
 		error := response.Error
 		if error != nil {
 			t.Errorf("Error making move: %s - %s", move, error)
@@ -72,5 +78,4 @@ func TestFullGame(t *testing.T) {
 	if !g.IsFinished() {
 		t.Errorf("Game not won")
 	}
-	t.Fail()
 }

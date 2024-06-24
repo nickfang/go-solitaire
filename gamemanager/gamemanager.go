@@ -57,13 +57,7 @@ func (gm *GameManager) CreateSession() (string, error) {
 
 	sessionId := xid.New().String()
 	game := game.NewGame(sessionId)
-	error := game.Cards.RandomShuffle()
-	if error != nil {
-		return "", error
-	}
-	game.DealBoard()
 	gameStates := gamestates.NewGameStates()
-	gameStates.SaveState(game)
 	newSession := GameSession{
 		Id:         sessionId,
 		Game:       &game,
@@ -71,6 +65,28 @@ func (gm *GameManager) CreateSession() (string, error) {
 	}
 	gm.Sessions[sessionId] = newSession
 	return sessionId, nil
+}
+
+func (gm *GameManager) InitializeGame(sessionId string) error {
+	gs, error := gm.GetSession(sessionId)
+	if error != nil {
+		return error
+	}
+	gs.Game.Cards.RandomShuffle()
+	gs.Game.DealBoard()
+	gs.GameStates.SaveState(*gs.Game)
+	return nil
+}
+
+func (gm *GameManager) InitializeTestGame(sessionId string) error {
+	gs, error := gm.GetSession(sessionId)
+	if error != nil {
+		return error
+	}
+	gs.Game.Cards.TestingShuffle()
+	gs.Game.DealBoard()
+	gs.GameStates.SaveState(*gs.Game)
+	return nil
 }
 
 func (gm *GameManager) GetSession(sessionId string) (*GameSession, error) {
@@ -102,7 +118,6 @@ func (gm *GameManager) ProcessRequests() {
 			continue
 		}
 		session, error := gm.GetSession(req.SessionId)
-		session.Game.Print()
 		if session == nil {
 			req.Response <- GameResponse{Error: errors.New("session not found")}
 			continue
@@ -111,7 +126,7 @@ func (gm *GameManager) ProcessRequests() {
 			req.Response <- GameResponse{Error: error}
 			continue
 		}
-		error = HandleMoves(req.Action, *session)
+		error = HandleMoves(req.Action, session)
 		if error != nil {
 			req.Response <- GameResponse{Error: error}
 			continue
@@ -220,22 +235,26 @@ func ShowGameState(gs *gamestates.GameStates) {
 	gs.PrintLast()
 }
 
-func ShowGameStates(gs *gamestates.GameStates) {
+func ShowGameStates(gs *gamestates.GameStates) error {
 	gs.PrintAll()
+	return nil
 }
 
-func ChangeFlipCount(g *game.Game, gs *gamestates.GameStates) {
-	g.SetFlipCount(1)
+func ChangeFlipCount(g *game.Game, gs *gamestates.GameStates) error {
+	error := g.SetFlipCount(1)
+	if error != nil {
+		return error
+	}
 	fmt.Println("Easy mode.")
 	gs.SaveState(*g)
+	return nil
 }
 
-func HandleMoves(input string, session GameSession) error {
+func HandleMoves(input string, session *GameSession) error {
 	game := session.Game
 	gameStates := session.GameStates
 	if input == "n" {
-		NextCard(game, gameStates)
-		return nil
+		return NextCard(game, gameStates)
 	}
 	if input == "r" {
 		ResetGame(game, gameStates)
@@ -246,25 +265,21 @@ func HandleMoves(input string, session GameSession) error {
 		return nil
 	}
 	if input == "u" {
-		err := Undo(game, gameStates)
-		return err
+		return Undo(game, gameStates)
 	}
 	if input == "ds" {
-		MoveDeckToStacks(game, gameStates)
-		return nil
+		return MoveDeckToStacks(game, gameStates)
 	}
 	if input == "rt" {
 		DealTest(game, gameStates)
 		return nil
 	}
 	if input == "ss" {
-		ShowGameStates(gameStates)
-		return nil
+		return ShowGameStates(gameStates)
 	}
 
 	if input == "fc1" {
-		ChangeFlipCount(game, gameStates)
-		return nil
+		return ChangeFlipCount(game, gameStates)
 	}
 	// if moving to and/or from a column
 	if len(input) == 2 {
