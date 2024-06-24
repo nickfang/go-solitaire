@@ -210,12 +210,13 @@ func MoveColumnToColumn(input0, input1 string, g *game.Game, gs *gamestates.Game
 	return nil
 }
 
-func DealTest(g *game.Game, gs *gamestates.GameStates) {
+func DealTest(g *game.Game, gs *gamestates.GameStates) error {
 	g.Reset()
 	g.Cards.TestingShuffle()
 	g.DealBoard()
 	gs.Reset()
 	gs.SaveState(*g)
+	return nil
 }
 
 func ShowGameState(gs *gamestates.GameStates) {
@@ -251,11 +252,17 @@ func HandleMoves(input string, session *GameSession) error {
 		return Undo(game, gameStates)
 	}
 	if input == "ds" {
-		return MoveDeckToStacks(game, gameStates)
+		error := MoveDeckToStacks(game, gameStates)
+		if error != nil {
+			return error
+		}
+		if game.IsFinished() {
+			return errors.New("finished")
+		}
+		return nil
 	}
 	if input == "rt" {
-		DealTest(game, gameStates)
-		return nil
+		return DealTest(game, gameStates)
 	}
 	if input == "ss" {
 		return ShowGameStates(gameStates)
@@ -282,6 +289,9 @@ func HandleMoves(input string, session *GameSession) error {
 				error := MoveBoardToStacks(from, game, gameStates)
 				if error != nil {
 					return error
+				}
+				if game.IsFinished() {
+					return errors.New("finished")
 				}
 				return nil
 			}

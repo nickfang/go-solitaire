@@ -64,15 +64,24 @@ func TestFullGame(t *testing.T) {
 	}
 
 	responseChan := make(chan gamemanager.GameResponse, 10)
-	for _, move := range moves {
+	for i, move := range moves {
 		gr := gamemanager.GameRequest{SessionId: sessionId, Action: move, Response: responseChan}
 		gm.Requests <- gr
 
 		response := <-responseChan
 		error := response.Error
-		if error != nil {
-			t.Errorf("Error making move: %s - %s", move, error)
-			return
+		if i == len(moves)-1 {
+			fmt.Println(i, len(moves)-1, error.Error(), "finished")
+			if error.Error() != "finished" {
+				t.Errorf("error should be: Congrat! You won!")
+				return
+			}
+		} else {
+			if error != nil {
+				t.Errorf("Error making move: %s - %s", move, error)
+				return
+			}
+
 		}
 	}
 	if !g.IsFinished() {
