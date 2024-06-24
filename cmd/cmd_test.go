@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"solitaire/game"
-	"solitaire/gamestates"
+	"solitaire/gamemanager"
 
 	"testing"
 )
@@ -34,10 +34,18 @@ func TestGetCardDisplay(t *testing.T) {
 
 func TestFullGame(t *testing.T) {
 	// This really only needs to test that the move strings call the correct functions.
-	g := game.NewGame("")
+	gm := gamemanager.NewGameManager()
+	sessionId, error := gm.CreateSession()
+	if error != nil {
+		t.Errorf("Error creating game: %s", error)
+	}
+	session, error := gm.GetSession(sessionId)
+	if error != nil {
+		t.Errorf("Error getting session: %s", error)
+	}
+	g := session.Game
 	g.Cards.TestingShuffle()
 	g.DealBoard()
-	gs := gamestates.NewGameStates()
 	moves := []string{
 		"ds", "ds", "ds", "n", "ds", "ds", "ds", "n",
 		"ds", "ds", "ds", "n", "ds", "ds", "ds", "n",
@@ -48,8 +56,14 @@ func TestFullGame(t *testing.T) {
 		"7s", "6s", "3s", "7s", "3s", "4s", "6s", "3s", "2s",
 		"1s", "4s", "6s", "2s", "74", "12", "2s", "4s", "2s", "3s", "4s",
 	}
+
+	responseChan := make(chan gamemanager.GameResponse)
 	for _, move := range moves {
-		error := HandleMoves(move, &g, &gs)
+		gr := gamemanager.GameRequest{SessionId: sessionId, Action: move, Response: responseChan}
+		gm.Requests <- gr
+		response := <-responseChan
+		DisplayGame(*response.Game)
+		error := response.Error
 		if error != nil {
 			t.Errorf("Error making move: %s - %s", move, error)
 			return
@@ -58,4 +72,5 @@ func TestFullGame(t *testing.T) {
 	if !g.IsFinished() {
 		t.Errorf("Game not won")
 	}
+	t.Fail()
 }

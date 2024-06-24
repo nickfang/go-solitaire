@@ -11,6 +11,8 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+var ValidColumns = []string{"1", "2", "3", "4", "5", "6", "7"}
+
 func NextCard(g *game.Game, gs *gamestates.GameStates) error {
 	nextErr := g.NextDeckCard()
 	if nextErr != nil {

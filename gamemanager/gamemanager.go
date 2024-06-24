@@ -21,8 +21,8 @@ type GameSession struct {
 
 type GameManager struct {
 	Sessions map[string]GameSession
-	mu       sync.RWMutex
-	requests chan GameRequest
+	Mutex    sync.RWMutex
+	Requests chan GameRequest
 }
 
 type GameResponse struct {
@@ -46,14 +46,14 @@ var ValidColumns = []string{"1", "2", "3", "4", "5", "6", "7"}
 func NewGameManager() *GameManager {
 	return &GameManager{
 		Sessions: make(map[string]GameSession),
-		mu:       sync.RWMutex{},
-		requests: make(chan GameRequest),
+		Mutex:    sync.RWMutex{},
+		Requests: make(chan GameRequest),
 	}
 }
 
 func (gm *GameManager) CreateSession() (string, error) {
-	gm.mu.Lock()
-	defer gm.mu.Unlock()
+	gm.Mutex.Lock()
+	defer gm.Mutex.Unlock()
 
 	sessionId := xid.New().String()
 	game := game.NewGame(sessionId)
@@ -74,8 +74,8 @@ func (gm *GameManager) CreateSession() (string, error) {
 }
 
 func (gm *GameManager) GetSession(sessionId string) (*GameSession, error) {
-	gm.mu.RLock()
-	defer gm.mu.RUnlock()
+	gm.Mutex.RLock()
+	defer gm.Mutex.RUnlock()
 
 	if session, ok := gm.Sessions[sessionId]; ok {
 		return &session, nil
@@ -84,23 +84,25 @@ func (gm *GameManager) GetSession(sessionId string) (*GameSession, error) {
 }
 
 func (gm *GameManager) DeleteSession(sessionId string) {
-	gm.mu.Lock()
-	defer gm.mu.Unlock()
+	gm.Mutex.Lock()
+	defer gm.Mutex.Unlock()
 
 	delete(gm.Sessions, sessionId)
 }
 
-func (ge *GameManager) ProcessRequests() {
+func (gm *GameManager) ProcessRequests() {
 	for {
-		req := <-ge.requests
+		req := <-gm.Requests
+		fmt.Println(req.Action, req.SessionId)
 		if req.Action == "kill" {
 			break
 		}
 		if req.Action == "q" {
-			ge.DeleteSession(req.SessionId)
+			gm.DeleteSession(req.SessionId)
 			continue
 		}
-		session, error := ge.GetSession(req.SessionId)
+		session, error := gm.GetSession(req.SessionId)
+		session.Game.Print()
 		if session == nil {
 			req.Response <- GameResponse{Error: errors.New("session not found")}
 			continue
@@ -114,9 +116,10 @@ func (ge *GameManager) ProcessRequests() {
 			req.Response <- GameResponse{Error: error}
 			continue
 		}
+		req.Response <- GameResponse{Game: session.Game}
 	}
 	// close the channel
-	close(ge.requests)
+	close(gm.Requests)
 }
 
 func NextCard(g *game.Game, gs *gamestates.GameStates) error {
