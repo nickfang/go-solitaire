@@ -131,5 +131,4 @@ func TestInvalidMoves(t *testing.T) {
 	if response.Error != nil {
 		t.Errorf("Expected no error")
 	}
-
 }

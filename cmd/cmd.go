@@ -44,7 +44,11 @@ func main() {
 		if response.Error != nil {
 			fmt.Println(response.Error)
 		}
-		if input != "ss" && input != "h" && input != "?" {
+		if input == "h" {
+			DisplayHints(*session.Game)
+		} else if input == "?" {
+			DisplayHelp()
+		} else {
 			DisplayGame(*session.Game)
 		}
 

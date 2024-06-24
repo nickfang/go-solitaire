@@ -109,7 +109,6 @@ func (gm *GameManager) DeleteSession(sessionId string) {
 func (gm *GameManager) ProcessRequests() {
 	for {
 		req := <-gm.Requests
-		fmt.Println(req.Action, req.SessionId)
 		if req.Action == "kill" {
 			break
 		}
@@ -156,11 +155,11 @@ func ResetGame(g *game.Game, gs *gamestates.GameStates) error {
 	return nil
 }
 
-func GetHints(g *game.Game) {
+func GetHints(g *game.Game) []string {
 	moves := g.GetDeckHints()
 	moves = append(moves, g.GetStackHints()...)
 	moves = append(moves, g.GetBoardHints()...)
-	fmt.Println("Moves:", moves)
+	return moves
 }
 
 func Undo(g *game.Game, gs *gamestates.GameStates) error {

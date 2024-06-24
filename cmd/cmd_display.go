@@ -132,7 +132,7 @@ func DisplayGame(g game.Game) {
 	}
 }
 
-func ShowHelp() {
+func DisplayHelp() {
 	fmt.Println("Commands: ")
 	fmt.Println("  n - next card")
 	fmt.Println("  d# - move from deck to column number")
