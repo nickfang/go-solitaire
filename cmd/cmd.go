@@ -45,7 +45,7 @@ func main() {
 			fmt.Println(response.Error)
 		}
 		if input != "ss" && input != "h" && input != "?" {
-			DisplayGame(*response.Game)
+			DisplayGame(*session.Game)
 		}
 
 	}

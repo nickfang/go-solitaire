@@ -47,7 +47,7 @@ func NewGameManager() *GameManager {
 	return &GameManager{
 		Sessions: make(map[string]GameSession),
 		Mutex:    sync.RWMutex{},
-		Requests: make(chan GameRequest),
+		Requests: make(chan GameRequest, 10),
 	}
 }
 
@@ -305,6 +305,7 @@ func HandleMoves(input string, session *GameSession) error {
 		}
 		if (slices.Contains(ValidColumns, from) && slices.Contains(ValidColumns, to)) && from != to {
 			error := MoveColumnToColumn(from, to, game, gameStates)
+			fmt.Println(error)
 			if error != nil {
 				return error
 			}

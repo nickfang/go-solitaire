@@ -63,7 +63,7 @@ func TestFullGame(t *testing.T) {
 		"1s", "4s", "6s", "2s", "74", "12", "2s", "4s", "2s", "3s", "4s",
 	}
 
-	responseChan := make(chan gamemanager.GameResponse)
+	responseChan := make(chan gamemanager.GameResponse, 10)
 	for _, move := range moves {
 		gr := gamemanager.GameRequest{SessionId: sessionId, Action: move, Response: responseChan}
 		gm.Requests <- gr
@@ -78,4 +78,58 @@ func TestFullGame(t *testing.T) {
 	if !g.IsFinished() {
 		t.Errorf("Game not won")
 	}
+}
+
+func TestInvalidMoves(t *testing.T) {
+	gm := gamemanager.NewGameManager()
+	go gm.ProcessRequests()
+
+	sessionId, error := gm.CreateSession()
+	if error != nil {
+		t.Errorf("Error creating game: %s", error)
+	}
+
+	error = gm.InitializeTestGame(sessionId)
+	if error != nil {
+		t.Errorf("Error initializing test game: %s", error)
+	}
+
+	responseChan := make(chan gamemanager.GameResponse)
+	gr := gamemanager.GameRequest{SessionId: sessionId, Action: "ds", Response: responseChan}
+	gm.Requests <- gr
+	gm.Requests <- gr
+	gm.Requests <- gr
+	gm.Requests <- gr
+	response := <-responseChan
+	response = <-responseChan
+	response = <-responseChan
+	response = <-responseChan
+	if response.Error.Error() != "no cards in the deck" {
+		t.Errorf("Expected error: no cards in the deck")
+	}
+	gr = gamemanager.GameRequest{SessionId: sessionId, Action: "12", Response: responseChan}
+	gm.Requests <- gr
+	response = <-responseChan
+	if response.Error.Error() != "invalid board move" {
+		t.Errorf("Expected error: invalid board move")
+	}
+	gr = gamemanager.GameRequest{SessionId: sessionId, Action: "1s", Response: responseChan}
+	gm.Requests <- gr
+	response = <-responseChan
+	if response.Error.Error() != "invalid move" {
+		t.Errorf("Expected error: invalid move")
+	}
+	gr = gamemanager.GameRequest{SessionId: sessionId, Action: "d1", Response: responseChan}
+	gm.Requests <- gr
+	response = <-responseChan
+	if response.Error.Error() != "invalid move" {
+		t.Errorf("Expected error: invalid move")
+	}
+	gr = gamemanager.GameRequest{SessionId: sessionId, Action: "n", Response: responseChan}
+	gm.Requests <- gr
+	response = <-responseChan
+	if response.Error != nil {
+		t.Errorf("Expected no error")
+	}
+
 }
