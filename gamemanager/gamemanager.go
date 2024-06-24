@@ -116,6 +116,7 @@ func (gm *GameManager) ProcessRequests() {
 			gm.DeleteSession(req.SessionId)
 			continue
 		}
+
 		session, error := gm.GetSession(req.SessionId)
 		if session == nil {
 			req.Response <- GameResponse{Error: errors.New("session not found")}
@@ -304,7 +305,6 @@ func HandleMoves(input string, session *GameSession) error {
 		}
 		if (slices.Contains(ValidColumns, from) && slices.Contains(ValidColumns, to)) && from != to {
 			error := MoveColumnToColumn(from, to, game, gameStates)
-			fmt.Println(error)
 			if error != nil {
 				return error
 			}

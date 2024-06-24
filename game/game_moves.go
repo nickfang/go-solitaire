@@ -2,7 +2,6 @@ package game
 
 import (
 	"errors"
-	"fmt"
 	"slices"
 )
 
@@ -88,7 +87,6 @@ func (g *Game) MoveFromBoardToStacks(column int) error {
 
 func (g *Game) MoveFromColumnToColumn(from int, to int) error {
 	// move cards from one column to another column
-	fmt.Println(from, to)
 	validIndex := -1
 	moves := g.GetBoardMoves()
 
@@ -109,7 +107,6 @@ func (g *Game) MoveFromColumnToColumn(from int, to int) error {
 	if validIndex > 0 {
 		g.Board[from][validIndex-1].Shown = true
 	}
-	fmt.Println("end MoveFromColumnToColumn")
 	// add all card from the king or the valid next card to the end of the from column to the to column
 	return nil
 }
