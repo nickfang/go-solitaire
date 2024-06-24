@@ -37,11 +37,23 @@ func main() {
 	for {
 		fmt.Scanln(&i)
 		input := strings.ToLower(i)
+		if input == "r" {
+			gm.DeleteSession(sessionId)
+			sessionId, error = gm.CreateSession()
+			gm.InitializeGame(sessionId)
+			session, error = gm.GetSession(sessionId)
+			DisplayGame(*session.Game)
+			continue
+		}
 		gr := gamemanager.GameRequest{SessionId: sessionId, Action: input, Response: responseChan}
 		gm.Requests <- gr
 
 		response := <-responseChan
 		if response.Error != nil {
+			if response.Error.Error() == "quit" {
+				fmt.Println("Quitting...")
+				return
+			}
 			fmt.Println(response.Error)
 		}
 		if input == "h" {

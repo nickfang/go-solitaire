@@ -109,14 +109,11 @@ func (gm *GameManager) DeleteSession(sessionId string) {
 func (gm *GameManager) ProcessRequests() {
 	for {
 		req := <-gm.Requests
-		if req.Action == "kill" {
+		if req.Action == "q" {
+			req.Response <- GameResponse{Error: errors.New("quit")}
+			gm.DeleteSession(req.SessionId)
 			break
 		}
-		if req.Action == "q" {
-			gm.DeleteSession(req.SessionId)
-			continue
-		}
-
 		session, error := gm.GetSession(req.SessionId)
 		if session == nil {
 			req.Response <- GameResponse{Error: errors.New("session not found")}
@@ -142,16 +139,6 @@ func NextCard(g *game.Game, gs *gamestates.GameStates) error {
 	if nextErr != nil {
 		return nextErr
 	}
-	gs.SaveState(*g)
-	return nil
-}
-
-func ResetGame(g *game.Game, gs *gamestates.GameStates) error {
-	error := g.Reset()
-	if error != nil {
-		return error
-	}
-	gs.Reset()
 	gs.SaveState(*g)
 	return nil
 }
@@ -255,10 +242,6 @@ func HandleMoves(input string, session *GameSession) error {
 	gameStates := session.GameStates
 	if input == "n" {
 		return NextCard(game, gameStates)
-	}
-	if input == "r" {
-		ResetGame(game, gameStates)
-		return nil
 	}
 	if input == "h" {
 		GetHints(game)
