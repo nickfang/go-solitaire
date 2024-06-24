@@ -2,7 +2,7 @@ package solitairestore
 
 import (
 	"solitaire/game"
-	"solitaire/game/gamestates"
+	"solitaire/gamestates"
 )
 
 type SolitaireStore interface {

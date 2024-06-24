@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"solitaire/game"
-	"solitaire/game/gamestates"
+	"solitaire/gamestates"
 
 	"github.com/rs/xid"
 )

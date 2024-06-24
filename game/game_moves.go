@@ -3,8 +3,30 @@ package game
 import (
 	"errors"
 	"slices"
-	// "solitaire/game/deck"
 )
+
+func (g *Game) NextDeckCard() error {
+	deckLength := len(g.Cards)
+	if deckLength == 0 {
+		return errors.New("no more cards in the deck")
+	}
+	// if there is a current card, hide it
+	if g.CurrentCardIndex >= 0 {
+		g.Cards[g.CurrentCardIndex].Shown = false
+	}
+	// if the next card is out of bounds, set the current card back to the beginning
+	if g.CurrentCardIndex == -1 || g.CurrentCardIndex+g.FlipCount > deckLength-1 {
+		if 2 < deckLength-1 {
+			g.CurrentCardIndex = g.FlipCount - 1
+		} else {
+			g.CurrentCardIndex = deckLength - 1
+		}
+	} else {
+		g.CurrentCardIndex += g.FlipCount
+	}
+	g.Cards[g.CurrentCardIndex].Shown = true
+	return nil
+}
 
 // move the current card from the deck to a column
 func (g *Game) MoveFromDeckToBoard(column int) error {
@@ -13,8 +35,11 @@ func (g *Game) MoveFromDeckToBoard(column int) error {
 		return errors.New("invalid move")
 	}
 	g.Cards[g.CurrentCardIndex].Shown = true
-	g.Board[column] = append(g.Board[column], g.Cards[g.CurrentCardIndex])
-	g.Cards.RemoveCard(g.CurrentCardIndex)
+	card, error := g.Cards.RemoveCard(g.CurrentCardIndex)
+	if error != nil {
+		return error
+	}
+	g.Board[column] = append(g.Board[column], card)
 	if g.CurrentCardIndex >= 0 {
 		g.CurrentCardIndex = g.CurrentCardIndex - 1
 	}
@@ -62,7 +87,6 @@ func (g *Game) MoveFromBoardToStacks(column int) error {
 
 func (g *Game) MoveFromColumnToColumn(from int, to int) error {
 	// move cards from one column to another column
-
 	validIndex := -1
 	moves := g.GetBoardMoves()
 
@@ -83,7 +107,6 @@ func (g *Game) MoveFromColumnToColumn(from int, to int) error {
 	if validIndex > 0 {
 		g.Board[from][validIndex-1].Shown = true
 	}
-
 	// add all card from the king or the valid next card to the end of the from column to the to column
 	return nil
 }

@@ -1,0 +1,195 @@
+@startuml
+package cmd{
+annotation cmd {
+
+-var CardNumDisplay:
+-var CardSuitsIcons:
+-main()
+-getCardDisplay(value int, suit string): string
+-incrementDigits(input string): string
++DisplayCard(c Card)
++DisplayBoard(b Board)
++DisplayStacks(s Stacks)
++DisplayCurrentCard(g Game): string
++DisplayCards(g Game)
++DisplayGame(g Game)
++DisplayHelp()
++DisplayHints(g Game)
+}
+}
+package game/board{
+annotation game/board {
+-const NumColumns: INT
+
++NewBoard(): Board
+}
+class Board {
+
++IsEqual(b2 Board): bool
++GetLastCard(column int): int, Card
++Print()
+}
+}
+package game/deck{
+annotation game/deck {
+-const DeckSize: INT
+-var CardSuits:
+-var CardValues:
+-getCardColor(suit string): string
++NewCard(value int, suit string, shown bool): Card, error
++NewDeck(): Cards
+}
+class Card {
++Debug: bool
++Shown: bool
++Value: int
++Suit: string
++Color: string
++IsEqual(c2 Card): bool
++Print()
+}
+class Cards {
+
++IsEqual(d2 Cards): bool
++RemoveCard(cardIndex int): Card, error
++RandomShuffle(): error
++PerfectShuffle()
++TestingShuffle(): error
++DebugShuffle(): error
++Print()
+}
+}
+package game/stacks{
+annotation game/stacks {
+
+
++NewStacks(): Stacks
+}
+class Stack {
+
+
+}
+class Stacks {
+
++IsEqual(stacks2 Stacks): bool
++MoveToStack(card Card)
++GetTopCards(): Stacks
++Print()
+}
+}
+package game{
+annotation game {
+-const DefaultFlipCount: INT
+
+-checkMove(card Card, toCard Card): bool
++NewGame(id string): Game
+}
+class Game {
++Id: string
++Cards: Cards
++Board: Board
++Stacks: Stacks
++CurrentCardIndex: int
++FlipCount: int
++Debug: bool
++GetCurrentCard(): Card, error
++Reset(): error
++DealBoard()
++UpdateState(gameState Game): error
++SetFlipCount(flipCount int): error
++IsFinished(): bool
++GetDeckMoves(): []int
++GetStackMoves(card Card): int, bool
++GetBoardMoves(): []BoardMove
++GetDeckHints(): []string
++GetStackHints(): []string
++GetBoardHints(): []string
+}
+class BoardMove {
++FromColumn: int
++FromRow: int
++ToColumn: int
+
+}
+}
+package gamemanager{
+annotation gamemanager {
+
+-var ValidColumns:
++NewGameManager(): *GameManager
++NextCard(g *Game, gs *GameStates): error
++ResetGame(g *Game, gs *GameStates): error
++GetHints(g *Game): []string
++Undo(g *Game, gs *GameStates): error
++MoveDeckToBoard(input1 string, g *Game, gs *GameStates): error
++MoveDeckToStacks(g *Game, gs *GameStates): error
++MoveBoardToStacks(input0 string, g *Game, gs *GameStates): error
++MoveColumnToColumn(input0 string, input1 string, g *Game, gs *GameStates): error
++DealTest(g *Game, gs *GameStates)
++ShowGameState(gs *GameStates)
++ShowGameStates(gs *GameStates): error
++ChangeFlipCount(g *Game, gs *GameStates): error
++HandleMoves(input string, session *GameSession): error
+}
+class GameResponse {
++Game: *Game
++Error: error
++Message: string
+
+}
+class GameManager {
++Sessions: map[string]GameSession
++Mutex: RWMutex
++Requests: chan GameRequest
++CreateSession(): string, error
++InitializeGame(sessionId string): error
++InitializeTestGame(sessionId string): error
++GetSession(sessionId string): *GameSession, error
++DeleteSession(sessionId string)
++ProcessRequests()
+}
+class GameRequestData {
+
+
+}
+class GameRequest {
++SessionId: string
++Action: string
++Data: interface
++Response: chan GameResponse
+
+}
+class GameSession {
++Id: string
++Game: *Game
++GameStates: *GameStates
+
+}
+}
+package gamestates{
+annotation gamestates {
+
+
++NewGameStates(): GameStates
+}
+class GameStates {
++States: []Game
+-push(state Game)
+-pop(): Game
++Reset()
++SaveState(state Game)
++Undo(): Game
++PrintLast()
++PrintAll()
+}
+}
+"Game" --> "Board"
+"Game" --> "Cards"
+"Game" --> "Stacks"
+"GameResponse" --> "Game"
+"GameSession" --> "Game"
+"GameSession" --> "GameStates"
+
+@enduml
+
+'../go-plantuml/go-plantuml generate -r -d cmd,game,gamemanager,gamestates
