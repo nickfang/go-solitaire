@@ -39,9 +39,17 @@ func main() {
 		input := strings.ToLower(i)
 		if input == "r" {
 			gm.DeleteSession(sessionId)
-			sessionId, error = gm.CreateSession()
+			sessionId, _ = gm.CreateSession()
 			gm.InitializeGame(sessionId)
-			session, error = gm.GetSession(sessionId)
+			session, _ = gm.GetSession(sessionId)
+			DisplayGame(*session.Game)
+			continue
+		}
+		if input == "rt" {
+			gm.DeleteSession(sessionId)
+			sessionId, _ = gm.CreateSession()
+			gm.InitializeTestGame(sessionId)
+			session, _ = gm.GetSession(sessionId)
 			DisplayGame(*session.Game)
 			continue
 		}
@@ -53,6 +61,10 @@ func main() {
 			if response.Error.Error() == "quit" {
 				fmt.Println("Quitting...")
 				return
+			}
+			if response.Error.Error() == "finished" {
+				fmt.Println("Congrats! You won!")
+				continue
 			}
 			fmt.Println(response.Error)
 		}
