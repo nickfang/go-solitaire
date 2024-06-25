@@ -26,17 +26,26 @@ func TestNewStacks(t *testing.T) {
 func TestMoveToStack(t *testing.T) {
 	s := NewStacks()
 
-	c1, err1 := deck.NewCard(1, "Hearts", true)
-	if err1 != nil {
-		t.Error("error creating c1 card.")
+	c1, _ := deck.NewCard(1, "squares", true)
+	error := s.MoveToStack(c1)
+	if error.Error() != "invalid suit in card - this should not happen" {
+		t.Error("Expected error: invalid suit in card - this should not happen", error)
 	}
-	s.MoveToStack(c1)
 
-	c2, err2 := deck.NewCard(2, "Spades", true)
-	if err2 != nil {
-		t.Error("error creating c1 card.")
+	c2, _ := deck.NewCard(2, "Spades", true)
+	error = s.MoveToStack(c2)
+	if error.Error() != "only an ace can be moved to an empty stack" {
+		t.Error("Expected error: only an ace can be moved to an empty stack.", error)
 	}
-	s.MoveToStack(c2)
+
+	c3, _ := deck.NewCard(1, "Hearts", true)
+	error = s.MoveToStack(c3)
+	if error != nil {
+		t.Error("Expected no error.", error)
+	}
+	if len(s[1]) != 1 || s[1][0].Value != 1 || s[1][0].Suit != "Hearts" {
+		t.Error("MoveToStack faile to move the ace of hearts.")
+	}
 
 }
 
