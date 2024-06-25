@@ -64,7 +64,7 @@ func main() {
 			}
 			if response.Error.Error() == "finished" {
 				fmt.Println("Congrats! You won!")
-				continue
+				return
 			}
 			fmt.Println(response.Error)
 		}
