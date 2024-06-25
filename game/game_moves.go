@@ -15,6 +15,7 @@ func (g *Game) NextDeckCard() error {
 		g.Cards[g.CurrentCardIndex].Shown = false
 	}
 	// if the next card is out of bounds, set the current card back to the beginning
+	oldCardIndex := g.CurrentCardIndex
 	if g.CurrentCardIndex == -1 || g.CurrentCardIndex+g.FlipCount > deckLength-1 {
 		if 2 < deckLength-1 {
 			g.CurrentCardIndex = g.FlipCount - 1
@@ -25,6 +26,9 @@ func (g *Game) NextDeckCard() error {
 		g.CurrentCardIndex += g.FlipCount
 	}
 	g.Cards[g.CurrentCardIndex].Shown = true
+	if oldCardIndex == g.CurrentCardIndex {
+		return errors.New("end of deck")
+	}
 	return nil
 }
 
