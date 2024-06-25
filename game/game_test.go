@@ -1,7 +1,6 @@
 package game
 
 import (
-	"fmt"
 	"solitaire/game/deck"
 	"solitaire/testutils"
 	"testing"
@@ -38,7 +37,6 @@ func TestCheckMove(t *testing.T) {
 func TestNewGame(t *testing.T) {
 	g := NewGame("")
 
-	g.Print()
 	if g.Id != "main" {
 		t.Error("Expected game id to be 'main'.")
 	}
@@ -139,7 +137,6 @@ func TestNextDeckCard(t *testing.T) {
 
 	g.Cards = g.Cards[:2]
 	g.CurrentCardIndex = 0
-	fmt.Println(g.Cards)
 	err = g.NextDeckCard()
 	if err != nil {
 		t.Error("Expected no error.")
@@ -150,10 +147,9 @@ func TestNextDeckCard(t *testing.T) {
 
 	g.Cards = g.Cards[:1]
 	g.CurrentCardIndex = 0
-	fmt.Println(g.Cards)
 	err = g.NextDeckCard()
-	if err != nil {
-		t.Error("Expected no error.")
+	if err.Error() != "end of deck" {
+		t.Error("Expected error: end of deck.", err.Error())
 	}
 	if g.CurrentCardIndex != 0 {
 		t.Error("Expected current card index to be 0 if there are only 2 cards left.", g.CurrentCardIndex)
