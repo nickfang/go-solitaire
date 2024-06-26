@@ -120,3 +120,84 @@ func TestMoveFromDeckToStacks(t *testing.T) {
 	}
 
 }
+
+func TestMoveFromBoardToStacks(t *testing.T) {
+	g := NewGame("")
+	g.Cards.TestingShuffle()
+	g.DealBoard()
+
+	for i := 0; i < 8; i++ {
+		g.MoveFromDeckToStacks()
+		g.MoveFromDeckToStacks()
+		g.MoveFromDeckToStacks()
+		g.NextDeckCard()
+	}
+
+	// MoveFromBoardToStacks behaves normally in standard cases
+	err := g.MoveFromBoardToStacks(6)
+	if err != nil {
+		t.Error("Expected no error.")
+	}
+	if len(g.Stacks[3]) != 7 {
+		t.Error("Expected seven card in stack 3.", len(g.Stacks[3]))
+	}
+	if g.Stacks[3][0].Value != 1 || g.Stacks[3][0].Suit != "Diamonds" {
+		t.Error("Expected 5 of Clubs in stack 3.", g.Stacks[3][0])
+	}
+	if len(g.Board[6]) != 6 {
+		t.Error("Expected six cards in column six.", len(g.Board[6]))
+	}
+	if g.Board[6][5].Value != 7 || g.Board[6][5].Suit != "Clubs" {
+		t.Error("Expected 7 of Clubs in column 6.", g.Board[6][5])
+	}
+
+	// MoveFromBoardToStacks returns an error if the move is invalid
+	err = g.MoveFromBoardToStacks(3)
+	if err.Error() != "invalid move" {
+		t.Error("Expected error: invalid move.", err.Error())
+	}
+
+	// MoveFromBoardToStacks returns an error if the move is invalid
+	g.Board[0] = g.Board[0][:0]
+	err = g.MoveFromBoardToStacks(0)
+	if err.Error() != "nothing to move" {
+		t.Error("Expected error: nothing to move.", err.Error())
+	}
+}
+
+func TestMoveFromColumnToColumn(t *testing.T) {
+	g := NewGame("")
+	g.Cards.TestingShuffle()
+	g.DealBoard()
+
+	// MoveColumnToColumn behaves normally in standard cases
+	err := g.MoveFromColumnToColumn(5, 4)
+	if err != nil {
+		t.Error("Expected no error.")
+	}
+	if len(g.Board[5]) != 5 {
+		t.Error("Expected five cards in column 5.", len(g.Board[5]))
+	}
+	if g.Board[5][4].Value != 8 || g.Board[5][4].Suit != "Diamonds" || g.Board[5][4].Shown != true {
+		t.Error("Expected 8 of Diamonds to be shown in column 5.", g.Board[5][4])
+	}
+	if len(g.Board[5]) != 5 {
+		t.Error("Expected five cards in column 5.", len(g.Board[5]))
+	}
+	if g.Board[4][5].Value != 7 || g.Board[4][5].Suit != "Hearts" || g.Board[4][5].Shown != true {
+		t.Error("Expected 7 of Hearts is shown in column 4.", g.Board[4][5])
+	}
+
+	// MoveColumnToColumn returns an error if the move is invalid
+	err = g.MoveFromColumnToColumn(5, 5)
+	if err.Error() != "invalid board move" {
+		t.Error("Expected error: invalid board move.", err.Error())
+	}
+
+	// MoveColumnToColumn returns an error if the move is invalid
+	g.Board[0] = g.Board[0][:0]
+	err = g.MoveFromColumnToColumn(0, 1)
+	if err.Error() != "invalid board move" {
+		t.Error("Expected error: invalid board move.", err.Error())
+	}
+}

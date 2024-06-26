@@ -205,10 +205,3 @@ func TestDeepCopy(t *testing.T) {
 // TODO: test doing an undo and then trying to go to the next card
 
 // TODO: test
-
-func TestMoveColumnToColumn(t *testing.T) {
-	g := NewGame("")
-	g.Cards.TestingShuffle()
-	g.DealBoard()
-	// moves := []string{"54", "53"}
-}

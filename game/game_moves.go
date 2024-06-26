@@ -65,6 +65,7 @@ func (g *Game) MoveFromDeckToStacks() error {
 	if error != nil {
 		return error
 	}
+	// errors handled by validMove
 	g.Stacks.MoveToStack(movedCard)
 	if g.CurrentCardIndex >= 0 {
 		g.CurrentCardIndex = g.CurrentCardIndex - 1
@@ -85,10 +86,9 @@ func (g *Game) MoveFromBoardToStacks(column int) error {
 	if !validMove {
 		return errors.New("invalid move")
 	}
-	error := g.Stacks.MoveToStack(lastCard)
-	if error != nil {
-		return error
-	}
+	// errors handled by validMove
+	g.Stacks.MoveToStack(lastCard)
+
 	g.pruneColumn(column, lastIndex)
 	columnLength := len(g.Board[column])
 	if columnLength > 0 && !g.Board[column][columnLength-1].Shown {
