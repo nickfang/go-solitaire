@@ -28,8 +28,8 @@ func TestMoveToStack(t *testing.T) {
 
 	c1, _ := deck.NewCard(1, "squares", true)
 	error := s.MoveToStack(c1)
-	if error.Error() != "invalid suit in card - this should not happen" {
-		t.Error("Expected error: invalid suit in card - this should not happen", error)
+	if error.Error() != "invalid suit in card - use NewCard() when creating card" {
+		t.Error("Expected error: invalid suit in card - use NewCard() when creating card", error)
 	}
 
 	c2, _ := deck.NewCard(2, "Spades", true)

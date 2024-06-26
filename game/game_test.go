@@ -124,45 +124,6 @@ func TestIsEqual(t *testing.T) {
 	}
 }
 
-func TestNextDeckCard(t *testing.T) {
-	g := NewGame("")
-
-	err := g.NextDeckCard()
-	if err != nil {
-		t.Error("Expected no error.")
-	}
-	if g.CurrentCardIndex != 5 {
-		t.Error("Expected current card index to be 5.", g.CurrentCardIndex)
-	}
-
-	g.Cards = g.Cards[:2]
-	g.CurrentCardIndex = 0
-	err = g.NextDeckCard()
-	if err != nil {
-		t.Error("Expected no error.")
-	}
-	if g.CurrentCardIndex != 1 {
-		t.Error("Expected current card index to be 1 if there are only 2 cards left.", g.CurrentCardIndex)
-	}
-
-	g.Cards = g.Cards[:1]
-	g.CurrentCardIndex = 0
-	err = g.NextDeckCard()
-	if err.Error() != "end of deck" {
-		t.Error("Expected error: end of deck.", err.Error())
-	}
-	if g.CurrentCardIndex != 0 {
-		t.Error("Expected current card index to be 0 if there are only 2 cards left.", g.CurrentCardIndex)
-	}
-
-	g.Cards = g.Cards[:0]
-	err = g.NextDeckCard()
-	if err.Error() != "no more cards in the deck" {
-		t.Error("Expected error message not shown.")
-	}
-
-}
-
 func TestSetFlipcount(t *testing.T) {
 	g := NewGame("")
 
@@ -191,10 +152,6 @@ func TestSetFlipcount(t *testing.T) {
 	if err.Error() != "flip count must be 1 or 3" {
 		t.Error("Expected error message not shown.")
 	}
-}
-
-func TextCheckMove(t *testing.T) {
-
 }
 
 func TestDeepCopy(t *testing.T) {

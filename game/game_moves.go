@@ -10,10 +10,7 @@ func (g *Game) NextDeckCard() error {
 	if deckLength == 0 {
 		return errors.New("no more cards in the deck")
 	}
-	// if there is a current card, hide it
-	if g.CurrentCardIndex >= 0 {
-		g.Cards[g.CurrentCardIndex].Shown = false
-	}
+
 	// if the next card is out of bounds, set the current card back to the beginning
 	oldCardIndex := g.CurrentCardIndex
 	if g.CurrentCardIndex == -1 || g.CurrentCardIndex+g.FlipCount > deckLength-1 {
@@ -25,9 +22,15 @@ func (g *Game) NextDeckCard() error {
 	} else {
 		g.CurrentCardIndex += g.FlipCount
 	}
-	g.Cards[g.CurrentCardIndex].Shown = true
+	// if next card gives you the same card.
 	if oldCardIndex == g.CurrentCardIndex {
 		return errors.New("end of deck")
+	} else {
+		g.Cards[g.CurrentCardIndex].Shown = true
+		if oldCardIndex >= 0 {
+			g.Cards[oldCardIndex].Shown = false
+		}
+
 	}
 	return nil
 }
@@ -54,7 +57,7 @@ func (g *Game) MoveFromDeckToStacks() error {
 	if g.CurrentCardIndex < 0 {
 		return errors.New("no cards in the deck")
 	}
-	suitIndex, validMove := g.GetStackMoves(g.Cards[g.CurrentCardIndex])
+	_, validMove := g.GetStackMoves(g.Cards[g.CurrentCardIndex])
 	if !validMove {
 		return errors.New("invalid move")
 	}
@@ -62,10 +65,12 @@ func (g *Game) MoveFromDeckToStacks() error {
 	if error != nil {
 		return error
 	}
-	movedCard.Shown = true
-	g.Stacks[suitIndex] = append(g.Stacks[suitIndex], movedCard)
+	g.Stacks.MoveToStack(movedCard)
 	if g.CurrentCardIndex >= 0 {
 		g.CurrentCardIndex = g.CurrentCardIndex - 1
+	}
+	if g.CurrentCardIndex >= 0 {
+		g.Cards[g.CurrentCardIndex].Shown = true
 	}
 	return nil
 }
@@ -76,11 +81,14 @@ func (g *Game) MoveFromBoardToStacks(column int) error {
 	if lastIndex == -1 {
 		return errors.New("nothing to move")
 	}
-	suitIndex, validMove := g.GetStackMoves(lastCard)
+	_, validMove := g.GetStackMoves(lastCard)
 	if !validMove {
 		return errors.New("invalid move")
 	}
-	g.Stacks[suitIndex] = append(g.Stacks[suitIndex], lastCard)
+	error := g.Stacks.MoveToStack(lastCard)
+	if error != nil {
+		return error
+	}
 	g.pruneColumn(column, lastIndex)
 	columnLength := len(g.Board[column])
 	if columnLength > 0 && !g.Board[column][columnLength-1].Shown {

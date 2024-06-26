@@ -47,7 +47,7 @@ func (s *Stacks) MoveToStack(card deck.Card) error {
 		}
 	}
 	if suitIndex == -1 {
-		return errors.New("invalid suit in card - this should not happen")
+		return errors.New("invalid suit in card - use NewCard() when creating card")
 	}
 	if len((*s)[suitIndex]) == 0 {
 		if card.Value != 1 {
