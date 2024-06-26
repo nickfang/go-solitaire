@@ -31,20 +31,6 @@ func NewBoard() Board {
 	return board
 }
 
-// func (b board) pruneColumn(column int, index int) []card {
-// 	removed := b[column][index:]
-// 	columnCopy := make([]card, len(b[column]))
-// 	copy(columnCopy, b[column][:])
-
-// 	b[column] = columnCopy
-// 	fmt.Println(removed)
-// 	return removed
-// }
-
-// func (b Board) getColumnInfo(column int) {
-// 	// TODO:
-// }
-
 func (b Board) GetLastCard(column int) (int, deck.Card) {
 	var lastIndex int
 	var lastCard deck.Card

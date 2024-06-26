@@ -1,6 +1,7 @@
 package stacks
 
 import (
+	"errors"
 	"fmt"
 	"solitaire/game/deck"
 )
@@ -37,7 +38,7 @@ func NewStacks() Stacks {
 	return stacks
 }
 
-func (s *Stacks) MoveToStack(card deck.Card) {
+func (s *Stacks) MoveToStack(card deck.Card) error {
 	suitIndex := -1
 	for index, suit := range deck.CardSuits {
 		if suit == card.Suit {
@@ -46,19 +47,17 @@ func (s *Stacks) MoveToStack(card deck.Card) {
 		}
 	}
 	if suitIndex == -1 {
-		fmt.Printf("Invalid suit in card.  This card was created incorrectly.  This should never happen.")
-		return
+		return errors.New("invalid suit in card - use NewCard() when creating card")
 	}
 	if len((*s)[suitIndex]) == 0 {
 		if card.Value != 1 {
-			fmt.Printf("Only an ace can be moved to an empty stack.")
-			return
+			return errors.New("only an ace can be moved to an empty stack")
 		}
 	} else if (*s)[suitIndex][len((*s)[suitIndex])-1].Value+1 != card.Value {
-		fmt.Printf("No valid spots in the stack for this card.")
-		return
+		return errors.New("invalid stack move")
 	}
 	(*s)[suitIndex] = append((*s)[suitIndex], card)
+	return nil
 }
 
 func (s Stacks) GetTopCards() Stacks {
