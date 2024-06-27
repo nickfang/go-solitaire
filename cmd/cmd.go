@@ -11,13 +11,7 @@ func main() {
 	gm := gamemanager.NewGameManager()
 	go gm.ProcessRequests()
 
-	sessionId, error := gm.CreateSession()
-	if error != nil {
-		fmt.Println(error)
-		return
-	}
-
-	error = gm.InitializeGame(sessionId)
+	sessionId, error := gm.CreateSession(gamemanager.WithRandomShuffle())
 	if error != nil {
 		fmt.Println(error)
 		return
@@ -39,16 +33,14 @@ func main() {
 		input := strings.ToLower(i)
 		if input == "r" {
 			gm.DeleteSession(sessionId)
-			sessionId, _ = gm.CreateSession()
-			gm.InitializeGame(sessionId)
+			sessionId, _ = gm.CreateSession(gamemanager.WithRandomShuffle())
 			session, _ = gm.GetSession(sessionId)
 			DisplayGame(*session.Game)
 			continue
 		}
 		if input == "rt" {
 			gm.DeleteSession(sessionId)
-			sessionId, _ = gm.CreateSession()
-			gm.InitializeTestGame(sessionId)
+			sessionId, _ = gm.CreateSession(gamemanager.WithTestingShuffle())
 			session, _ = gm.GetSession(sessionId)
 			DisplayGame(*session.Game)
 			continue

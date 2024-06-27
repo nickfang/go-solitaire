@@ -13,16 +13,11 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-type GameSession struct {
-	Id         string
-	Game       *game.Game
-	GameStates *gamestates.GameStates
-}
-
-type GameManager struct {
-	Sessions map[string]GameSession
-	Mutex    sync.RWMutex
-	Requests chan GameRequest
+type GameRequest struct {
+	SessionId string
+	Action    string
+	Data      interface{}
+	Response  chan GameResponse
 }
 
 type GameResponse struct {
@@ -31,70 +26,108 @@ type GameResponse struct {
 	Message string
 }
 
+type GameSession struct {
+	Id         string
+	Game       *game.Game
+	GameStates *gamestates.GameStates
+	Respons    chan GameResponse
+}
+
+type SessionEvent struct {
+	SessionId   string
+	EventType   string
+	SessionData *GameSession
+}
+
+type GameManager struct {
+	Sessions  map[string]*GameSession
+	Requests  chan GameRequest
+	Responses chan GameResponse
+	Events    chan SessionEvent
+	Mutex     sync.RWMutex
+}
+
 type GameRequestData struct {
 }
 
-type GameRequest struct {
-	SessionId string
-	Action    string
-	Data      interface{}
-	Response  chan GameResponse
-}
+type ClientOption func(*GameSession)
 
 var ValidColumns = []string{"1", "2", "3", "4", "5", "6", "7"}
 
 func NewGameManager() *GameManager {
 	return &GameManager{
-		Sessions: make(map[string]GameSession),
-		Mutex:    sync.RWMutex{},
-		Requests: make(chan GameRequest, 10),
+		Sessions:  make(map[string]*GameSession),
+		Requests:  make(chan GameRequest),
+		Responses: make(chan GameResponse),
+		Events:    make(chan SessionEvent),
+		Mutex:     sync.RWMutex{},
 	}
 }
 
-func (gm *GameManager) CreateSession() (string, error) {
+func (gm *GameManager) CreateSession(options ...ClientOption) (string, error) {
 	gm.Mutex.Lock()
 	defer gm.Mutex.Unlock()
 
 	sessionId := xid.New().String()
 	game := game.NewGame(sessionId)
 	gameStates := gamestates.NewGameStates()
-	newSession := GameSession{
+	newSession := &GameSession{
 		Id:         sessionId,
 		Game:       &game,
 		GameStates: &gameStates,
 	}
+
+	for _, option := range options {
+		option(newSession)
+	}
+
+	newSession.Game.DealBoard()
+	newSession.GameStates.SaveState(*newSession.Game)
+
 	gm.Sessions[sessionId] = newSession
 	return sessionId, nil
 }
 
-func (gm *GameManager) InitializeGame(sessionId string) error {
-	gs, error := gm.GetSession(sessionId)
-	if error != nil {
-		return error
+func WithRandomShuffle() ClientOption {
+	return func(gs *GameSession) {
+		gs.Game.Cards.RandomShuffle()
 	}
-	gs.Game.Cards.RandomShuffle()
-	gs.Game.DealBoard()
-	gs.GameStates.SaveState(*gs.Game)
-	return nil
 }
 
-func (gm *GameManager) InitializeTestGame(sessionId string) error {
-	gs, error := gm.GetSession(sessionId)
-	if error != nil {
-		return error
+func WithTestingShuffle() ClientOption {
+	return func(gs *GameSession) {
+		gs.Game.Cards.TestingShuffle()
 	}
-	gs.Game.Cards.TestingShuffle()
-	gs.Game.DealBoard()
-	gs.GameStates.SaveState(*gs.Game)
-	return nil
 }
+
+// func (gm *GameManager) InitializeGame(sessionId string) error {
+// 	gs, error := gm.GetSession(sessionId)
+// 	if error != nil {
+// 		return error
+// 	}
+// 	gs.Game.Cards.RandomShuffle()
+// 	gs.Game.DealBoard()
+// 	gs.GameStates.SaveState(*gs.Game)
+// 	return nil
+// }
+
+// func (gm *GameManager) InitializeTestGame(sessionId string) error {
+// 	gs, error := gm.GetSession(sessionId)
+// 	if error != nil {
+// 		return error
+// 	}
+// 	gs.Game.Cards.TestingShuffle()
+// 	gs.Game.DealBoard()
+// 	gs.GameStates.SaveState(*gs.Game)
+// 	return nil
+// }
 
 func (gm *GameManager) GetSession(sessionId string) (*GameSession, error) {
 	gm.Mutex.RLock()
 	defer gm.Mutex.RUnlock()
 
 	if session, ok := gm.Sessions[sessionId]; ok {
-		return &session, nil
+		return session, nil
 	}
 	return nil, errors.New("session not found")
 }

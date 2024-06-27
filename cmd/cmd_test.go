@@ -2,18 +2,54 @@ package main
 
 import (
 	"fmt"
-	"solitaire/game"
+	"io"
+	"os"
 	"solitaire/gamemanager"
-
+	"strings"
 	"testing"
 )
 
-func TestDealBoard(t *testing.T) {
-	g := game.NewGame("")
-	fmt.Println(g)
-	g.DealBoard()
-	// g.SetDebug(true)
-	// g.board.Display()
+func TestMainOutput(t *testing.T) {
+	oldArgs := os.Args
+	oldStdin := os.Stdin
+	oldStdout := os.Stdout
+
+	defer func() {
+		os.Args = oldArgs
+		os.Stdin = oldStdin
+		os.Stdout = oldStdout
+	}()
+
+	os.Args = []string{"go run ."}
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+	os.Stdin = r
+
+	// run some commands, end with 'q' or test times out.
+	fmt.Fprintln(w, "n")
+	fmt.Fprintln(w, "q")
+
+	main()
+
+	// must close write before getting read or test times out
+	w.Close()
+
+	out, _ := io.ReadAll(r)
+	r.Close()
+
+	// to print the output, redirect stdout to the original value
+	// os.Stdout = oldStdout
+	// fmt.Println(string(out))
+
+	if len(out) == 0 {
+		t.Errorf("Expected non-empty output, but got empty output")
+	}
+
+	lines := strings.Split(string(out), "\n")
+	lastLine := lines[len(lines)-2]
+	if lastLine != "Quitting..." {
+		t.Errorf("Expected last line to be 'Quitting...', but got '%s'", lastLine)
+	}
 }
 
 func TestGetCardDisplay(t *testing.T) {
@@ -32,19 +68,30 @@ func TestGetCardDisplay(t *testing.T) {
 	}
 }
 
+func TestGetCardDisplayInvalidCard(t *testing.T) {
+	// Test with an invalid card value
+	cardDisplay := getCardDisplay(14, "Spades")
+	expected := "Invalid Value for Card"
+	if cardDisplay != expected {
+		t.Errorf("Expected %s, got %s", expected, cardDisplay)
+	}
+
+	// Test with an invalid suit
+	cardDisplay = getCardDisplay(5, "InvalidSuit")
+	expected = "Invalid Suit for Card"
+	if cardDisplay != expected {
+		t.Errorf("Expected %s, got %s", expected, cardDisplay)
+	}
+}
+
 func TestFullGame(t *testing.T) {
 	// This really only needs to test that the move strings call the correct functions.
 	gm := gamemanager.NewGameManager()
 	go gm.ProcessRequests()
 
-	sessionId, error := gm.CreateSession()
+	sessionId, error := gm.CreateSession(gamemanager.WithTestingShuffle())
 	if error != nil {
 		t.Errorf("Error creating game: %s", error)
-	}
-
-	error = gm.InitializeTestGame(sessionId)
-	if error != nil {
-		t.Errorf("Error initializing test game: %s", error)
 	}
 
 	session, error := gm.GetSession(sessionId)
@@ -93,25 +140,27 @@ func TestInvalidMoves(t *testing.T) {
 	gm := gamemanager.NewGameManager()
 	go gm.ProcessRequests()
 
-	sessionId, error := gm.CreateSession()
+	sessionId, error := gm.CreateSession(gamemanager.WithTestingShuffle())
 	if error != nil {
 		t.Errorf("Error creating game: %s", error)
 	}
-
-	error = gm.InitializeTestGame(sessionId)
-	if error != nil {
-		t.Errorf("Error initializing test game: %s", error)
-	}
-
+	move := "test"
 	responseChan := make(chan gamemanager.GameResponse)
-	gr := gamemanager.GameRequest{SessionId: sessionId, Action: "ds", Response: responseChan}
-	gm.Requests <- gr
-	gm.Requests <- gr
-	gm.Requests <- gr
+	gr := gamemanager.GameRequest{SessionId: sessionId, Action: move, Response: responseChan}
 	gm.Requests <- gr
 	response := <-responseChan
+	if response.Error == nil {
+		t.Errorf("Expected error for invalid move, but got no error")
+	}
+
+	gr = gamemanager.GameRequest{SessionId: sessionId, Action: "ds", Response: responseChan}
+	gm.Requests <- gr
 	response = <-responseChan
+	gm.Requests <- gr
 	response = <-responseChan
+	gm.Requests <- gr
+	response = <-responseChan
+	gm.Requests <- gr
 	response = <-responseChan
 	if response.Error.Error() != "no cards in the deck" {
 		t.Errorf("Expected error: no cards in the deck")
