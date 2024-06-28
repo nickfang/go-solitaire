@@ -9,7 +9,7 @@ import (
 
 func main() {
 	gm := gamemanager.NewGameManager()
-	go gm.ProcessRequests()
+	go gm.GameEngine()
 
 	sessionId, error := gm.CreateSession(gamemanager.WithRandomShuffle())
 	if error != nil {
@@ -26,7 +26,6 @@ func main() {
 	game := session.Game
 	DisplayGame(*game)
 	var i string
-	responseChan := make(chan gamemanager.GameResponse)
 
 	for {
 		fmt.Scanln(&i)
@@ -45,10 +44,10 @@ func main() {
 			DisplayGame(*session.Game)
 			continue
 		}
-		gr := gamemanager.GameRequest{SessionId: sessionId, Action: input, Response: responseChan}
+		gr := gamemanager.GameRequest{SessionId: sessionId, Action: input}
 		gm.Requests <- gr
 
-		response := <-responseChan
+		response := <-gm.Responses
 		if response.Error != nil {
 			if response.Error.Error() == "quit" {
 				fmt.Println("Quitting...")

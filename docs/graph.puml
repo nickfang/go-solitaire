@@ -146,11 +146,7 @@ class GameManager {
 +InitializeTestGame(sessionId string): error
 +GetSession(sessionId string): *GameSession, error
 +DeleteSession(sessionId string)
-+ProcessRequests()
-}
-class GameRequestData {
-
-
++GameEngine()
 }
 class GameRequest {
 +SessionId: string

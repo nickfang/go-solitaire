@@ -27,6 +27,10 @@ func TestMainOutput(t *testing.T) {
 
 	// run some commands, end with 'q' or test times out.
 	fmt.Fprintln(w, "n")
+	fmt.Fprintln(w, "h")
+	fmt.Fprintln(w, "?")
+	fmt.Fprintln(w, "r")
+	fmt.Fprintln(w, "rt")
 	fmt.Fprintln(w, "q")
 
 	main()
@@ -87,7 +91,7 @@ func TestGetCardDisplayInvalidCard(t *testing.T) {
 func TestFullGame(t *testing.T) {
 	// This really only needs to test that the move strings call the correct functions.
 	gm := gamemanager.NewGameManager()
-	go gm.ProcessRequests()
+	go gm.GameEngine()
 
 	sessionId, error := gm.CreateSession(gamemanager.WithTestingShuffle())
 	if error != nil {
@@ -110,12 +114,11 @@ func TestFullGame(t *testing.T) {
 		"1s", "4s", "6s", "2s", "74", "12", "2s", "4s", "2s", "3s", "4s",
 	}
 
-	responseChan := make(chan gamemanager.GameResponse, 10)
 	for i, move := range moves {
-		gr := gamemanager.GameRequest{SessionId: sessionId, Action: move, Response: responseChan}
+		gr := gamemanager.GameRequest{SessionId: sessionId, Action: move}
 		gm.Requests <- gr
 
-		response := <-responseChan
+		response := <-gm.Responses
 		error := response.Error
 		if i == len(moves)-1 {
 			fmt.Println(i, len(moves)-1, error.Error(), "finished")
@@ -138,54 +141,53 @@ func TestFullGame(t *testing.T) {
 
 func TestInvalidMoves(t *testing.T) {
 	gm := gamemanager.NewGameManager()
-	go gm.ProcessRequests()
+	go gm.GameEngine()
 
 	sessionId, error := gm.CreateSession(gamemanager.WithTestingShuffle())
 	if error != nil {
 		t.Errorf("Error creating game: %s", error)
 	}
 	move := "test"
-	responseChan := make(chan gamemanager.GameResponse)
-	gr := gamemanager.GameRequest{SessionId: sessionId, Action: move, Response: responseChan}
+	gr := gamemanager.GameRequest{SessionId: sessionId, Action: move}
 	gm.Requests <- gr
-	response := <-responseChan
+	response := <-gm.Responses
 	if response.Error == nil {
 		t.Errorf("Expected error for invalid move, but got no error")
 	}
 
-	gr = gamemanager.GameRequest{SessionId: sessionId, Action: "ds", Response: responseChan}
+	gr = gamemanager.GameRequest{SessionId: sessionId, Action: "ds"}
 	gm.Requests <- gr
-	response = <-responseChan
+	response = <-gm.Responses
 	gm.Requests <- gr
-	response = <-responseChan
+	response = <-gm.Responses
 	gm.Requests <- gr
-	response = <-responseChan
+	response = <-gm.Responses
 	gm.Requests <- gr
-	response = <-responseChan
+	response = <-gm.Responses
 	if response.Error.Error() != "no cards in the deck" {
 		t.Errorf("Expected error: no cards in the deck")
 	}
-	gr = gamemanager.GameRequest{SessionId: sessionId, Action: "12", Response: responseChan}
+	gr = gamemanager.GameRequest{SessionId: sessionId, Action: "12"}
 	gm.Requests <- gr
-	response = <-responseChan
+	response = <-gm.Responses
 	if response.Error.Error() != "invalid board move" {
 		t.Errorf("Expected error: invalid board move")
 	}
-	gr = gamemanager.GameRequest{SessionId: sessionId, Action: "1s", Response: responseChan}
+	gr = gamemanager.GameRequest{SessionId: sessionId, Action: "1s"}
 	gm.Requests <- gr
-	response = <-responseChan
+	response = <-gm.Responses
 	if response.Error.Error() != "invalid move" {
 		t.Errorf("Expected error: invalid move")
 	}
-	gr = gamemanager.GameRequest{SessionId: sessionId, Action: "d1", Response: responseChan}
+	gr = gamemanager.GameRequest{SessionId: sessionId, Action: "d1"}
 	gm.Requests <- gr
-	response = <-responseChan
+	response = <-gm.Responses
 	if response.Error.Error() != "invalid move" {
 		t.Errorf("Expected error: invalid move")
 	}
-	gr = gamemanager.GameRequest{SessionId: sessionId, Action: "n", Response: responseChan}
+	gr = gamemanager.GameRequest{SessionId: sessionId, Action: "n"}
 	gm.Requests <- gr
-	response = <-responseChan
+	response = <-gm.Responses
 	if response.Error != nil {
 		t.Errorf("Expected no error")
 	}

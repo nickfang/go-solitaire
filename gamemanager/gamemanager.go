@@ -9,15 +9,13 @@ import (
 	"solitaire/game"
 	"solitaire/gamestates"
 
-	"github.com/rs/xid"
 	"golang.org/x/exp/slices"
 )
 
 type GameRequest struct {
 	SessionId string
 	Action    string
-	Data      interface{}
-	Response  chan GameResponse
+	// Response  chan GameResponse
 }
 
 type GameResponse struct {
@@ -30,7 +28,7 @@ type GameSession struct {
 	Id         string
 	Game       *game.Game
 	GameStates *gamestates.GameStates
-	Respons    chan GameResponse
+	// Response    chan GameResponse
 }
 
 type SessionEvent struct {
@@ -47,9 +45,6 @@ type GameManager struct {
 	Mutex     sync.RWMutex
 }
 
-type GameRequestData struct {
-}
-
 type ClientOption func(*GameSession)
 
 var ValidColumns = []string{"1", "2", "3", "4", "5", "6", "7"}
@@ -64,104 +59,31 @@ func NewGameManager() *GameManager {
 	}
 }
 
-func (gm *GameManager) CreateSession(options ...ClientOption) (string, error) {
-	gm.Mutex.Lock()
-	defer gm.Mutex.Unlock()
-
-	sessionId := xid.New().String()
-	game := game.NewGame(sessionId)
-	gameStates := gamestates.NewGameStates()
-	newSession := &GameSession{
-		Id:         sessionId,
-		Game:       &game,
-		GameStates: &gameStates,
-	}
-
-	for _, option := range options {
-		option(newSession)
-	}
-
-	newSession.Game.DealBoard()
-	newSession.GameStates.SaveState(*newSession.Game)
-
-	gm.Sessions[sessionId] = newSession
-	return sessionId, nil
-}
-
-func WithRandomShuffle() ClientOption {
-	return func(gs *GameSession) {
-		gs.Game.Cards.RandomShuffle()
-	}
-}
-
-func WithTestingShuffle() ClientOption {
-	return func(gs *GameSession) {
-		gs.Game.Cards.TestingShuffle()
-	}
-}
-
-// func (gm *GameManager) InitializeGame(sessionId string) error {
-// 	gs, error := gm.GetSession(sessionId)
-// 	if error != nil {
-// 		return error
-// 	}
-// 	gs.Game.Cards.RandomShuffle()
-// 	gs.Game.DealBoard()
-// 	gs.GameStates.SaveState(*gs.Game)
-// 	return nil
-// }
-
-// func (gm *GameManager) InitializeTestGame(sessionId string) error {
-// 	gs, error := gm.GetSession(sessionId)
-// 	if error != nil {
-// 		return error
-// 	}
-// 	gs.Game.Cards.TestingShuffle()
-// 	gs.Game.DealBoard()
-// 	gs.GameStates.SaveState(*gs.Game)
-// 	return nil
-// }
-
-func (gm *GameManager) GetSession(sessionId string) (*GameSession, error) {
-	gm.Mutex.RLock()
-	defer gm.Mutex.RUnlock()
-
-	if session, ok := gm.Sessions[sessionId]; ok {
-		return session, nil
-	}
-	return nil, errors.New("session not found")
-}
-
-func (gm *GameManager) DeleteSession(sessionId string) {
-	gm.Mutex.Lock()
-	defer gm.Mutex.Unlock()
-
-	delete(gm.Sessions, sessionId)
-}
-
-func (gm *GameManager) ProcessRequests() {
+func (gm *GameManager) GameEngine() {
 	for {
 		req := <-gm.Requests
 		if req.Action == "q" {
-			req.Response <- GameResponse{Error: errors.New("quit")}
+			gm.Responses <- GameResponse{Error: errors.New("quit")}
 			gm.DeleteSession(req.SessionId)
 			break
 		}
+
 		session, error := gm.GetSession(req.SessionId)
 		if session == nil {
-			req.Response <- GameResponse{Error: errors.New("session not found")}
+			gm.Responses <- GameResponse{Error: errors.New("session not found")}
 			continue
 		}
 		if error != nil {
-			req.Response <- GameResponse{Error: error}
+			gm.Responses <- GameResponse{Error: error}
 			continue
 		}
+
 		error = HandleMoves(req.Action, session)
 		if error != nil {
-			req.Response <- GameResponse{Error: error}
+			gm.Responses <- GameResponse{Error: error}
 			continue
 		}
-		req.Response <- GameResponse{Game: session.Game}
+		gm.Responses <- GameResponse{Game: session.Game}
 	}
 	// close the channel
 	close(gm.Requests)
