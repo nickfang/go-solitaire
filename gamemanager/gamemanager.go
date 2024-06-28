@@ -87,6 +87,29 @@ func (gm *GameManager) GameEngine() {
 	close(gm.Requests)
 }
 
+func (gm *GameManager) SessionEngine() {
+	for {
+		event := <-gm.Events
+		switch event.EventType {
+		case "create":
+			sessionId, _ := gm.CreateSession()
+			session, _ := gm.GetSession(sessionId)
+			gm.Events <- SessionEvent{SessionId: sessionId, EventType: "get", SessionData: session}
+			continue
+		case "get":
+			gm.GetSession(event.SessionId)
+			continue
+		case "delete":
+			error := gm.DeleteSession(event.SessionId)
+			if error != nil {
+				fmt.Println(error)
+			}
+
+		}
+	}
+
+}
+
 func NextCard(g *game.Game, gs *gamestates.GameStates) error {
 	nextErr := g.NextDeckCard()
 	if nextErr != nil {

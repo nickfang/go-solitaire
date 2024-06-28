@@ -54,9 +54,13 @@ func (gm *GameManager) GetSession(sessionId string) (*GameSession, error) {
 	return nil, errors.New("session not found")
 }
 
-func (gm *GameManager) DeleteSession(sessionId string) {
+func (gm *GameManager) DeleteSession(sessionId string) error {
+	if _, ok := gm.Sessions[sessionId]; !ok {
+		return errors.New("session not found")
+	}
 	gm.Mutex.Lock()
 	defer gm.Mutex.Unlock()
 
 	delete(gm.Sessions, sessionId)
+	return nil
 }

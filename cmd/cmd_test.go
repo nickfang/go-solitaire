@@ -189,6 +189,6 @@ func TestInvalidMoves(t *testing.T) {
 	gm.Requests <- gr
 	response = <-gm.Responses
 	if response.Error != nil {
-		t.Errorf("Expected no error")
+		t.Errorf("Expected no error", response.Error)
 	}
 }
