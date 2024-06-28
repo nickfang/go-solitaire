@@ -55,7 +55,10 @@ func main() {
 			}
 			if response.Error.Error() == "finished" {
 				fmt.Println("Congrats! You won!")
-				return
+				sessionId, _ = gm.CreateSession(gamemanager.WithRandomShuffle())
+				session, _ = gm.GetSession(sessionId)
+				DisplayGame(*session.Game)
+				continue
 			}
 			fmt.Println(response.Error)
 		}

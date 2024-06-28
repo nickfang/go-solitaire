@@ -134,15 +134,15 @@ func DisplayGame(g game.Game) {
 
 func DisplayHelp() {
 	fmt.Println("Commands: ")
-	fmt.Println("  n - next card")
-	fmt.Println("  d# - move from deck to column number")
-	fmt.Println("  ds - move from deck to stacks")
-	fmt.Println("  ## - move fromcolumn to column")
-	fmt.Println("  r - reset")
-	fmt.Println("  h - hints")
+	fmt.Println("  n   - next card")
+	fmt.Println("  d#  - move from deck to column number")
+	fmt.Println("  ds  - move from deck to stacks")
+	fmt.Println("  ##  - move fromcolumn to column")
+	fmt.Println("  r   - reset")
+	fmt.Println("  h   - hints")
 	fmt.Println("  fc1 - set flip count to 1 (easy mode)")
-	fmt.Println("  u - undo")
-	fmt.Println("  q - quit")
+	fmt.Println("  u   - undo")
+	fmt.Println("  q   - quit")
 }
 
 func DisplayHints(g game.Game) {
