@@ -15,7 +15,6 @@ import (
 type GameRequest struct {
 	SessionId string
 	Action    string
-	// Response  chan GameResponse
 }
 
 type GameResponse struct {
@@ -28,7 +27,6 @@ type GameSession struct {
 	Id         string
 	Game       *game.Game
 	GameStates *gamestates.GameStates
-	// Response    chan GameResponse
 }
 
 type SessionEvent struct {
