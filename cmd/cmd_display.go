@@ -128,7 +128,6 @@ func DisplayGame(g game.Game) {
 	DisplayCards(g)
 	if g.Debug {
 		DisplayHints(g)
-
 	}
 }
 

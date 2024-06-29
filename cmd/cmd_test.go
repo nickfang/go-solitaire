@@ -116,9 +116,9 @@ func TestFullGame(t *testing.T) {
 
 	for i, move := range moves {
 		gr := gamemanager.GameRequest{SessionId: sessionId, Action: move}
-		gm.Requests <- gr
+		gm.GameReq <- gr
 
-		response := <-gm.Responses
+		response := <-gm.GameRes
 		error := response.Error
 		if i == len(moves)-1 {
 			fmt.Println(i, len(moves)-1, error.Error(), "finished")
@@ -149,46 +149,46 @@ func TestInvalidMoves(t *testing.T) {
 	}
 	move := "test"
 	gr := gamemanager.GameRequest{SessionId: sessionId, Action: move}
-	gm.Requests <- gr
-	response := <-gm.Responses
+	gm.GameReq <- gr
+	response := <-gm.GameRes
 	if response.Error == nil {
 		t.Errorf("Expected error for invalid move, but got no error")
 	}
 
 	gr = gamemanager.GameRequest{SessionId: sessionId, Action: "ds"}
-	gm.Requests <- gr
-	response = <-gm.Responses
-	gm.Requests <- gr
-	response = <-gm.Responses
-	gm.Requests <- gr
-	response = <-gm.Responses
-	gm.Requests <- gr
-	response = <-gm.Responses
+	gm.GameReq <- gr
+	response = <-gm.GameRes
+	gm.GameReq <- gr
+	response = <-gm.GameRes
+	gm.GameReq <- gr
+	response = <-gm.GameRes
+	gm.GameReq <- gr
+	response = <-gm.GameRes
 	if response.Error.Error() != "no cards in the deck" {
 		t.Errorf("Expected error: no cards in the deck")
 	}
 	gr = gamemanager.GameRequest{SessionId: sessionId, Action: "12"}
-	gm.Requests <- gr
-	response = <-gm.Responses
+	gm.GameReq <- gr
+	response = <-gm.GameRes
 	if response.Error.Error() != "invalid board move" {
 		t.Errorf("Expected error: invalid board move")
 	}
 	gr = gamemanager.GameRequest{SessionId: sessionId, Action: "1s"}
-	gm.Requests <- gr
-	response = <-gm.Responses
+	gm.GameReq <- gr
+	response = <-gm.GameRes
 	if response.Error.Error() != "invalid move" {
 		t.Errorf("Expected error: invalid move")
 	}
 	gr = gamemanager.GameRequest{SessionId: sessionId, Action: "d1"}
-	gm.Requests <- gr
-	response = <-gm.Responses
+	gm.GameReq <- gr
+	response = <-gm.GameRes
 	if response.Error.Error() != "invalid move" {
 		t.Errorf("Expected error: invalid move")
 	}
 	gr = gamemanager.GameRequest{SessionId: sessionId, Action: "n"}
-	gm.Requests <- gr
-	response = <-gm.Responses
+	gm.GameReq <- gr
+	response = <-gm.GameRes
 	if response.Error != nil {
-		t.Errorf("Expected no error", response.Error)
+		t.Errorf("Expected no error.  %s", response.Error)
 	}
 }

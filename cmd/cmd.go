@@ -10,65 +10,90 @@ import (
 func main() {
 	gm := gamemanager.NewGameManager()
 	go gm.GameEngine()
+	go gm.SessionEngine()
 
-	sessionId, error := gm.CreateSession(gamemanager.WithRandomShuffle())
-	if error != nil {
-		fmt.Println(error)
-		return
-	}
+	gm.SessionReq <- gamemanager.SessionRequest{Action: "create"}
+	sessionRes := <-gm.SessionRes
+	sessionId := sessionRes.Id
+	gm.GameReq <- gamemanager.GameRequest{SessionId: sessionId, Action: "display"}
+	gameRes := <-gm.GameRes
+	game := gameRes.Game
 
-	session, err := gm.GetSession(sessionId)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	game := session.Game
 	DisplayGame(*game)
 	var i string
 
 	for {
 		fmt.Scanln(&i)
 		input := strings.ToLower(i)
+		gm.GameReq <- gamemanager.GameRequest{SessionId: sessionId, Action: "display"}
+		gameRes := <-gm.GameRes
+		game = gameRes.Game
 		if input == "r" {
-			gm.DeleteSession(sessionId)
-			sessionId, _ = gm.CreateSession(gamemanager.WithRandomShuffle())
-			session, _ = gm.GetSession(sessionId)
-			DisplayGame(*session.Game)
+			gm.SessionReq <- gamemanager.SessionRequest{Action: "create"}
+			sessionRes = <-gm.SessionRes
+			if sessionRes.Error != nil {
+				fmt.Println(sessionRes.Error)
+				continue
+			}
+			sessionId = sessionRes.Id
+			gm.GameReq <- gamemanager.GameRequest{SessionId: sessionId, Action: "display"}
+			gameRes = <-gm.GameRes
+			game = gameRes.Game
+			DisplayGame(*game)
 			continue
 		}
 		if input == "rt" {
-			gm.DeleteSession(sessionId)
-			sessionId, _ = gm.CreateSession(gamemanager.WithTestingShuffle())
-			session, _ = gm.GetSession(sessionId)
-			DisplayGame(*session.Game)
+			gm.SessionReq <- gamemanager.SessionRequest{Id: sessionId, Action: "delete"}
+			session := <-gm.SessionRes
+			if session.Error != nil {
+				fmt.Println(session.Error)
+				continue
+			}
+
+			gm.SessionReq <- gamemanager.SessionRequest{Action: "create:test"}
+			session = <-gm.SessionRes
+			if session.Error != nil {
+				fmt.Println(session.Error)
+				continue
+			}
+			sessionId = session.Id
+			gm.GameReq <- gamemanager.GameRequest{SessionId: sessionId, Action: "display"}
+			gameRes = <-gm.GameRes
+			game = gameRes.Game
+			DisplayGame(*game)
 			continue
 		}
 		gr := gamemanager.GameRequest{SessionId: sessionId, Action: input}
-		gm.Requests <- gr
+		gm.GameReq <- gr
 
-		response := <-gm.Responses
-		if response.Error != nil {
-			if response.Error.Error() == "quit" {
+		gameRes = <-gm.GameRes
+		if gameRes.Error != nil {
+			if gameRes.Error.Error() == "quit" {
 				fmt.Println("Quitting...")
-				return
+				break
 			}
-			if response.Error.Error() == "finished" {
+			if gameRes.Error.Error() == "finished" {
 				fmt.Println("Congrats! You won!")
-				sessionId, _ = gm.CreateSession(gamemanager.WithRandomShuffle())
-				session, _ = gm.GetSession(sessionId)
-				DisplayGame(*session.Game)
+				gm.SessionReq <- gamemanager.SessionRequest{Id: sessionId, Action: "delete"}
+				session := <-gm.SessionRes
+				gm.SessionReq <- gamemanager.SessionRequest{Action: "create"}
+				session = <-gm.SessionRes
+				sessionId = session.Id
+				gm.GameReq <- gamemanager.GameRequest{SessionId: sessionId, Action: "display"}
+				gameRes = <-gm.GameRes
+				game = gameRes.Game
+				DisplayGame(*game)
 				continue
 			}
-			fmt.Println(response.Error)
+			fmt.Println(gameRes.Error)
 		}
 		if input == "h" {
-			DisplayHints(*session.Game)
+			DisplayHints(*game)
 		} else if input == "?" {
 			DisplayHelp()
 		} else {
-			DisplayGame(*session.Game)
+			DisplayGame(*game)
 		}
-
 	}
+	gamemanager.CloseManager(gm)
 }

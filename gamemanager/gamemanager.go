@@ -29,18 +29,19 @@ type GameSession struct {
 	GameStates *gamestates.GameStates
 }
 
-type SessionEvent struct {
-	SessionId   string
-	EventType   string
-	SessionData *GameSession
-}
+// type SessionEvent struct {
+// 	SessionId   string
+// 	EventType   string
+// 	SessionData *GameSession
+// }
 
 type GameManager struct {
-	Sessions  map[string]*GameSession
-	Requests  chan GameRequest
-	Responses chan GameResponse
-	Events    chan SessionEvent
-	Mutex     sync.RWMutex
+	Sessions   map[string]*GameSession
+	GameReq    chan GameRequest
+	GameRes    chan GameResponse
+	SessionReq chan SessionRequest
+	SessionRes chan SessionResponse
+	Mutex      sync.RWMutex
 }
 
 type ClientOption func(*GameSession)
@@ -49,65 +50,57 @@ var ValidColumns = []string{"1", "2", "3", "4", "5", "6", "7"}
 
 func NewGameManager() *GameManager {
 	return &GameManager{
-		Sessions:  make(map[string]*GameSession),
-		Requests:  make(chan GameRequest),
-		Responses: make(chan GameResponse),
-		Events:    make(chan SessionEvent),
-		Mutex:     sync.RWMutex{},
+		Sessions:   make(map[string]*GameSession),
+		GameReq:    make(chan GameRequest),
+		GameRes:    make(chan GameResponse),
+		SessionReq: make(chan SessionRequest),
+		SessionRes: make(chan SessionResponse),
+		Mutex:      sync.RWMutex{},
 	}
+}
+
+func CloseManager(gm *GameManager) {
+	close(gm.GameReq)
+	close(gm.GameRes)
+	close(gm.SessionReq)
+	close(gm.SessionRes)
 }
 
 func (gm *GameManager) GameEngine() {
 	for {
-		req := <-gm.Requests
+		req := <-gm.GameReq
 		if req.Action == "q" {
-			gm.Responses <- GameResponse{Error: errors.New("quit")}
+			gm.GameRes <- GameResponse{Error: errors.New("quit")}
 			gm.DeleteSession(req.SessionId)
 			break
 		}
 
 		session, error := gm.GetSession(req.SessionId)
 		if session == nil {
-			gm.Responses <- GameResponse{Error: errors.New("session not found")}
+			gm.GameRes <- GameResponse{Error: errors.New("session not found")}
 			continue
 		}
 		if error != nil {
-			gm.Responses <- GameResponse{Error: error}
+			gm.GameRes <- GameResponse{Error: error}
+			continue
+		}
+
+		if req.Action == "display" {
+			gm.GameRes <- GameResponse{Game: session.Game}
 			continue
 		}
 
 		error = HandleMoves(req.Action, session)
 		if error != nil {
-			gm.Responses <- GameResponse{Error: error}
+			gm.GameRes <- GameResponse{Error: error}
 			continue
 		}
-		gm.Responses <- GameResponse{Game: session.Game}
+		gm.GameRes <- GameResponse{Game: session.Game}
 	}
 	// close the channel
-	close(gm.Requests)
-}
-
-func (gm *GameManager) SessionEngine() {
-	for {
-		event := <-gm.Events
-		switch event.EventType {
-		case "create":
-			sessionId, _ := gm.CreateSession()
-			session, _ := gm.GetSession(sessionId)
-			gm.Events <- SessionEvent{SessionId: sessionId, EventType: "get", SessionData: session}
-			continue
-		case "get":
-			gm.GetSession(event.SessionId)
-			continue
-		case "delete":
-			error := gm.DeleteSession(event.SessionId)
-			if error != nil {
-				fmt.Println(error)
-			}
-
-		}
-	}
-
+	gm.SessionReq <- SessionRequest{Action: "quit"}
+	// wait before calling CloseManager()
+	<-gm.SessionRes
 }
 
 func NextCard(g *game.Game, gs *gamestates.GameStates) error {
