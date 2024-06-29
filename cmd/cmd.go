@@ -11,6 +11,7 @@ func main() {
 	gm := gamemanager.NewGameManager()
 	go gm.GameEngine()
 	go gm.SessionEngine()
+	// defer gamemanager.CloseManager(gm)
 
 	gm.SessionReq <- gamemanager.SessionRequest{Action: "create"}
 	sessionRes := <-gm.SessionRes
@@ -25,10 +26,13 @@ func main() {
 	for {
 		fmt.Scanln(&i)
 		input := strings.ToLower(i)
-		gm.GameReq <- gamemanager.GameRequest{SessionId: sessionId, Action: "display"}
-		gameRes := <-gm.GameRes
-		game = gameRes.Game
 		if input == "r" {
+			gm.SessionReq <- gamemanager.SessionRequest{Id: sessionId, Action: "delete"}
+			session := <-gm.SessionRes
+			if session.Error != nil {
+				fmt.Println(session.Error)
+				continue
+			}
 			gm.SessionReq <- gamemanager.SessionRequest{Action: "create"}
 			sessionRes = <-gm.SessionRes
 			if sessionRes.Error != nil {
@@ -49,7 +53,6 @@ func main() {
 				fmt.Println(session.Error)
 				continue
 			}
-
 			gm.SessionReq <- gamemanager.SessionRequest{Action: "create:test"}
 			session = <-gm.SessionRes
 			if session.Error != nil {
@@ -63,9 +66,7 @@ func main() {
 			DisplayGame(*game)
 			continue
 		}
-		gr := gamemanager.GameRequest{SessionId: sessionId, Action: input}
-		gm.GameReq <- gr
-
+		gm.GameReq <- gamemanager.GameRequest{SessionId: sessionId, Action: input}
 		gameRes = <-gm.GameRes
 		if gameRes.Error != nil {
 			if gameRes.Error.Error() == "quit" {
@@ -86,6 +87,8 @@ func main() {
 				continue
 			}
 			fmt.Println(gameRes.Error)
+		} else {
+			game = gameRes.Game
 		}
 		if input == "h" {
 			DisplayHints(*game)
@@ -95,5 +98,4 @@ func main() {
 			DisplayGame(*game)
 		}
 	}
-	gamemanager.CloseManager(gm)
 }

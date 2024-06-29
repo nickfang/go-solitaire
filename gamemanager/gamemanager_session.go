@@ -81,37 +81,32 @@ func (gm *GameManager) SessionEngine() {
 		sessionReq := <-gm.SessionReq
 		switch sessionReq.Action {
 		case "create":
-			sessionId, _ := gm.CreateSession(WithRandomShuffle())
-			session, error := gm.GetSession(sessionId)
-			if error != nil || session == nil {
+			sessionId, error := gm.CreateSession(WithRandomShuffle())
+			// session, error := gm.GetSession(sessionId)
+			if error != nil {
 				gm.SessionRes <- SessionResponse{Id: sessionId, Message: "Session not created", Error: error}
 				continue
 			}
 			gm.SessionRes <- SessionResponse{Id: sessionId, Message: "Session Created", Error: nil}
 			continue
 		case "create:test":
-			sessionId, _ := gm.CreateSession(WithTestingShuffle())
-			session, error := gm.GetSession(sessionId)
-			if error != nil || session == nil {
+			sessionId, error := gm.CreateSession(WithTestingShuffle())
+			// session, error := gm.GetSession(sessionId)
+			if error != nil {
 				gm.SessionRes <- SessionResponse{Id: sessionId, Message: "Test session not created", Error: error}
 				continue
 			}
 			gm.SessionRes <- SessionResponse{Id: sessionId, Message: "Test session Created", Error: nil}
 			continue
 		case "create:no-shuffle":
-			sessionId, _ := gm.CreateSession()
-			session, error := gm.GetSession(sessionId)
-			if error != nil || session == nil {
+			sessionId, error := gm.CreateSession()
+			// session, error := gm.GetSession(sessionId)
+			if error != nil {
 				gm.SessionRes <- SessionResponse{Id: sessionId, Message: "Unshuffled session not created", Error: error}
 				continue
 			}
 			gm.SessionRes <- SessionResponse{Id: sessionId, Message: "Unshuffled session Created", Error: nil}
 			continue
-
-			// I don't think we need to do a get.  Clients will communicate with the game through the game channels
-		// case "get":
-		// 	gm.GetSession(sessionReq.Id)
-		// 	continue
 		case "delete":
 			error := gm.DeleteSession(sessionReq.Id)
 			if error != nil {

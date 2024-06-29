@@ -109,7 +109,10 @@ func DisplayCurrentCard(g game.Game) string {
 		}
 		return error.Error()
 	}
-	return getCardDisplay(card.Value, card.Suit)
+	if card.Shown {
+		return getCardDisplay(card.Value, card.Suit)
+	}
+	return "   "
 }
 
 func DisplayCards(g game.Game) {

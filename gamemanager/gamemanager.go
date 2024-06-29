@@ -99,7 +99,6 @@ func (gm *GameManager) GameEngine() {
 	}
 	// close the channel
 	gm.SessionReq <- SessionRequest{Action: "quit"}
-	// wait before calling CloseManager()
 	<-gm.SessionRes
 }
 
@@ -198,10 +197,14 @@ func ShowGameStates(gs *gamestates.GameStates) error {
 }
 
 func ChangeFlipCount(g *game.Game, gs *gamestates.GameStates) error {
+	if g.CurrentCardIndex > -1 {
+		g.Cards[g.CurrentCardIndex].Shown = false
+	}
 	error := g.SetFlipCount(1)
 	if error != nil {
 		return error
 	}
+	g.Cards[0].Shown = true
 	fmt.Println("Easy mode.")
 	gs.SaveState(*g)
 	return nil
