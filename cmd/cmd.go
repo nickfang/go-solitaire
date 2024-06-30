@@ -9,72 +9,100 @@ import (
 
 func main() {
 	gm := gamemanager.NewGameManager()
-	go gm.ProcessRequests()
+	go gm.GameEngine()
+	go gm.SessionEngine()
+	// defer gamemanager.CloseManager(gm)
 
-	sessionId, error := gm.CreateSession()
-	if error != nil {
-		fmt.Println(error)
-		return
-	}
+	gm.SessionReq <- gamemanager.SessionRequest{Action: "create"}
+	sessionRes := <-gm.SessionRes
+	sessionId := sessionRes.Id
+	gm.GameReq <- gamemanager.GameRequest{SessionId: sessionId, Action: "display"}
+	gameRes := <-gm.GameRes
+	game := gameRes.Game
 
-	error = gm.InitializeGame(sessionId)
-	if error != nil {
-		fmt.Println(error)
-		return
-	}
-
-	session, err := gm.GetSession(sessionId)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	game := session.Game
+	ClearScreen()
 	DisplayGame(*game)
 	var i string
-	responseChan := make(chan gamemanager.GameResponse)
 
 	for {
 		fmt.Scanln(&i)
 		input := strings.ToLower(i)
 		if input == "r" {
-			gm.DeleteSession(sessionId)
-			sessionId, _ = gm.CreateSession()
-			gm.InitializeGame(sessionId)
-			session, _ = gm.GetSession(sessionId)
-			DisplayGame(*session.Game)
+			gm.SessionReq <- gamemanager.SessionRequest{Id: sessionId, Action: "delete"}
+			session := <-gm.SessionRes
+			if session.Error != nil {
+				fmt.Println(session.Error)
+				continue
+			}
+			gm.SessionReq <- gamemanager.SessionRequest{Action: "create"}
+			sessionRes = <-gm.SessionRes
+			if sessionRes.Error != nil {
+				fmt.Println(sessionRes.Error)
+				continue
+			}
+			sessionId = sessionRes.Id
+			gm.GameReq <- gamemanager.GameRequest{SessionId: sessionId, Action: "display"}
+			gameRes = <-gm.GameRes
+			game = gameRes.Game
+			ClearScreen()
+			DisplayGame(*game)
 			continue
 		}
 		if input == "rt" {
-			gm.DeleteSession(sessionId)
-			sessionId, _ = gm.CreateSession()
-			gm.InitializeTestGame(sessionId)
-			session, _ = gm.GetSession(sessionId)
-			DisplayGame(*session.Game)
+			gm.SessionReq <- gamemanager.SessionRequest{Id: sessionId, Action: "delete"}
+			session := <-gm.SessionRes
+			if session.Error != nil {
+				fmt.Println(session.Error)
+				continue
+			}
+			gm.SessionReq <- gamemanager.SessionRequest{Action: "create:test"}
+			session = <-gm.SessionRes
+			if session.Error != nil {
+				fmt.Println(session.Error)
+				continue
+			}
+			sessionId = session.Id
+			gm.GameReq <- gamemanager.GameRequest{SessionId: sessionId, Action: "display"}
+			gameRes = <-gm.GameRes
+			game = gameRes.Game
+			ClearScreen()
+			DisplayGame(*game)
 			continue
 		}
-		gr := gamemanager.GameRequest{SessionId: sessionId, Action: input, Response: responseChan}
-		gm.Requests <- gr
-
-		response := <-responseChan
-		if response.Error != nil {
-			if response.Error.Error() == "quit" {
+		gm.GameReq <- gamemanager.GameRequest{SessionId: sessionId, Action: input}
+		gameRes = <-gm.GameRes
+		ClearScreen()
+		if gameRes.Error != nil {
+			if gameRes.Error.Error() == "quit" {
 				fmt.Println("Quitting...")
-				return
+				break
 			}
-			if response.Error.Error() == "finished" {
+			if gameRes.Error.Error() == "finished" {
 				fmt.Println("Congrats! You won!")
-				return
+				gm.SessionReq <- gamemanager.SessionRequest{Id: sessionId, Action: "delete"}
+				session := <-gm.SessionRes
+				gm.SessionReq <- gamemanager.SessionRequest{Action: "create"}
+				session = <-gm.SessionRes
+				sessionId = session.Id
+				gm.GameReq <- gamemanager.GameRequest{SessionId: sessionId, Action: "display"}
+				gameRes = <-gm.GameRes
+				game = gameRes.Game
+				DisplayGame(*game)
+				continue
 			}
-			fmt.Println(response.Error)
+			fmt.Println(gameRes.Error)
+		} else {
+			game = gameRes.Game
 		}
 		if input == "h" {
-			DisplayHints(*session.Game)
+			DisplayHints(*game)
 		} else if input == "?" {
 			DisplayHelp()
+		} else if input == "ss" {
+			// TODO: Not sure if this should be implemented in the client.
+			fmt.Println("States:")
 		} else {
-			DisplayGame(*session.Game)
+			DisplayGame(*game)
 		}
-
 	}
 }

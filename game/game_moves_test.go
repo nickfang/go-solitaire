@@ -10,7 +10,7 @@ func TestNextDeckCard(t *testing.T) {
 	// NextDeckCard behaves normally in standard cases
 	err := g.NextDeckCard()
 	if err != nil {
-		t.Error("Expected no error.")
+		t.Error("Expected no error.", err)
 	}
 	if g.CurrentCardIndex != 5 {
 		t.Error("Expected current card index to be 5.", g.CurrentCardIndex)
@@ -29,7 +29,7 @@ func TestNextDeckCard(t *testing.T) {
 	g.CurrentCardIndex = 1
 	err = g.NextDeckCard()
 	if err != nil {
-		t.Error("Expected no error.")
+		t.Error("Expected no error.", err)
 	}
 	if g.Cards[g.CurrentCardIndex].Shown != true {
 		t.Error("Expected current card to be shown.", g.Cards[g.CurrentCardIndex].Shown)
@@ -43,7 +43,7 @@ func TestNextDeckCard(t *testing.T) {
 	g.CurrentCardIndex = 0
 	err = g.NextDeckCard()
 	if err != nil {
-		t.Error("Expected no error.")
+		t.Error("Expected no error.", err)
 	}
 	if g.CurrentCardIndex != 1 {
 		t.Error("Expected current card index to be 1 if there are only 2 cards left.", g.CurrentCardIndex)
@@ -72,7 +72,7 @@ func TestMoveFromDeckToBoard(t *testing.T) {
 	// using unshuffled deck
 	err := g.MoveFromDeckToBoard(3)
 	if err != nil {
-		t.Error("Expected no error.")
+		t.Error("Expected no error.", err)
 	}
 	if len(g.Board[3]) != 5 {
 		t.Error("Expected five cards in column 3.", len(g.Board[3]))
@@ -87,13 +87,13 @@ func TestMoveFromDeckToBoard(t *testing.T) {
 	// MoveFromDeckToBoard returns an error if the move is invalid
 	err = g.MoveFromDeckToBoard(0)
 	if err.Error() != "invalid move" {
-		t.Error("Expected error: invalid move.", err.Error())
+		t.Error("Expected error: invalid move.", err)
 	}
 
 	// MoveFromDeckToBoard returns an error if the move is invalid
 	err = g.MoveFromDeckToBoard(3)
 	if err.Error() != "invalid move" {
-		t.Error("Expected error: invalid move.", err.Error())
+		t.Error("Expected error: invalid move.", err)
 	}
 }
 
@@ -104,7 +104,7 @@ func TestMoveFromDeckToStacks(t *testing.T) {
 
 	error := g.MoveFromDeckToStacks()
 	if error != nil {
-		t.Error("Expected no error.")
+		t.Error("Expected no error.", error)
 	}
 	if len(g.Stacks[0]) != 1 {
 		t.Error("Expected one card in stack 0.", len(g.Stacks[0]))
@@ -136,7 +136,7 @@ func TestMoveFromBoardToStacks(t *testing.T) {
 	// MoveFromBoardToStacks behaves normally in standard cases
 	err := g.MoveFromBoardToStacks(6)
 	if err != nil {
-		t.Error("Expected no error.")
+		t.Error("Expected no error.", err)
 	}
 	if len(g.Stacks[3]) != 7 {
 		t.Error("Expected seven card in stack 3.", len(g.Stacks[3]))
@@ -173,7 +173,7 @@ func TestMoveFromColumnToColumn(t *testing.T) {
 	// MoveColumnToColumn behaves normally in standard cases
 	err := g.MoveFromColumnToColumn(5, 4)
 	if err != nil {
-		t.Error("Expected no error.")
+		t.Error("Expected no error.", err)
 	}
 	if len(g.Board[5]) != 5 {
 		t.Error("Expected five cards in column 5.", len(g.Board[5]))

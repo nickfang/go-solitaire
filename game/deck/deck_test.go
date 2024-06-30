@@ -177,7 +177,7 @@ func TestNewTestingDeck(t *testing.T) {
 	deck := NewDeck()
 	err := deck.TestingShuffle()
 	if err != nil {
-		t.Error("Expected no error.")
+		t.Error("Expected no error.", err)
 	}
 	// this order makes it easy to clear out the deck and board to test edge cases.
 	deckValues := []int{13, 13, 13, 13, 12, 12, 12, 12, 11, 11, 11, 11, 10, 10, 10, 10, 9, 9, 9, 9, 8, 8, 8, 8, 7, 7, 7, 7, 3, 2, 1, 6, 5, 4, 3, 2, 1, 6, 5, 4, 3, 2, 1, 6, 5, 4, 3, 2, 1, 6, 5, 4}

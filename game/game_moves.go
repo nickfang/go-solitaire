@@ -50,6 +50,9 @@ func (g *Game) MoveFromDeckToBoard(column int) error {
 	if g.CurrentCardIndex >= 0 {
 		g.CurrentCardIndex = g.CurrentCardIndex - 1
 	}
+	if g.CurrentCardIndex >= 0 {
+		g.Cards[g.CurrentCardIndex].Shown = true
+	}
 	return nil
 }
 

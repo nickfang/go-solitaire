@@ -60,7 +60,7 @@ func TestGetCurrentCard(t *testing.T) {
 	game := NewGame("")
 	card, err := game.GetCurrentCard()
 	if err != nil {
-		t.Error("Expected no error.")
+		t.Error("Expected no error.", err)
 	}
 	if card != game.Cards[2] {
 		t.Error("Expected current card to be the third card in the deck.")
@@ -69,7 +69,7 @@ func TestGetCurrentCard(t *testing.T) {
 	game.CurrentCardIndex = -1
 	card, err = game.GetCurrentCard()
 	if err != nil {
-		t.Error("Expected no error.")
+		t.Error("Expected no error.", err)
 	}
 	if card.Value != 0 || card.Suit != "" {
 		t.Error("Expected current card to be empty.")
@@ -99,7 +99,7 @@ func TestSetFlipcount(t *testing.T) {
 
 	err := g.SetFlipCount(1)
 	if err != nil {
-		t.Error("Expected no error.")
+		t.Error("Expected no error.", err)
 	}
 	if g.FlipCount != 1 {
 		t.Error("Expected flip count to be 1.", g.FlipCount)
@@ -107,7 +107,7 @@ func TestSetFlipcount(t *testing.T) {
 
 	err = g.SetFlipCount(3)
 	if err != nil {
-		t.Error("Expected no error.")
+		t.Error("Expected no error.", err)
 	}
 	if g.FlipCount != 3 {
 		t.Error("Expected flip count to be 3.", g.FlipCount)

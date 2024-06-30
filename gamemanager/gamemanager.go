@@ -9,20 +9,12 @@ import (
 	"solitaire/game"
 	"solitaire/gamestates"
 
-	"github.com/rs/xid"
 	"golang.org/x/exp/slices"
 )
 
-type GameSession struct {
-	Id         string
-	Game       *game.Game
-	GameStates *gamestates.GameStates
-}
-
-type GameManager struct {
-	Sessions map[string]GameSession
-	Mutex    sync.RWMutex
-	Requests chan GameRequest
+type GameRequest struct {
+	SessionId string
+	Action    string
 }
 
 type GameResponse struct {
@@ -31,107 +23,83 @@ type GameResponse struct {
 	Message string
 }
 
-type GameRequestData struct {
+type GameSession struct {
+	Id         string
+	Game       *game.Game
+	GameStates *gamestates.GameStates
 }
 
-type GameRequest struct {
-	SessionId string
-	Action    string
-	Data      interface{}
-	Response  chan GameResponse
+// type SessionEvent struct {
+// 	SessionId   string
+// 	EventType   string
+// 	SessionData *GameSession
+// }
+
+type GameManager struct {
+	Sessions   map[string]*GameSession
+	GameReq    chan GameRequest
+	GameRes    chan GameResponse
+	SessionReq chan SessionRequest
+	SessionRes chan SessionResponse
+	Mutex      sync.RWMutex
 }
+
+type ClientOption func(*GameSession)
 
 var ValidColumns = []string{"1", "2", "3", "4", "5", "6", "7"}
 
 func NewGameManager() *GameManager {
 	return &GameManager{
-		Sessions: make(map[string]GameSession),
-		Mutex:    sync.RWMutex{},
-		Requests: make(chan GameRequest, 10),
+		Sessions:   make(map[string]*GameSession),
+		GameReq:    make(chan GameRequest),
+		GameRes:    make(chan GameResponse),
+		SessionReq: make(chan SessionRequest),
+		SessionRes: make(chan SessionResponse),
+		Mutex:      sync.RWMutex{},
 	}
 }
 
-func (gm *GameManager) CreateSession() (string, error) {
-	gm.Mutex.Lock()
-	defer gm.Mutex.Unlock()
-
-	sessionId := xid.New().String()
-	game := game.NewGame(sessionId)
-	gameStates := gamestates.NewGameStates()
-	newSession := GameSession{
-		Id:         sessionId,
-		Game:       &game,
-		GameStates: &gameStates,
-	}
-	gm.Sessions[sessionId] = newSession
-	return sessionId, nil
+func CloseManager(gm *GameManager) {
+	close(gm.GameReq)
+	close(gm.GameRes)
+	close(gm.SessionReq)
+	close(gm.SessionRes)
 }
 
-func (gm *GameManager) InitializeGame(sessionId string) error {
-	gs, error := gm.GetSession(sessionId)
-	if error != nil {
-		return error
-	}
-	gs.Game.Cards.RandomShuffle()
-	gs.Game.DealBoard()
-	gs.GameStates.SaveState(*gs.Game)
-	return nil
-}
-
-func (gm *GameManager) InitializeTestGame(sessionId string) error {
-	gs, error := gm.GetSession(sessionId)
-	if error != nil {
-		return error
-	}
-	gs.Game.Cards.TestingShuffle()
-	gs.Game.DealBoard()
-	gs.GameStates.SaveState(*gs.Game)
-	return nil
-}
-
-func (gm *GameManager) GetSession(sessionId string) (*GameSession, error) {
-	gm.Mutex.RLock()
-	defer gm.Mutex.RUnlock()
-
-	if session, ok := gm.Sessions[sessionId]; ok {
-		return &session, nil
-	}
-	return nil, errors.New("session not found")
-}
-
-func (gm *GameManager) DeleteSession(sessionId string) {
-	gm.Mutex.Lock()
-	defer gm.Mutex.Unlock()
-
-	delete(gm.Sessions, sessionId)
-}
-
-func (gm *GameManager) ProcessRequests() {
+func (gm *GameManager) GameEngine() {
 	for {
-		req := <-gm.Requests
+		req := <-gm.GameReq
 		if req.Action == "q" {
-			req.Response <- GameResponse{Error: errors.New("quit")}
+			gm.GameRes <- GameResponse{Error: errors.New("quit")}
 			gm.DeleteSession(req.SessionId)
 			break
 		}
+
 		session, error := gm.GetSession(req.SessionId)
 		if session == nil {
-			req.Response <- GameResponse{Error: errors.New("session not found")}
+			gm.GameRes <- GameResponse{Error: errors.New("session not found")}
 			continue
 		}
 		if error != nil {
-			req.Response <- GameResponse{Error: error}
+			gm.GameRes <- GameResponse{Error: error}
 			continue
 		}
+
+		if req.Action == "display" {
+			gm.GameRes <- GameResponse{Game: session.Game}
+			continue
+		}
+
 		error = HandleMoves(req.Action, session)
 		if error != nil {
-			req.Response <- GameResponse{Error: error}
+			gm.GameRes <- GameResponse{Error: error}
 			continue
 		}
-		req.Response <- GameResponse{Game: session.Game}
+		gm.GameRes <- GameResponse{Game: session.Game}
 	}
 	// close the channel
-	close(gm.Requests)
+	gm.SessionReq <- SessionRequest{Action: "quit"}
+	<-gm.SessionRes
 }
 
 func NextCard(g *game.Game, gs *gamestates.GameStates) error {
@@ -229,10 +197,14 @@ func ShowGameStates(gs *gamestates.GameStates) error {
 }
 
 func ChangeFlipCount(g *game.Game, gs *gamestates.GameStates) error {
+	if g.CurrentCardIndex > -1 {
+		g.Cards[g.CurrentCardIndex].Shown = false
+	}
 	error := g.SetFlipCount(1)
 	if error != nil {
 		return error
 	}
+	g.Cards[0].Shown = true
 	fmt.Println("Easy mode.")
 	gs.SaveState(*g)
 	return nil

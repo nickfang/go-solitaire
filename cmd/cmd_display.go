@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
 	"solitaire/game"
 	"solitaire/game/board"
 	"solitaire/game/deck"
@@ -109,7 +111,10 @@ func DisplayCurrentCard(g game.Game) string {
 		}
 		return error.Error()
 	}
-	return getCardDisplay(card.Value, card.Suit)
+	if card.Shown {
+		return getCardDisplay(card.Value, card.Suit)
+	}
+	return "   "
 }
 
 func DisplayCards(g game.Game) {
@@ -128,21 +133,20 @@ func DisplayGame(g game.Game) {
 	DisplayCards(g)
 	if g.Debug {
 		DisplayHints(g)
-
 	}
 }
 
 func DisplayHelp() {
 	fmt.Println("Commands: ")
-	fmt.Println("  n - next card")
-	fmt.Println("  d# - move from deck to column number")
-	fmt.Println("  ds - move from deck to stacks")
-	fmt.Println("  ## - move fromcolumn to column")
-	fmt.Println("  r - reset")
-	fmt.Println("  h - hints")
+	fmt.Println("  n   - next card")
+	fmt.Println("  d#  - move from deck to column number")
+	fmt.Println("  ds  - move from deck to stacks")
+	fmt.Println("  ##  - move from column to column")
+	fmt.Println("  r   - reset")
+	fmt.Println("  h   - hints")
 	fmt.Println("  fc1 - set flip count to 1 (easy mode)")
-	fmt.Println("  u - undo")
-	fmt.Println("  q - quit")
+	fmt.Println("  u   - undo")
+	fmt.Println("  q   - quit")
 }
 
 func DisplayHints(g game.Game) {
@@ -153,4 +157,10 @@ func DisplayHints(g game.Game) {
 		hints[i] = incrementDigits(hint)
 	}
 	fmt.Println("Moves:", hints)
+}
+
+func ClearScreen() {
+	cmd := exec.Command("clear") // For Unix-like systems
+	cmd.Stdout = os.Stdout
+	cmd.Run()
 }
