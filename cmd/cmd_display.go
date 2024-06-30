@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
 	"solitaire/game"
 	"solitaire/game/board"
 	"solitaire/game/deck"
@@ -139,7 +141,7 @@ func DisplayHelp() {
 	fmt.Println("  n   - next card")
 	fmt.Println("  d#  - move from deck to column number")
 	fmt.Println("  ds  - move from deck to stacks")
-	fmt.Println("  ##  - move fromcolumn to column")
+	fmt.Println("  ##  - move from column to column")
 	fmt.Println("  r   - reset")
 	fmt.Println("  h   - hints")
 	fmt.Println("  fc1 - set flip count to 1 (easy mode)")
@@ -155,4 +157,10 @@ func DisplayHints(g game.Game) {
 		hints[i] = incrementDigits(hint)
 	}
 	fmt.Println("Moves:", hints)
+}
+
+func ClearScreen() {
+	cmd := exec.Command("clear") // For Unix-like systems
+	cmd.Stdout = os.Stdout
+	cmd.Run()
 }

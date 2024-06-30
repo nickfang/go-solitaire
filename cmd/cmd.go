@@ -20,6 +20,7 @@ func main() {
 	gameRes := <-gm.GameRes
 	game := gameRes.Game
 
+	ClearScreen()
 	DisplayGame(*game)
 	var i string
 
@@ -43,6 +44,7 @@ func main() {
 			gm.GameReq <- gamemanager.GameRequest{SessionId: sessionId, Action: "display"}
 			gameRes = <-gm.GameRes
 			game = gameRes.Game
+			ClearScreen()
 			DisplayGame(*game)
 			continue
 		}
@@ -63,11 +65,13 @@ func main() {
 			gm.GameReq <- gamemanager.GameRequest{SessionId: sessionId, Action: "display"}
 			gameRes = <-gm.GameRes
 			game = gameRes.Game
+			ClearScreen()
 			DisplayGame(*game)
 			continue
 		}
 		gm.GameReq <- gamemanager.GameRequest{SessionId: sessionId, Action: input}
 		gameRes = <-gm.GameRes
+		ClearScreen()
 		if gameRes.Error != nil {
 			if gameRes.Error.Error() == "quit" {
 				fmt.Println("Quitting...")
@@ -94,6 +98,9 @@ func main() {
 			DisplayHints(*game)
 		} else if input == "?" {
 			DisplayHelp()
+		} else if input == "ss" {
+			// TODO: Not sure if this should be implemented in the client.
+			fmt.Println("States:")
 		} else {
 			DisplayGame(*game)
 		}
