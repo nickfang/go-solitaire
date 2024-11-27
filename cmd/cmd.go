@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"solitaire/gamemanager"
 )
 
-func main() {
+func StartCmd() {
 	gm := gamemanager.NewGameManager()
 	go gm.GameEngine()
 	go gm.SessionEngine()

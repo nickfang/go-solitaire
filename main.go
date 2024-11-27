@@ -1,17 +1,16 @@
 package main
 
 import (
-	"net/http"
+	// "net/http"
 
-	"github.com/rs/zerolog"
+	// "github.com/rs/zerolog"
 
-	"solitaire/api"
+	"solitaire/cmd"
 )
 
 func main() {
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-
-	api.StartApi()
-
-	http.ListenAndServe(":8888", nil)
+	cmd.StartCmd()
+	// zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	// api.StartApi()
+	// http.ListenAndServe(":8888", nil)
 }

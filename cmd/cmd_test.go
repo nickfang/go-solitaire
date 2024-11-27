@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"fmt"
@@ -33,7 +33,7 @@ func TestMainOutput(t *testing.T) {
 	fmt.Fprintln(w, "rt")
 	fmt.Fprintln(w, "q")
 
-	main()
+	StartCmd()
 
 	// must close write before getting read or test times out
 	w.Close()
